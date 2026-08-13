@@ -109,26 +109,41 @@ body {
 
 .menu-link {
     background-color: transparent;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 8px;
+    border-radius: 10px; /* Bordas mais arredondadas e modernas */
     cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--text-secundario);
-    text-decoration: none;
-    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
     border: 1px solid transparent;
+    width: 44px; /* Tamanho fixo para deixar todos alinhados */
+    height: 44px;
 }
 
+/* Imagem do Ícone */
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    transition: transform 0.3s ease; /* Animação suave para o hover */
+}
+
+/* HOVER: Quando o mouse passa por cima */
 .menu-link:hover {
-    background-color: var(--bg-linha-hover);
-    color: var(--text-escuro);
+    background-color: var(--bg-badge); /* Fundo lilás bem clarinho */
+    border-color: var(--border-badge);
 }
 
+.menu-link:hover .nav-icon {
+    transform: scale(1.15); /* Faz o ícone dar uma leve "crescida" */
+}
+
+/* ATIVO: Página atual */
 .menu-link.active {
     background-color: var(--bg-linha-selecionada);
-    color: var(--btn-acao);
-    border: 1px solid var(--border-divisoria);
+    border: 1px solid var(--btn-acao); /* Borda Roxo Ametista para destacar */
+    box-shadow: inset 0 0 8px rgba(164, 95, 206, 0.15); /* Sombra interna suave */
 }
 
 /* --- NOVA LINHA DIVISÓRIA --- */
