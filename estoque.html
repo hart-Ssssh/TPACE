@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <!-- Logo -->
+        <div class="topbar-brand">T-PACE</div>
+        
+        <!-- Pesquisa -->
+        <div class="topbar-search">
+            <input type="text" placeholder="Pesquisar no sistema...">
+        </div>
+
+        <!-- Menu Principal -->
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link" title="Dashboard">
+                [ Ícone Dashboard ]
+            </a>
+            <a href="estoque.html" class="menu-link active" title="Controle de Estoque">
+                [ Ícone Estoque ]
+            </a>
+            <a href="#" class="menu-link" title="Sair">
+                [ Ícone Sair ]
+            </a>
+        </nav>
+
+        <div class="topbar-divider"></div>
+
+        <!-- Usuário -->
+        <div class="user-info">
+            <span>Operador 01</span>
+            <div class="user-avatar"></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- CONTEÚDO DA TELA: ESTOQUE -->
+        <section class="screen-container">
+            <h2>Gerenciar Estoque</h2>
+            
+            <div class="toolbar">
+                <input type="text" placeholder="Pesquisar produto..." style="width: 300px;">
+                <div>
+                    <button class="btn btn-outline" style="margin-right: 10px;">Exportar Relatório</button>
+                    <button class="btn">+ Adicionar Produto</button>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Qtd.</th>
+                        <th>Preço Unit.</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>Camiseta Básica</td>
+                        <td>Vestuário</td>
+                        <td>45</td>
+                        <td>R$ 49,90</td>
+                        <td><span class="status-badge status-ok">Adequado</span></td>
+                        <td class="action-links"><a href="#">Editar</a> <a href="#">Excluir</a></td>
+                    </tr>
+                    <tr>
+                        <td>005</td>
+                        <td>Meias (Par)</td>
+                        <td>Vestuário</td>
+                        <td>0</td>
+                        <td>R$ 15,00</td>
+                        <td><span class="status-badge status-low">Esgotado</span></td>
+                        <td class="action-links"><a href="#">Editar</a> <a href="#">Excluir</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>

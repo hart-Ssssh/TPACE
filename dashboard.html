@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <!-- Logo -->
+        <div class="topbar-brand">T-PACE</div>
+        
+        <!-- Pesquisa -->
+        <div class="topbar-search">
+            <input type="text" placeholder="Pesquisar no sistema...">
+        </div>
+
+        <!-- Menu Principal (Substitua o texto pelos seus ícones) -->
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link active" title="Dashboard">
+                [ Ícone Dashboard ]
+            </a>
+            <a href="estoque.html" class="menu-link" title="Controle de Estoque">
+                [ Ícone Estoque ]
+            </a>
+            <a href="#" class="menu-link" title="Sair">
+                [ Ícone Sair ]
+            </a>
+        </nav>
+        
+        <div class="topbar-divider"></div>
+
+        <!-- Usuário -->
+        <div class="user-info">
+            <span>Operador 01</span>
+            <div class="user-avatar"></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- CONTEÚDO DA TELA: DASHBOARD -->
+        <section class="screen-container">
+            <h2>Resumo de Hoje</h2>
+            
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-title">Vendas do Dia</div>
+                    <div class="card-value">R$ 4.250,00</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Atendimentos</div>
+                    <div class="card-value">34</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Alertas de Estoque</div>
+                    <div class="card-value">12 itens</div>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">
+                [ Área reservada para Gráfico de Faturamento ]
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
