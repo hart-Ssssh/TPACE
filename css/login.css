@@ -1,0 +1,21 @@
+:root {
+  /* Tons Claros / Base */
+  --marfim: #F7F4EA; 
+  /* Tons de Roxo / Lilás */
+  --lilas-claro: #DED9E2;
+  --lavanda: #C0B9DD;
+  --roxo-ametista: #A45FCE;
+  /* Tons de Azul */
+  --ciano-claro: #B0EBEA;
+  --turquesa: #68BBBA;
+  --verde-ardosia: #6A8B8A;
+  /* Tom Escuro / Contraste */
+  --chumbo: #242A2A;
+}
+
+* {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
