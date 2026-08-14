@@ -1,21 +1,107 @@
+/* Centraliza a caixa de login no meio da tela */
 :root {
-  /* Tons Claros / Base */
-  --marfim: #F7F4EA; 
-  /* Tons de Roxo / Lilás */
-  --lilas-claro: #DED9E2;
-  --lavanda: #C0B9DD;
-  --roxo-ametista: #A45FCE;
-  /* Tons de Azul */
-  --ciano-claro: #B0EBEA;
-  --turquesa: #68BBBA;
-  --verde-ardosia: #6A8B8A;
-  /* Tom Escuro / Contraste */
-  --chumbo: #242A2A;
+    /* Fundos / Backgrounds (Convertidos para Hex CSS RGBA) */
+    --bg-topo: #5E3A7D;
+    --bg-base: #2A1143;
+    --glass-inicio: #F8F3FCE6; /* Translúcido 90% */
+    --glass-fim: #F8F3FCCC;    /* Translúcido 80% */
+    --bg-pesquisa: #F8F3FC99;
+    --bg-rodape: #F8F3FC44;
+    --bg-badge: #A45FCE1A;
+    --bg-placeholder: #D6C4E833;
+    --bg-linha-selecionada: #2A11431A;
+    --bg-linha-hover: #2A11430D;
+
+    /* Bordas e Sombras */
+    --border-glass: #FFFFFFFF;
+    --border-pesquisa: #FFFFFF88;
+    --border-divisoria: #D6C4E866;
+    --border-rodape: #D6C4E844;
+    --border-badge: #A45FCE44;
+    --sombra-escura: #2A1143;
+
+    /* Destaques e Botões */
+    --btn-acao: #A45FCE;
+
+    /* Textos e Tipografia */
+    --text-escuro: #2A1143;
+    --text-secundario: #5E3A7D;
+    --text-claro: #F8F3FC;
+    --text-rodape: #D6C4E8;
+    --text-placeholder: #5E3A7D88;
 }
 
-* {
-    margin: 0;
-    border: 0;
-    padding: 0;
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
 }
 
+/* O Cartão de Vidro do Login */
+.login-glass-card {
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px rgba(42, 17, 67, 0.3);
+    backdrop-filter: blur(16px);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    font-size: 32px;
+    color: var(--btn-acao);
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+.login-header p {
+    color: var(--text-secundario);
+    font-size: 14px;
+}
+
+/* Campos de Input */
+.input-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-escuro);
+    text-transform: uppercase;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    background-color: var(--bg-pesquisa);
+}
+
+.btn-block {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Mensagem de Erro Oculta por padrão */
+.error-message {
+    color: #ff4d4d;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 15px;
+    min-height: 18px; /* Mantém o espaço mesmo vazia */
+}

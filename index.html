@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - T-PACE</title>
+    <!-- Importa as variáveis de cor e o estilo base -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Importa o estilo específico da tela de login -->
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-glass-card">
+            
+            <div class="login-header">
+                <h1>T-PACE</h1>
+                <p>Faça login para acessar o sistema</p>
+            </div>
+
+            <form id="form-login">
+                <div class="input-group">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" placeholder="Ex: admin, rh, estoque..." required>
+                </div>
+
+                <div class="input-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" placeholder="••••••••" required>
+                </div>
+
+                <!-- Mensagem de erro que o JS vai usar -->
+                <div id="mensagem-erro" class="error-message"></div>
+
+                <button type="submit" class="btn btn-block">ENTRAR</button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Script que vai processar o login simulado -->
+    <script src="js/login.js"></script>
+</body>
+</html>
