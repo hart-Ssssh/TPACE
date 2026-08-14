@@ -18,20 +18,26 @@
             <input type="text" placeholder="Pesquisar no sistema...">
         </div>
 
+        <!-- Menu Principal (Completo) -->
         <nav class="topbar-menu">
+            <!-- 1. Dashboard -->
             <a href="dashboard.html" class="menu-link active" title="Dashboard">
                 <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
             </a>
-            <a href="relatorios.html" class="menu-link" title="Emissão de Relatórios">
-                <img src="assets/icons/relatorio.png" alt="Relatório" class="nav-icon">
+            <!-- 2. Relatórios -->
+            <a href="relatorios.html" class="menu-link" title="Relatórios">
+                <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
             </a>
+            <!-- 3. Usuários -->
+            <a href="usuarios.html" class="menu-link" title="Usuários">
+                <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
+            </a>
+            <!-- 4. Estoque -->
             <a href="estoque.html" class="menu-link" title="Controle de Estoque">
                 <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
             </a>
-            <a href="usuarios.html" class="menu-link" title="Controle de Usuários">
-                <img src="assets/icons/usuario.png" alt="Sair" class="nav-icon">
-            </a>
-            <a href="index.html" class="menu-link" title="Sair">
+            <!-- 5. Sair (Sempre visível) -->
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
                 <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
             </a>
         </nav>
@@ -70,6 +76,9 @@
             </div>
         </section>
     </main>
-
+    <!-- Script de Controle de Permissões e Logout -->
+    <script src="js/permissoes.js"></script>
+</body>
+</html>
 </body>
 </html>
