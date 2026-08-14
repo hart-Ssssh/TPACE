@@ -47,7 +47,6 @@
         <!-- Usuário -->
         <div class="user-info">
             <span>Operador 01</span>
-            <div class="user-avatar"></div>
         </div>
     </header>
 
@@ -76,30 +75,14 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>001</td>
-                        <td>Camiseta Básica</td>
-                        <td>Vestuário</td>
-                        <td>45</td>
-                        <td>R$ 49,90</td>
-                        <td><span class="status-badge status-ok">Adequado</span></td>
-                        <td class="action-links"><a href="#">Editar</a> <a href="#">Excluir</a></td>
-                    </tr>
-                    <tr>
-                        <td>005</td>
-                        <td>Meias (Par)</td>
-                        <td>Vestuário</td>
-                        <td>0</td>
-                        <td>R$ 15,00</td>
-                        <td><span class="status-badge status-low">Esgotado</span></td>
-                        <td class="action-links"><a href="#">Editar</a> <a href="#">Excluir</a></td>
-                    </tr>
+                <tbody id="tabela-estoque">
+                    <!-- O JavaScript vai injetar os produtos reais aqui -->
                 </tbody>
             </table>
         </section>
     </main>
     <!-- Script de Controle de Permissões e Logout -->
     <script src="js/permissoes.js"></script>
+    <script src="js/estoque.js"></script>
 </body>
 </html>
