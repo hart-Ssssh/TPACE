@@ -93,6 +93,15 @@ function abrirModalEditar(id) {
     document.getElementById('prod-qtd').value = produto.quantidade;
     document.getElementById('prod-minimo').value = produto.quantidade_minima;
     document.getElementById('prod-unidade').value = produto.unidade_venda;
+    document.getElementById('prod-custo').value = produto.custo || "";
+    document.getElementById('prod-cest').value = produto.cest || "";
+    document.getElementById('prod-imposto').value = produto.aliquotas_imposto || "";
+    document.getElementById('prod-ncm').value = produto.ncm || "";
+    document.getElementById('prod-promocional').value = produto.valor_promocional || "";
+    document.getElementById('prod-em-promocao').value = produto.em_promocao || 0;
+    document.getElementById('prod-lote').value = produto.lote || "";
+    // Validade vem do banco, garantir que corte a hora se houver
+    document.getElementById('prod-validade').value = produto.validade ? produto.validade.split('T')[0] : "";
 
     // Mostra a janela
     document.getElementById('modal-produto').classList.add('active');
@@ -117,7 +126,15 @@ async function salvarProduto(event) {
         preco_venda: document.getElementById('prod-preco').value,
         quantidade: document.getElementById('prod-qtd').value,
         quantidade_minima: document.getElementById('prod-minimo').value,
-        unidade_venda: document.getElementById('prod-unidade').value
+        unidade_venda: document.getElementById('prod-unidade').value,
+        custo: document.getElementById('prod-custo').value,
+        cest: document.getElementById('prod-cest').value,
+        aliquotas_imposto: document.getElementById('prod-imposto').value,
+        ncm: document.getElementById('prod-ncm').value,
+        valor_promocional: document.getElementById('prod-promocional').value,
+        em_promocao: document.getElementById('prod-em-promocao').value,
+        lote: document.getElementById('prod-lote').value,
+        validade: document.getElementById('prod-validade').value
     };
 
     try {
