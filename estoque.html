@@ -46,7 +46,7 @@
 
         <!-- Usuário -->
         <div class="user-info">
-            <span>Operador 01</span>
+            <span>Carregando...</span>
         </div>
     </header>
 
@@ -55,14 +55,17 @@
         <section class="screen-container">
             <h2>Gerenciar Estoque</h2>
             
+            <!-- TOOLBAR COM BOTÕES -->
             <div class="toolbar">
                 <input type="text" placeholder="Pesquisar produto..." style="width: 300px;">
                 <div>
                     <button class="btn btn-outline" style="margin-right: 10px;">Exportar Relatório</button>
-                    <button class="btn">+ Adicionar Produto</button>
+                    <!-- O botão que abre a janelinha modal -->
+                    <button class="btn" onclick="abrirModalNovo()">+ Adicionar Produto</button>
                 </div>
             </div>
 
+            <!-- ESTRUTURA DA TABELA -->
             <table>
                 <thead>
                     <tr>
@@ -75,14 +78,80 @@
                         <th>Ações</th>
                     </tr>
                 </thead>
+                <!-- É aqui que o JS vai injetar os produtos -->
                 <tbody id="tabela-estoque">
-                    <!-- O JavaScript vai injetar os produtos reais aqui -->
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Carregando...</td>
+                    </tr>
                 </tbody>
             </table>
         </section>
     </main>
+
+    <!-- ========================================== -->
+    <!-- JANELA MODAL OCULTA (ADICIONAR/EDITAR)     -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="modal-produto">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Adicionar Produto</h3>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            
+            <form id="form-produto">
+                <!-- Campo escondido para guardar o ID quando formos editar -->
+                <input type="hidden" id="prod-id">
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Nome do Produto</label>
+                        <input type="text" id="prod-nome" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Código de Barras</label>
+                        <input type="text" id="prod-codigo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Preço de Venda (R$)</label>
+                        <input type="number" step="0.01" id="prod-preco" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantidade Atual</label>
+                        <input type="number" step="0.001" id="prod-qtd" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantidade Mínima (Alerta)</label>
+                        <input type="number" step="0.001" id="prod-minimo" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Unidade de Venda</label>
+                        <select id="prod-unidade">
+                            <option value="Un">Un (Unidade)</option>
+                            <option value="Kg">Kg (Quilograma)</option>
+                            <option value="L">L (Litro)</option>
+                            <option value="Cx">Cx (Caixa)</option>
+                            <option value="Mt">Mt (Metro)</option>
+                            <option value="G">G (Grama)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Script de Controle de Permissões e Logout -->
     <script src="js/permissoes.js"></script>
+    <!-- Script que puxa os produtos do banco e controla o modal -->
     <script src="js/estoque.js"></script>
 </body>
 </html>

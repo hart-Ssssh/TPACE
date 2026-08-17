@@ -412,3 +412,116 @@ tr:hover {
     height: 300px;
     width: 100%;
 }
+
+/* --- BOTÕES DE AÇÃO NA TABELA --- */
+.action-links {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+}
+
+/* Turquesa para o Editar */
+.btn-edit { background-color: var(--chart-turquesa); }
+.btn-edit:hover { background-color: var(--verde-ardosia); }
+
+/* Rosa para o Excluir */
+.btn-delete { background-color: var(--chart-rosa); }
+.btn-delete:hover { background-color: #d43f6a; }
+
+/* --- JANELA MODAL (Estilo JOptionPane Glass) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(42, 17, 67, 0.6); /* Fundo roxo escuro translúcido */
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    
+    /* Escondido por padrão */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Classe para mostrar o modal via JavaScript */
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-glass {
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px rgba(42, 17, 67, 0.4);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    color: var(--text-escuro);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-divisoria);
+    padding-bottom: 10px;
+}
+
+.modal-header h3 { color: var(--btn-acao); }
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secundario);
+    cursor: pointer;
+}
+
+/* Grid para organizar os inputs do formulário em duas colunas */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group.full-width {
+    grid-column: span 2; /* Faz o campo ocupar as duas colunas */
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-secundario);
+    text-transform: uppercase;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
