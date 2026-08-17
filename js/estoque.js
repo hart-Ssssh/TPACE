@@ -42,7 +42,26 @@ async function carregarProdutos() {
             else if (qtd <= (min * 4)) { classeBadge = 'status-medium'; textoStatus = 'Médio'; } 
             else { classeBadge = 'status-good'; textoStatus = 'Bom'; }
 
-            const precoFormatado = parseFloat(prod.preco_venda).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            // ==========================================
+            // Lógica de Preço Promocional
+            // ==========================================
+            let precoFinal = parseFloat(prod.preco_venda) || 0;
+            let isPromocao = (prod.em_promocao == 1 || prod.em_promocao === '1' || prod.em_promocao === true);
+            
+            // Se estiver em promoção e tiver um valor promocional válido, altera o preço base
+            if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) {
+                precoFinal = parseFloat(prod.valor_promocional);
+            }
+
+            const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            
+            // Monta o visual do preço (com badge se for promoção, normal se não for)
+            let tdPrecoHtml = `<td>${precoFormatado}</td>`;
+            if (isPromocao) {
+                tdPrecoHtml = `<td><span class="promo-badge" title="Preço Promocional">${precoFormatado}</span></td>`;
+            }
+
+            // ==========================================
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -50,7 +69,7 @@ async function carregarProdutos() {
                 <td>${prod.nome}</td>
                 <td>Geral</td>
                 <td>${qtd} ${prod.unidade_venda}</td>
-                <td>${precoFormatado}</td>
+                ${tdPrecoHtml} <!-- Aqui entra a mágica do preço -->
                 <td><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
                 <td class="action-links">
                     <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>

@@ -22,6 +22,10 @@
 
     /* Destaques e Botões */
     --btn-acao: #A45FCE;
+    
+    /* Cores Auxiliares (Gráficos e Ações) */
+    --chart-turquesa: #68BBBA;
+    --chart-rosa: #F25C8F;
 
     /* Textos e Tipografia */
     --text-escuro: #2A1143;
@@ -54,13 +58,13 @@ body {
     height: 70px;
     background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
     border-bottom: 1px solid var(--border-glass);
-    backdrop-filter: blur(12px); /* Efeito de vidro borrado */
+    backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 30px;
     gap: 20px;
-    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.2); /* Sombra baseada no #2A1143 */
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.2);
 }
 
 .topbar-brand {
@@ -110,14 +114,14 @@ body {
 .menu-link {
     background-color: transparent;
     padding: 8px;
-    border-radius: 10px; /* Bordas mais arredondadas e modernas */
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     border: 1px solid transparent;
-    width: 44px; /* Tamanho fixo para deixar todos alinhados */
+    width: 44px;
     height: 44px;
 }
 
@@ -126,43 +130,43 @@ body {
     width: 24px;
     height: 24px;
     object-fit: contain;
-    transition: transform 0.3s ease; /* Animação suave para o hover */
+    transition: transform 0.3s ease;
 }
 
-/* HOVER: Quando o mouse passa por cima */
+/* HOVER */
 .menu-link:hover {
-    background-color: var(--bg-badge); /* Fundo lilás bem clarinho */
+    background-color: var(--bg-badge);
     border-color: var(--border-badge);
 }
 
 .menu-link:hover .nav-icon {
-    transform: scale(1.15); /* Faz o ícone dar uma leve "crescida" */
+    transform: scale(1.15);
 }
 
 /* ATIVO: Página atual */
 .menu-link.active {
     background-color: var(--bg-linha-selecionada);
-    border: 1px solid var(--btn-acao); /* Borda Roxo Ametista para destacar */
-    box-shadow: inset 0 0 8px rgba(164, 95, 206, 0.15); /* Sombra interna suave */
+    border: 1px solid var(--btn-acao);
+    box-shadow: inset 0 0 8px rgba(164, 95, 206, 0.15);
 }
 
 /* --- NOVA LINHA DIVISÓRIA --- */
 .topbar-divider {
     width: 1px;
-    height: 35px; /* Altura da linha (mesmo tamanho do avatar) */
+    height: 35px;
     background-color: var(--border-divisoria);
-    margin: 0 5px; /* Espaço nas laterais para "respirar" */
+    margin: 0 5px;
 }
 
-/* --- USUÁRIO (Atualizado) --- */
+/* --- USUÁRIO --- */
 .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 600;
     color: var(--text-escuro);
-    /* Tiramos a borda antiga que ficava colada aqui */
 }
+
 .user-avatar {
     width: 35px;
     height: 35px;
@@ -185,7 +189,6 @@ body {
     overflow-y: auto;
 }
 
-/* Título de Seção (Texto Claro sobre fundo escuro do Body) */
 h2 {
     margin-bottom: 20px;
     font-size: 24px;
@@ -208,7 +211,7 @@ h2 {
 }
 
 .btn:hover {
-    background-color: var(--bg-topo); /* Topo escuro no hover */
+    background-color: var(--bg-topo);
 }
 
 .btn-outline {
@@ -325,6 +328,17 @@ tr:hover {
     background-color: var(--bg-linha-hover);
 }
 
+/* --- PREÇO PROMOCIONAL NO ESTOQUE --- */
+.promo-badge {
+    background-color: rgba(164, 95, 206, 0.15);
+    color: var(--text-secundario);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 1px solid rgba(164, 95, 206, 0.3);
+    display: inline-block;
+}
+
 /* --- Badges de Status (Efeito Glass Colorido) --- */
 .status-badge {
     padding: 4px 10px;
@@ -334,35 +348,30 @@ tr:hover {
     text-transform: uppercase;
 }
 
-/* 1. Alerta Máximo (Crítico) - Vermelho/Rosa escuro */
 .status-critical { 
     background-color: rgba(242, 92, 143, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid rgba(255, 77, 77, 0.4);
 }
 
-/* 2. Alerta (Igual ao mínimo) - Laranja/Amarelo */
 .status-warning { 
     background-color: rgba(164, 95, 206, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid rgba(255, 165, 0, 0.4);
 }
 
-/* 3. Baixo (Até o dobro do mínimo) - Roxo/Lilas (Paleta original) */
 .status-low { 
     background-color: rgba(142, 138, 159, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid var(--border-badge);
 }
 
-/* 4. Médio (Mais que o dobro) - Turquesa da paleta */
 .status-medium { 
     background-color: rgba(104, 187, 186, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid rgba(104, 187, 186, 0.4);
 }
 
-/* 5. Bom (Quádruplo ou mais) - Verde Ardósia da paleta */
 .status-good { 
     background-color: rgba(52, 211, 153, 0.15); 
     color: var(--btn-acao); 
@@ -413,30 +422,42 @@ tr:hover {
     width: 100%;
 }
 
-/* --- BOTÕES DE AÇÃO NA TABELA --- */
+/* --- BOTÕES DE AÇÃO NA TABELA (MINI-GLASS) --- */
 .action-links {
     display: flex;
     gap: 8px;
 }
 
 .btn-action {
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
-    border: none;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: 0.3s;
-    color: white;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Turquesa para o Editar */
-.btn-edit { background-color: var(--chart-turquesa); }
-.btn-edit:hover { background-color: var(--verde-ardosia); }
+.btn-edit { 
+    background: linear-gradient(135deg, var(--chart-turquesa), #4ba3a2);
+}
+.btn-edit:hover { 
+    background: linear-gradient(135deg, #4ba3a2, var(--chart-turquesa));
+    box-shadow: 0 0 10px var(--chart-turquesa);
+    transform: translateY(-2px);
+}
 
-/* Rosa para o Excluir */
-.btn-delete { background-color: var(--chart-rosa); }
-.btn-delete:hover { background-color: #d43f6a; }
+.btn-delete { 
+    background: linear-gradient(135deg, var(--chart-rosa), #d43f6a);
+}
+.btn-delete:hover { 
+    background: linear-gradient(135deg, #d43f6a, var(--chart-rosa));
+    box-shadow: 0 0 10px var(--chart-rosa);
+    transform: translateY(-2px);
+}
 
 /* --- JANELA MODAL (Estilo JOptionPane Glass) --- */
 .modal-overlay {
@@ -445,25 +466,24 @@ tr:hover {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(42, 17, 67, 0.6); /* Fundo roxo escuro translúcido */
+    background-color: rgba(42, 17, 67, 0.6);
     backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     
-    /* Escondido por padrão */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
-/* Classe para mostrar o modal via JavaScript */
 .modal-overlay.active {
     opacity: 1;
     pointer-events: auto;
 }
 
+/* Modal mais largo para caber todos os campos */
 .modal-glass {
     background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
     border: 1px solid var(--border-glass);
@@ -472,7 +492,7 @@ tr:hover {
     border-radius: 12px;
     padding: 30px;
     width: 100%;
-    max-width: 500px;
+    max-width: 750px;
     color: var(--text-escuro);
 }
 
@@ -495,10 +515,10 @@ tr:hover {
     cursor: pointer;
 }
 
-/* Grid para organizar os inputs do formulário em duas colunas */
+/* Grid usa 3 colunas para otimizar espaço */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -510,7 +530,7 @@ tr:hover {
 }
 
 .form-group.full-width {
-    grid-column: span 2; /* Faz o campo ocupar as duas colunas */
+    grid-column: span 3;
 }
 
 .form-group label {
