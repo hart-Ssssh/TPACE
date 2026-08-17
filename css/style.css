@@ -325,32 +325,90 @@ tr:hover {
     background-color: var(--bg-linha-hover);
 }
 
-/* Badges de Status (Usando a cor do Fundo Badge) */
+/* --- Badges de Status (Efeito Glass Colorido) --- */
 .status-badge {
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 12px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
-    background-color: var(--bg-badge);
-    color: var(--btn-acao);
+    text-transform: uppercase;
+}
+
+/* 1. Alerta Máximo (Crítico) - Vermelho/Rosa escuro */
+.status-critical { 
+    background-color: rgba(242, 92, 143, 0.15); 
+    color: var(--btn-acao); 
+    border: 1px solid rgba(255, 77, 77, 0.4);
+}
+
+/* 2. Alerta (Igual ao mínimo) - Laranja/Amarelo */
+.status-warning { 
+    background-color: rgba(164, 95, 206, 0.15); 
+    color: var(--btn-acao); 
+    border: 1px solid rgba(255, 165, 0, 0.4);
+}
+
+/* 3. Baixo (Até o dobro do mínimo) - Roxo/Lilas (Paleta original) */
+.status-low { 
+    background-color: rgba(142, 138, 159, 0.15); 
+    color: var(--btn-acao); 
     border: 1px solid var(--border-badge);
 }
 
-.status-low { 
-    background-color: var(--bg-placeholder); 
-    color: var(--text-escuro); 
-    border: 1px solid var(--border-divisoria);
+/* 4. Médio (Mais que o dobro) - Turquesa da paleta */
+.status-medium { 
+    background-color: rgba(104, 187, 186, 0.15); 
+    color: var(--btn-acao); 
+    border: 1px solid rgba(104, 187, 186, 0.4);
 }
 
-.action-links a {
-    color: var(--btn-acao);
-    text-decoration: none;
-    margin-right: 10px;
+/* 5. Bom (Quádruplo ou mais) - Verde Ardósia da paleta */
+.status-good { 
+    background-color: rgba(52, 211, 153, 0.15); 
+    color: var(--btn-acao); 
+    border: 1px solid rgba(106, 139, 138, 0.4);
+}
+
+/* --- GRÁFICOS (DASHBOARD) --- */
+.chart-container {
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-header h3 {
+    font-size: 18px;
+    color: var(--text-secundario);
+    text-transform: uppercase;
+}
+
+#chart-selector {
+    background-color: var(--bg-pesquisa);
+    border: 1px solid var(--border-divisoria);
+    color: var(--text-escuro);
+    border-radius: 8px;
+    padding: 8px 12px;
     font-size: 14px;
     font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-.action-links a:hover {
-    color: var(--text-escuro);
-    text-decoration: underline;
+#chart-selector:focus {
+    border-color: var(--btn-acao);
+    box-shadow: 0 0 5px var(--bg-badge);
+}
+
+.canvas-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
 }

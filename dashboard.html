@@ -5,48 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - T-PACE</title>
     <link rel="stylesheet" href="css/style.css">
+    <!-- Importando a biblioteca Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
     <!-- TOPBAR COM NAVEGAÇÃO -->
     <header class="topbar">
-        <!-- Logo -->
         <div class="topbar-brand">T-PACE</div>
         
-        <!-- Pesquisa -->
         <div class="topbar-search">
             <input type="text" placeholder="Pesquisar no sistema...">
         </div>
 
-        <!-- Menu Principal (Completo) -->
+        <!-- Menu Principal -->
         <nav class="topbar-menu">
-            <!-- 1. Dashboard -->
             <a href="dashboard.html" class="menu-link active" title="Dashboard">
                 <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
             </a>
-            <!-- 2. Relatórios -->
             <a href="relatorios.html" class="menu-link" title="Relatórios">
                 <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
             </a>
-            <!-- 3. Usuários -->
             <a href="usuarios.html" class="menu-link" title="Usuários">
                 <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
             </a>
-            <!-- 4. Estoque -->
             <a href="estoque.html" class="menu-link" title="Controle de Estoque">
                 <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
             </a>
-            <!-- 5. Sair (Sempre visível) -->
-            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
+            <a href="#" id="btn-sair" class="menu-link" title="Sair">
                 <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
             </a>
         </nav>
-        
+
         <div class="topbar-divider"></div>
 
         <!-- Usuário -->
         <div class="user-info">
-            <span>Operador 01</span>
+            <span>Carregando...</span>
         </div>
     </header>
 
@@ -70,14 +65,27 @@
                 </div>
             </div>
 
-            <div class="chart-placeholder">
-                [ Área reservada para Gráfico de Faturamento ]
+            <!-- GRÁFICO DINÂMICO -->
+            <div class="chart-container card">
+                <div class="chart-header">
+                    <h3>Análise de Desempenho</h3>
+                    <select id="chart-selector">
+                        <option value="faturamento">Faturamento (Últimos 7 dias)</option>
+                        <option value="pagamentos">Métodos de Pagamento</option>
+                        <option value="produtos">Top 5 Produtos Mais Vendidos</option>
+                        <option value="filiais">Faturamento por Filial</option>
+                    </select>
+                </div>
+                <div class="canvas-wrapper">
+                    <!-- Onde o gráfico será desenhado -->
+                    <canvas id="meuGrafico"></canvas>
+                </div>
             </div>
         </section>
     </main>
-    <!-- Script de Controle de Permissões e Logout -->
+
+    <!-- Scripts -->
     <script src="js/permissoes.js"></script>
-</body>
-</html>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

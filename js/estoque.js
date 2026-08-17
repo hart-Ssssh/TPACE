@@ -19,18 +19,37 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
 
         // Para cada produto recebido do banco, cria uma linha na tabela
+        // Para cada produto recebido do banco, cria uma linha na tabela
         produtos.forEach(prod => {
             
-            // Lógica para o status baseado na quantidade
-            let classeBadge = 'status-ok';
-            let textoStatus = 'Adequado';
+            // ==========================================
+            // LÓGICA INTELIGENTE DE ESTOQUE
+            // ==========================================
+            let classeBadge = '';
+            let textoStatus = '';
             
-            if (prod.quantidade <= 0) {
+            const qtd = parseFloat(prod.quantidade) || 0;
+            const min = parseFloat(prod.quantidade_minima) || 1; // Previne divisão por zero
+            
+            if (qtd < min) {
+                classeBadge = 'status-critical';
+                textoStatus = 'Crítico';
+            } 
+            else if (qtd === min) {
+                classeBadge = 'status-warning';
+                textoStatus = 'Alerta';
+            } 
+            else if (qtd <= (min * 2)) {
                 classeBadge = 'status-low';
-                textoStatus = 'Esgotado';
-            } else if (prod.quantidade <= 10) {
-                classeBadge = 'status-low';
-                textoStatus = 'Baixo Estoque';
+                textoStatus = 'Baixo';
+            } 
+            else if (qtd <= (min * 4)) {
+                classeBadge = 'status-medium';
+                textoStatus = 'Médio';
+            } 
+            else {
+                classeBadge = 'status-good';
+                textoStatus = 'Bom';
             }
 
             // Formata o preço (Ex: 50 -> R$ 50,00)
@@ -41,8 +60,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             tr.innerHTML = `
                 <td>${prod.codigo_barras || 'N/A'}</td>
                 <td>${prod.nome}</td>
-                <td>Geral</td> <!-- O BD não tem tabela de categorias, então fixei como Geral por enquanto -->
-                <td>${prod.quantidade} ${prod.unidade_venda}</td>
+                <td>Geral</td>
+                <td>${qtd} ${prod.unidade_venda}</td>
                 <td>${precoFormatado}</td>
                 <td><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
                 <td class="action-links"><a href="#">Editar</a> <a href="#">Excluir</a></td>
