@@ -24,63 +24,13 @@ async function carregarProdutos() {
         
         tbody.innerHTML = '';
 
-        if(listaProdutos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum produto cadastrado.</td></tr>';
-            return;
-        }
+        // Usa a nova função renderizarTabela para desenhar
+        renderizarTabela(listaProdutos);
 
-        listaProdutos.forEach(prod => {
-            // Lógica Inteligente de Cores de Estoque
-            let classeBadge = '';
-            let textoStatus = '';
-            const qtd = parseFloat(prod.quantidade) || 0;
-            const min = parseFloat(prod.quantidade_minima) || 1;
-            
-            if (qtd < min) { classeBadge = 'status-critical'; textoStatus = 'Crítico'; } 
-            else if (qtd === min) { classeBadge = 'status-warning'; textoStatus = 'Alerta'; } 
-            else if (qtd <= (min * 2)) { classeBadge = 'status-low'; textoStatus = 'Baixo'; } 
-            else if (qtd <= (min * 4)) { classeBadge = 'status-medium'; textoStatus = 'Médio'; } 
-            else { classeBadge = 'status-good'; textoStatus = 'Bom'; }
-
-            // ==========================================
-            // Lógica de Preço Promocional
-            // ==========================================
-            let precoFinal = parseFloat(prod.preco_venda) || 0;
-            let isPromocao = (prod.em_promocao == 1 || prod.em_promocao === '1' || prod.em_promocao === true);
-            
-            // Se estiver em promoção e tiver um valor promocional válido, altera o preço base
-            if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) {
-                precoFinal = parseFloat(prod.valor_promocional);
-            }
-
-            const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            
-            // Monta o visual do preço (com badge se for promoção, normal se não for)
-            let tdPrecoHtml = `<td>${precoFormatado}</td>`;
-            if (isPromocao) {
-                tdPrecoHtml = `<td><span class="promo-badge" title="Preço Promocional">${precoFormatado}</span></td>`;
-            }
-
-            // ==========================================
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${prod.codigo_barras || 'N/A'}</td>
-                <td>${prod.nome}</td>
-                <td>Geral</td>
-                <td>${qtd} ${prod.unidade_venda}</td>
-                ${tdPrecoHtml} <!-- Aqui entra a mágica do preço -->
-                <td><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
-                <td class="action-links">
-                    <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>
-                    <button class="btn-action btn-delete" onclick="excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
+        
 
         // Dispara o evento de permissões para ocultar os botões se o usuário for "Repositor"
-        ocultarBotoesSeRepositor();
+        
 
     } catch (erro) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar o estoque.</td></tr>';
@@ -206,5 +156,132 @@ function ocultarBotoesSeRepositor() {
     if (nivel === 5) {
         const tdAcoes = document.querySelectorAll('.action-links');
         tdAcoes.forEach(td => td.style.display = 'none');
+    }
+}
+
+// ==========================================
+// 6. PESQUISA EM TEMPO REAL (DEBOUNCE)
+// ==========================================
+const inputPesquisa = document.getElementById('inputPesquisa');
+let debounceTimer;
+
+if (inputPesquisa) {
+    inputPesquisa.addEventListener('input', (evento) => {
+        clearTimeout(debounceTimer);
+        const termo = evento.target.value.trim().toLowerCase();
+
+        // Aguarda 300ms após o usuário parar de digitar
+        debounceTimer = setTimeout(() => {
+            // Se você já tem a rota no backend configurada (ex: /api/web/produtos/buscar?q=termo)
+            // você pode fazer o fetch aqui. 
+            // Porém, como já temos os produtos na memória em 'listaProdutos', 
+            // podemos fazer a filtragem local incrivelmente rápida:
+            
+            filtrarTabela(termo);
+            
+            // NOTA: Se o seu banco for muito grande (+10.000 produtos) e não vierem todos de uma vez, 
+            // ative a chamada ao backend descomentando o código abaixo e ajustando a sua API:
+            /*
+            if (termo.length > 0) {
+                buscarNoBackend(termo);
+            } else {
+                carregarProdutos(); // recarrega todos
+            }
+            */
+            
+        }, 300);
+    });
+}
+
+// Filtro Local Rápido (Recomendado se todos os produtos já são carregados)
+function filtrarTabela(termo) {
+    const tbody = document.getElementById('tabela-estoque');
+    
+    // Se o termo estiver vazio, renderiza todos da memória
+    if (!termo) {
+        renderizarTabela(listaProdutos);
+        return;
+    }
+
+    // Filtra pelo nome ou código de barras
+    const produtosFiltrados = listaProdutos.filter(prod => {
+        const nome = (prod.nome || "").toLowerCase();
+        const codigo = (prod.codigo_barras || "").toLowerCase();
+        return nome.includes(termo) || codigo.includes(termo);
+    });
+
+    renderizarTabela(produtosFiltrados);
+}
+
+// Função auxiliar para renderizar a tabela, separada do fetch original
+function renderizarTabela(produtos) {
+    const tbody = document.getElementById('tabela-estoque');
+    tbody.innerHTML = '';
+
+    if (!produtos || produtos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum produto encontrado.</td></tr>';
+        return;
+    }
+
+    produtos.forEach(prod => {
+        let classeBadge = '';
+        let textoStatus = '';
+        const qtd = parseFloat(prod.quantidade) || 0;
+        const min = parseFloat(prod.quantidade_minima) || 1;
+        
+        if (qtd < min) { classeBadge = 'status-critical'; textoStatus = 'Crítico'; } 
+        else if (qtd === min) { classeBadge = 'status-warning'; textoStatus = 'Alerta'; } 
+        else if (qtd <= (min * 2)) { classeBadge = 'status-low'; textoStatus = 'Baixo'; } 
+        else if (qtd <= (min * 4)) { classeBadge = 'status-medium'; textoStatus = 'Médio'; } 
+        else { classeBadge = 'status-good'; textoStatus = 'Bom'; }
+
+        let precoFinal = parseFloat(prod.preco_venda) || 0;
+        let isPromocao = (prod.em_promocao == 1 || prod.em_promocao === '1' || prod.em_promocao === true);
+        
+        if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) {
+            precoFinal = parseFloat(prod.valor_promocional);
+        }
+
+        const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        let tdPrecoHtml = `<td>${precoFormatado}</td>`;
+        if (isPromocao) {
+            tdPrecoHtml = `<td><span class="promo-badge" title="Preço Promocional">${precoFormatado}</span></td>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${prod.codigo_barras || 'N/A'}</td>
+            <td>${prod.nome}</td>
+            <td>Geral</td>
+            <td>${qtd} ${prod.unidade_venda}</td>
+            ${tdPrecoHtml}
+            <td><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
+            <td class="action-links">
+                <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>
+                <button class="btn-action btn-delete" onclick="excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    ocultarBotoesSeRepositor();
+}
+
+// Opcional: Se precisar buscar no backend de verdade
+async function buscarNoBackend(termo) {
+    const tbody = document.getElementById('tabela-estoque');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Buscando...</td></tr>';
+    
+    try {
+        // Exemplo: rota que recebe ?q=termo
+        const resposta = await fetch(`${urlAPIProdutos}/buscar?q=${encodeURIComponent(termo)}`);
+        if (!resposta.ok) throw new Error('Erro ao buscar');
+        
+        const produtos = await resposta.json();
+        listaProdutos = produtos; // Atualiza a memória
+        renderizarTabela(produtos);
+    } catch (erro) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro na pesquisa.</td></tr>';
     }
 }
