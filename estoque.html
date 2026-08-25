@@ -9,34 +9,30 @@
 <body>
 
     <!-- TOPBAR COM NAVEGAÇÃO -->
+    <!-- TOPBAR COM NAVEGAÇÃO -->
     <header class="topbar">
         <!-- Logo -->
         <div class="topbar-brand">T-PACE</div>
         
-        <!-- Pesquisa -->
-        <div class="topbar-search">
-            <input type="text" placeholder="Pesquisar no sistema...">
-        </div>
+        <!-- Botão Hamburger (Aparece só no celular) -->
+        <button class="mobile-menu-btn" onclick="toggleMenuMobile()">
+            <span></span><span></span><span></span>
+        </button>
 
-        <!-- Menu Principal (Completo) -->
+        <!-- Menu Principal (Fica oculto no celular até clicar) -->
         <nav class="topbar-menu">
-            <!-- 1. Dashboard -->
             <a href="dashboard.html" class="menu-link" title="Dashboard">
                 <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
             </a>
-            <!-- 2. Relatórios -->
             <a href="relatorios.html" class="menu-link" title="Relatórios">
                 <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
             </a>
-            <!-- 3. Usuários -->
             <a href="usuarios.html" class="menu-link" title="Usuários">
                 <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
             </a>
-            <!-- 4. Estoque -->
             <a href="estoque.html" class="menu-link active" title="Controle de Estoque">
                 <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
             </a>
-            <!-- 5. Sair (Sempre visível) -->
             <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
                 <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
             </a>

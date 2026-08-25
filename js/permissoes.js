@@ -87,4 +87,10 @@ document.addEventListener("DOMContentLoaded", function() {
             window.location.href = 'index.html';
         });
     }
+
+    // Função Global para Abrir/Fechar o menu sanduíche nos celulares
+    window.toggleMenuMobile = function() {
+        const menu = document.querySelector('.topbar-menu');
+        menu.classList.toggle('open');
+    };
 });

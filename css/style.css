@@ -55,16 +55,19 @@ body {
 
 /* --- BARRA SUPERIOR (TOPBAR GLASS) --- */
 .topbar {
-    height: 70px;
+    min-height: 70px; /* Mudamos de height fixo para min-height para ela poder crescer */
     background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
     border-bottom: 1px solid var(--border-glass);
     backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0 30px;
     gap: 20px;
     box-shadow: 0 4px 15px rgba(42, 17, 67, 0.2);
+    
+    /* O Segredo: permite que o menu quebre para a linha de baixo no celular */
+    flex-wrap: wrap; 
+    transition: all 0.3s ease;
 }
 
 .topbar-brand {
@@ -73,38 +76,10 @@ body {
     color: var(--btn-acao);
     letter-spacing: 1px;
     text-transform: uppercase;
+    margin-right: auto; /* Empurra todo o resto (usuário e menu) lá para a direita */
 }
 
-/* Barra de Pesquisa */
-.topbar-search {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-    padding-left: 20px;
-}
-
-.topbar-search input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: 1px solid var(--border-pesquisa);
-    background-color: var(--bg-pesquisa);
-    color: var(--text-escuro);
-    transition: 0.3s;
-}
-
-.topbar-search input::placeholder {
-    color: var(--text-placeholder);
-}
-
-.topbar-search input:focus {
-    border-color: var(--btn-acao);
-    background-color: var(--text-claro);
-    outline: none;
-}
-
-/* Menu de Navegação */
+/* O Menu no Computador */
 .topbar-menu {
     display: flex;
     align-items: center;
@@ -125,7 +100,6 @@ body {
     height: 44px;
 }
 
-/* Imagem do Ícone */
 .nav-icon {
     width: 24px;
     height: 24px;
@@ -133,7 +107,6 @@ body {
     transition: transform 0.3s ease;
 }
 
-/* HOVER */
 .menu-link:hover {
     background-color: var(--bg-badge);
     border-color: var(--border-badge);
@@ -143,14 +116,12 @@ body {
     transform: scale(1.15);
 }
 
-/* ATIVO: Página atual */
 .menu-link.active {
     background-color: var(--bg-linha-selecionada);
     border: 1px solid var(--btn-acao);
     box-shadow: inset 0 0 8px rgba(164, 95, 206, 0.15);
 }
 
-/* --- NOVA LINHA DIVISÓRIA --- */
 .topbar-divider {
     width: 1px;
     height: 35px;
@@ -158,7 +129,6 @@ body {
     margin: 0 5px;
 }
 
-/* --- USUÁRIO --- */
 .user-info {
     display: flex;
     align-items: center;
@@ -167,12 +137,124 @@ body {
     color: var(--text-escuro);
 }
 
-.user-avatar {
-    width: 35px;
-    height: 35px;
-    background-color: var(--bg-placeholder);
-    border: 1px solid var(--border-glass);
-    border-radius: 50%;
+/* ==========================================
+   RESPONSIVIDADE DAS TELAS INTERNAS (CELULARES)
+   ========================================== */
+
+/* Proteção para a Tabela rolar no celular */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+}
+
+.table-wrapper table { box-shadow: none; }
+
+/* Botão Hamburger (Oculto no Computador) */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+}
+
+.mobile-menu-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--btn-acao);
+    border-radius: 3px;
+    transition: 0.3s;
+}
+
+/* --- REGRAS DO CELULAR --- */
+@media screen and (max-width: 768px) {
+    /* Topbar do Celular */
+    .topbar {
+        padding: 15px 20px;
+        gap: 10px; /* Reduz o buraco entre as linhas */
+    }
+
+    .topbar-brand { order: 1; }
+    
+    .user-info {
+        order: 2;
+        margin-right: 10px;
+        font-size: 13px;
+    }
+
+    .mobile-menu-btn {
+        order: 3;
+        display: flex; /* Revela o botão */
+    }
+
+    .topbar-divider { display: none; } /* Oculta a linha vertical */
+
+    /* 
+       A MÁGICA DO SUB-MENU HORIZONTAL:
+       Ao invés de flutuar, ele ocupa a "Linha 2" do flexbox e ganha uma cor de fundo 
+    */
+    .topbar-menu {
+        order: 4; /* Joga o menu para a última posição (linha de baixo) */
+        width: 100%; /* Força a ocupar a tela toda */
+        
+        display: none; /* Escondido por padrão */
+        flex-direction: row; /* Mantém os ícones lado a lado */
+        justify-content: space-evenly; /* Espalha os ícones igualmente pela tela */
+        
+        /* A cor levemente diferente (Fundo mais opaco/diferenciado) */
+        background-color: var(--bg-pesquisa); 
+        border: 1px solid var(--border-divisoria);
+        border-radius: 12px;
+        padding: 8px;
+        margin-top: 5px;
+        box-shadow: inset 0 2px 5px rgba(42, 17, 67, 0.05); /* Sombra interna sutil */
+    }
+
+    /* Quando clicado no JS, o display muda para flex e a animação acontece */
+    .topbar-menu.open {
+        display: flex;
+        animation: deslizarBaixo 0.3s ease-out forwards;
+    }
+
+    @keyframes deslizarBaixo {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Diminui levemente os ícones para caberem perfeitos sem apertar */
+    .menu-link {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Ajustes Gerais de Tela */
+    .screen-container { padding: 15px; }
+
+    /* Barra de ferramentas (Estoque) */
+    .toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toolbar input { width: 100% !important; }
+    .toolbar div {
+        display: flex;
+        width: 100%;
+        gap: 10px;
+    }
+    .toolbar .btn {
+        flex: 1; 
+        padding: 12px 5px;
+        font-size: 12px;
+    }
+
+    /* Limites da Tabela e Formulário */
+    table { min-width: 700px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
 }
 
 /* --- ÁREA PRINCIPAL --- */
