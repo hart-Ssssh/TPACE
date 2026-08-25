@@ -88,9 +88,16 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Função Global para Abrir/Fechar o menu sanduíche nos celulares
-    window.toggleMenuMobile = function() {
-        const menu = document.querySelector('.topbar-menu');
-        menu.classList.toggle('open');
-    };
+    // ==========================================
+    // CONTROLE DO MENU SANDUÍCHE (MOBILE)
+    // ==========================================
+    const btnMenu = document.querySelector('.mobile-menu-btn');
+    const menuNav = document.querySelector('.topbar-menu');
+
+    if (btnMenu && menuNav) {
+        btnMenu.addEventListener('click', function() {
+            // Adiciona ou remove a classe 'open', fazendo a sanfona abrir e fechar
+            menuNav.classList.toggle('open');
+        });
+    }
 });

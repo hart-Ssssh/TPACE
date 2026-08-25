@@ -55,7 +55,7 @@ body {
 
 /* --- BARRA SUPERIOR (TOPBAR GLASS) --- */
 .topbar {
-    min-height: 70px; /* Mudamos de height fixo para min-height para ela poder crescer */
+    min-height: 70px; 
     background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
     border-bottom: 1px solid var(--border-glass);
     backdrop-filter: blur(12px);
@@ -64,8 +64,6 @@ body {
     padding: 0 30px;
     gap: 20px;
     box-shadow: 0 4px 15px rgba(42, 17, 67, 0.2);
-    
-    /* O Segredo: permite que o menu quebre para a linha de baixo no celular */
     flex-wrap: wrap; 
     transition: all 0.3s ease;
 }
@@ -76,7 +74,7 @@ body {
     color: var(--btn-acao);
     letter-spacing: 1px;
     text-transform: uppercase;
-    margin-right: auto; /* Empurra todo o resto (usuário e menu) lá para a direita */
+    margin-right: auto; 
 }
 
 /* O Menu no Computador */
@@ -135,126 +133,6 @@ body {
     gap: 10px;
     font-weight: 600;
     color: var(--text-escuro);
-}
-
-/* ==========================================
-   RESPONSIVIDADE DAS TELAS INTERNAS (CELULARES)
-   ========================================== */
-
-/* Proteção para a Tabela rolar no celular */
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
-}
-
-.table-wrapper table { box-shadow: none; }
-
-/* Botão Hamburger (Oculto no Computador) */
-.mobile-menu-btn {
-    display: none;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    flex-direction: column;
-    gap: 5px;
-    padding: 5px;
-}
-
-.mobile-menu-btn span {
-    width: 25px;
-    height: 3px;
-    background-color: var(--btn-acao);
-    border-radius: 3px;
-    transition: 0.3s;
-}
-
-/* --- REGRAS DO CELULAR --- */
-@media screen and (max-width: 768px) {
-    /* Topbar do Celular */
-    .topbar {
-        padding: 15px 20px;
-        gap: 10px; /* Reduz o buraco entre as linhas */
-    }
-
-    .topbar-brand { order: 1; }
-    
-    .user-info {
-        order: 2;
-        margin-right: 10px;
-        font-size: 13px;
-    }
-
-    .mobile-menu-btn {
-        order: 3;
-        display: flex; /* Revela o botão */
-    }
-
-    .topbar-divider { display: none; } /* Oculta a linha vertical */
-
-    /* 
-       A MÁGICA DO SUB-MENU HORIZONTAL:
-       Ao invés de flutuar, ele ocupa a "Linha 2" do flexbox e ganha uma cor de fundo 
-    */
-    .topbar-menu {
-        order: 4; /* Joga o menu para a última posição (linha de baixo) */
-        width: 100%; /* Força a ocupar a tela toda */
-        
-        display: none; /* Escondido por padrão */
-        flex-direction: row; /* Mantém os ícones lado a lado */
-        justify-content: space-evenly; /* Espalha os ícones igualmente pela tela */
-        
-        /* A cor levemente diferente (Fundo mais opaco/diferenciado) */
-        background-color: var(--bg-pesquisa); 
-        border: 1px solid var(--border-divisoria);
-        border-radius: 12px;
-        padding: 8px;
-        margin-top: 5px;
-        box-shadow: inset 0 2px 5px rgba(42, 17, 67, 0.05); /* Sombra interna sutil */
-    }
-
-    /* Quando clicado no JS, o display muda para flex e a animação acontece */
-    .topbar-menu.open {
-        display: flex;
-        animation: deslizarBaixo 0.3s ease-out forwards;
-    }
-
-    @keyframes deslizarBaixo {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Diminui levemente os ícones para caberem perfeitos sem apertar */
-    .menu-link {
-        width: 40px;
-        height: 40px;
-    }
-
-    /* Ajustes Gerais de Tela */
-    .screen-container { padding: 15px; }
-
-    /* Barra de ferramentas (Estoque) */
-    .toolbar {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .toolbar input { width: 100% !important; }
-    .toolbar div {
-        display: flex;
-        width: 100%;
-        gap: 10px;
-    }
-    .toolbar .btn {
-        flex: 1; 
-        padding: 12px 5px;
-        font-size: 12px;
-    }
-
-    /* Limites da Tabela e Formulário */
-    table { min-width: 700px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full-width { grid-column: span 1; }
 }
 
 /* --- ÁREA PRINCIPAL --- */
@@ -421,7 +299,7 @@ tr:hover {
     display: inline-block;
 }
 
-/* --- Badges de Status (Efeito Glass Colorido) --- */
+/* --- Badges de Status --- */
 .status-badge {
     padding: 4px 10px;
     border-radius: 12px;
@@ -435,25 +313,21 @@ tr:hover {
     color: var(--btn-acao); 
     border: 1px solid rgba(255, 77, 77, 0.4);
 }
-
 .status-warning { 
     background-color: rgba(164, 95, 206, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid rgba(255, 165, 0, 0.4);
 }
-
 .status-low { 
     background-color: rgba(142, 138, 159, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid var(--border-badge);
 }
-
 .status-medium { 
     background-color: rgba(104, 187, 186, 0.15); 
     color: var(--btn-acao); 
     border: 1px solid rgba(104, 187, 186, 0.4);
 }
-
 .status-good { 
     background-color: rgba(52, 211, 153, 0.15); 
     color: var(--btn-acao); 
@@ -541,7 +415,7 @@ tr:hover {
     transform: translateY(-2px);
 }
 
-/* --- JANELA MODAL (Estilo JOptionPane Glass) --- */
+/* --- JANELA MODAL --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -554,7 +428,6 @@ tr:hover {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -565,7 +438,6 @@ tr:hover {
     pointer-events: auto;
 }
 
-/* Modal mais largo para caber todos os campos */
 .modal-glass {
     background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
     border: 1px solid var(--border-glass);
@@ -597,7 +469,6 @@ tr:hover {
     cursor: pointer;
 }
 
-/* Grid usa 3 colunas para otimizar espaço */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -626,4 +497,130 @@ tr:hover {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+/* ==========================================
+   RESPONSIVIDADE DAS TELAS INTERNAS (CELULARES)
+   ========================================== */
+
+/* Botão Hamburger Oculto no Desktop */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+}
+
+.mobile-menu-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--btn-acao);
+    border-radius: 3px;
+    transition: 0.3s;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+}
+
+.table-wrapper table { box-shadow: none; }
+
+@media screen and (max-width: 768px) {
+    .topbar {
+        padding: 15px 20px;
+        gap: 0; /* Tiramos o gap para controlar as margens manualmente */
+        align-items: center; 
+    }
+
+    /* 1. Botão Sanduíche na extrema ESQUERDA */
+    .mobile-menu-btn {
+        order: 1;
+        display: flex; 
+        margin-right: 15px; /* Dá um espacinho antes do nome do sistema */
+    }
+
+    /* 2. Logo T-PACE logo após o botão */
+    .topbar-brand { 
+        order: 2; 
+        margin-right: auto; /* Esse auto empurra o nome do usuário lá pra direita! */
+        white-space: nowrap;
+    }
+    
+    /* 3. Usuário na extrema DIREITA */
+    .user-info {
+        order: 3;
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .topbar-divider { display: none; } 
+
+    /* 4. O SUB-MENU ABAIXO (Sanfona) */
+    .topbar-menu {
+        order: 4; 
+        width: 100%; 
+        
+        display: none !important; /* Escondido por padrão */
+        flex-direction: row; 
+        justify-content: space-evenly; 
+        
+        background-color: var(--bg-pesquisa); 
+        border: 1px solid var(--border-divisoria);
+        border-radius: 12px;
+        padding: 10px;
+        margin-top: 15px; 
+        box-shadow: inset 0 2px 5px rgba(42, 17, 67, 0.05); 
+    }
+
+    /* Quando ativado pelo JS */
+    .topbar-menu.open {
+        display: flex !important; 
+        animation: deslizarBaixo 0.3s ease-out forwards;
+    }
+
+    @keyframes deslizarBaixo {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-link {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Ajustes da Tabela e Resto da Tela */
+    .screen-container { padding: 15px; }
+
+    .toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .toolbar input { width: 100% !important; }
+    .toolbar div {
+        display: flex;
+        width: 100%;
+        gap: 10px;
+    }
+    .toolbar .btn {
+        flex: 1; 
+        padding: 12px 5px;
+        font-size: 12px;
+    }
+
+    /* Tabela */
+    table { min-width: 700px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+    
+    /* Empilha os Cards do Dashboard */
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
