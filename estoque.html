@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - T-PACE</title>
     <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
@@ -15,7 +16,8 @@
         <div class="topbar-brand">T-PACE</div>
         
         <!-- Botão Hamburger limpo, sem o onclick -->
-        <button class="mobile-menu-btn">
+        <!-- Botão Hamburger -->
+        <button class="mobile-menu-btn" onclick="abrirMenuMobile()">
             <span></span><span></span><span></span>
         </button>
 
@@ -63,24 +65,22 @@
 
             <!-- ESTRUTURA DA TABELA -->
             <table>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Produto</th>
-                        <th>Categoria</th>
-                        <th>Qtd.</th>
-                        <th>Preço Unit.</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <!-- É aqui que o JS vai injetar os produtos -->
-                <tbody id="tabela-estoque">
-                    <tr>
-                        <td colspan="7" style="text-align: center;">Carregando...</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th class="col-desktop">Categoria</th>
+                            <th class="col-desktop">Qtd</th>
+                            <th class="col-desktop">Preço</th>
+                            <th class="col-desktop">Status</th>
+                            <th class="col-desktop">Ações</th>
+                            <th class="col-mobile-seta"></th> <!-- Coluna da setinha (escondida no PC) -->
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-estoque">
+                        <!-- O JS injeta aqui -->
+                    </tbody>
+                </table>
         </section>
     </main>
 
@@ -185,9 +185,18 @@
         </div>
     </div>
 
-    <!-- Script de Controle de Permissões e Logout -->
+    <!-- Scripts -->
     <script src="js/permissoes.js"></script>
-    <!-- Script que puxa os produtos do banco e controla o modal -->
     <script src="js/estoque.js"></script>
+    
+    <!-- SCRIPT INFALÍVEL DO MENU MOBILE -->
+    <script>
+        function abrirMenuMobile() {
+            // Pega o menu e liga/desliga a classe "open" que criamos no CSS
+            document.querySelector('.topbar-menu').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
 </body>
 </html>

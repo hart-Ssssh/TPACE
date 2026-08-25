@@ -6,7 +6,6 @@ let listaProdutos = [];
 
 document.addEventListener("DOMContentLoaded", function() {
     carregarProdutos();
-
     // Quando o usuário clicar em "Salvar" no formulário do Modal
     document.getElementById('form-produto').addEventListener('submit', salvarProduto);
 });
@@ -16,24 +15,17 @@ document.addEventListener("DOMContentLoaded", function() {
 // ==========================================
 async function carregarProdutos() {
     const tbody = document.getElementById('tabela-estoque');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando produtos...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Carregando produtos...</td></tr>';
 
     try {
         const resposta = await fetch(urlAPIProdutos);
         listaProdutos = await resposta.json();
         
-        tbody.innerHTML = '';
-
         // Usa a nova função renderizarTabela para desenhar
         renderizarTabela(listaProdutos);
 
-        
-
-        // Dispara o evento de permissões para ocultar os botões se o usuário for "Repositor"
-        
-
     } catch (erro) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar o estoque.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar o estoque.</td></tr>';
     }
 }
 
@@ -154,7 +146,7 @@ async function excluirProduto(id, nomeProduto) {
 function ocultarBotoesSeRepositor() {
     const nivel = parseInt(localStorage.getItem('tpace_usuario_nivel'));
     if (nivel === 5) {
-        const tdAcoes = document.querySelectorAll('.action-links');
+        const tdAcoes = document.querySelectorAll('.action-links, .action-links-mobile');
         tdAcoes.forEach(td => td.style.display = 'none');
     }
 }
@@ -172,38 +164,18 @@ if (inputPesquisa) {
 
         // Aguarda 300ms após o usuário parar de digitar
         debounceTimer = setTimeout(() => {
-            // Se você já tem a rota no backend configurada (ex: /api/web/produtos/buscar?q=termo)
-            // você pode fazer o fetch aqui. 
-            // Porém, como já temos os produtos na memória em 'listaProdutos', 
-            // podemos fazer a filtragem local incrivelmente rápida:
-            
             filtrarTabela(termo);
-            
-            // NOTA: Se o seu banco for muito grande (+10.000 produtos) e não vierem todos de uma vez, 
-            // ative a chamada ao backend descomentando o código abaixo e ajustando a sua API:
-            /*
-            if (termo.length > 0) {
-                buscarNoBackend(termo);
-            } else {
-                carregarProdutos(); // recarrega todos
-            }
-            */
-            
         }, 300);
     });
 }
 
-// Filtro Local Rápido (Recomendado se todos os produtos já são carregados)
+// Filtro Local Rápido
 function filtrarTabela(termo) {
-    const tbody = document.getElementById('tabela-estoque');
-    
-    // Se o termo estiver vazio, renderiza todos da memória
     if (!termo) {
         renderizarTabela(listaProdutos);
         return;
     }
 
-    // Filtra pelo nome ou código de barras
     const produtosFiltrados = listaProdutos.filter(prod => {
         const nome = (prod.nome || "").toLowerCase();
         const codigo = (prod.codigo_barras || "").toLowerCase();
@@ -213,13 +185,15 @@ function filtrarTabela(termo) {
     renderizarTabela(produtosFiltrados);
 }
 
-// Função auxiliar para renderizar a tabela, separada do fetch original
+// ==========================================
+// 7. RENDERIZAR TABELA COM SANFONA (MOBILE)
+// ==========================================
 function renderizarTabela(produtos) {
     const tbody = document.getElementById('tabela-estoque');
     tbody.innerHTML = '';
 
     if (!produtos || produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum produto encontrado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum produto encontrado.</td></tr>';
         return;
     }
 
@@ -244,44 +218,70 @@ function renderizarTabela(produtos) {
 
         const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         
-        let tdPrecoHtml = `<td>${precoFormatado}</td>`;
-        if (isPromocao) {
-            tdPrecoHtml = `<td><span class="promo-badge" title="Preço Promocional">${precoFormatado}</span></td>`;
-        }
+        let conteudoPreco = isPromocao ? `<span class="promo-badge" title="Preço Promocional">${precoFormatado}</span>` : precoFormatado;
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        // LINHA 1: LINHA PRINCIPAL (Visível sempre)
+        const trPrincipal = document.createElement('tr');
+        trPrincipal.className = "linha-produto";
+        trPrincipal.onclick = () => toggleDetalhesEstoque(prod.id); // O clique na linha aciona a sanfona!
+        trPrincipal.innerHTML = `
             <td>${prod.codigo_barras || 'N/A'}</td>
             <td>${prod.nome}</td>
-            <td>Geral</td>
-            <td>${qtd} ${prod.unidade_venda}</td>
-            ${tdPrecoHtml}
-            <td><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
-            <td class="action-links">
-                <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>
-                <button class="btn-action btn-delete" onclick="excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+            <td class="col-desktop">Geral</td>
+            <td class="col-desktop">${qtd} ${prod.unidade_venda}</td>
+            <td class="col-desktop">${conteudoPreco}</td>
+            <td class="col-desktop"><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
+            <td class="col-desktop action-links">
+                <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalEditar(${prod.id})">Editar</button>
+                <button class="btn-action btn-delete" onclick="event.stopPropagation(); excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+            </td>
+            <td class="td-seta">
+                <i class="fas fa-chevron-down seta-tabela" id="seta-${prod.id}"></i>
             </td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(trPrincipal);
+
+        // LINHA 2: LINHA DE DETALHES FANTASMA (Só Mobile)
+        const trDetalhes = document.createElement('tr');
+        trDetalhes.id = `detalhes-${prod.id}`;
+        trDetalhes.className = 'detalhes-row';
+        trDetalhes.innerHTML = `
+            <td colspan="3"> <!-- Ocupa as 3 colunas do celular: Código, Nome e Seta -->
+                <div class="detalhes-content">
+                    <div class="detalhe-item"><b>Quantidade:</b> <span>${qtd} ${prod.unidade_venda}</span></div>
+                    <div class="detalhe-item"><b>Preço:</b> <span>${conteudoPreco}</span></div>
+                    <div class="detalhe-item"><b>Status:</b> <span class="status-badge ${classeBadge}">${textoStatus}</span></div>
+                    <div class="detalhes-acoes action-links-mobile">
+                        <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+                    </div>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(trDetalhes);
     });
 
     ocultarBotoesSeRepositor();
 }
 
-// Opcional: Se precisar buscar no backend de verdade
-async function buscarNoBackend(termo) {
-    const tbody = document.getElementById('tabela-estoque');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Buscando...</td></tr>';
+// Função que abre a sanfona de detalhes da tabela no celular
+window.toggleDetalhesEstoque = function(id) {
+    const linha = document.getElementById(`detalhes-${id}`);
+    const seta = document.getElementById(`seta-${id}`);
     
-    try {
-        // Exemplo: rota que recebe ?q=termo
-        const resposta = await fetch(`${urlAPIProdutos}/buscar?q=${encodeURIComponent(termo)}`);
-        if (!resposta.ok) throw new Error('Erro ao buscar');
-        
-        const produtos = await resposta.json();
-        listaProdutos = produtos; // Atualiza a memória
-        renderizarTabela(produtos);
-    } catch (erro) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro na pesquisa.</td></tr>';
+    if (linha && seta) {
+        linha.classList.toggle('open');
+        seta.classList.toggle('ativa');
     }
-}
+};
+
+// Função que abre a sanfona de detalhes da tabela no celular
+window.toggleDetalhesEstoque = function(id) {
+    const linha = document.getElementById(`detalhes-${id}`);
+    const seta = document.getElementById(`seta-${id}`);
+    
+    if (linha && seta) {
+        linha.classList.toggle('open');
+        seta.classList.toggle('ativa');
+    }
+};

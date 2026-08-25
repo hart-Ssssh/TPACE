@@ -623,4 +623,83 @@ tr:hover {
         grid-template-columns: 1fr;
         gap: 15px;
     }
+    /* --- Ajustes do Gráfico no Celular --- */
+    .chart-header {
+        flex-direction: column; /* Coloca o seletor embaixo do título */
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    #chart-selector {
+        width: 100%; /* Faz a caixa preencher certinho o espaço */
+        font-size: 13px; /* Letra um pouco menor pra não espremer o texto */
+    }
+
+    .canvas-wrapper {
+        height: 250px; /* Reduz um pouquinho a altura no celular pra não comer a tela toda */
+    }
+}
+
+/* ==========================================
+   TABELA SANFONA (ESTOQUE MOBILE)
+   ========================================== */
+
+/* Esconde a coluna da seta e a linha de detalhes no Computador */
+.col-mobile-seta, .td-seta { display: none; }
+.detalhes-row { display: none !important; }
+
+/* Animação da Setinha */
+.seta-tabela {
+    color: var(--btn-acao);
+    transition: transform 0.3s ease;
+}
+.seta-tabela.ativa {
+    transform: rotate(180deg);
+}
+
+@media screen and (max-width: 768px) {
+    /* 1. Esconde as colunas completas no celular */
+    .col-desktop { display: none !important; }
+    
+    /* 2. Mostra a coluna da setinha */
+    .col-mobile-seta, .td-seta { 
+        display: table-cell !important; 
+        text-align: right; 
+        vertical-align: middle; 
+    }
+
+    /* Deixa a linha clicável com carinha de botão */
+    .linha-produto { cursor: pointer; }
+
+    /* 3. A Linha de Detalhes Expandida */
+    .detalhes-row.open {
+        display: table-row !important;
+        background-color: var(--bg-linha-selecionada);
+    }
+
+    .detalhes-content {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detalhe-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-divisoria);
+        font-size: 13px;
+    }
+
+    .detalhe-item b { color: var(--text-secundario); text-transform: uppercase; font-size: 11px; }
+    
+    /* Botões na linha de detalhes */
+    .detalhes-acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
 }

@@ -90,13 +90,20 @@ document.addEventListener("DOMContentLoaded", async function() {
             config = {
                 type: 'bar',
                 data: {
-                    labels: dados.map(d => d.nome),
+                    // Corta o nome se for maior que 20 caracteres (agora temos mais espaço!)
+                    labels: dados.map(d => d.nome.length > 20 ? d.nome.substring(0, 20) + '...' : d.nome),
                     datasets: [{
                         label: 'Unidades Vendidas',
                         data: dados.map(d => d.qtd),
                         backgroundColor: cores.turquesa,
                         borderRadius: 6
                     }]
+                },
+                options: { 
+                    indexAxis: 'y', // A MÁGICA: Deita as barras para o celular!
+                    plugins: {
+                        legend: { display: false } // Esconde a legenda extra pra deixar mais limpo
+                    }
                 }
             };
         }
@@ -105,7 +112,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             config = {
                 type: 'bar',
                 data: {
-                    labels: dados.map(d => d.nome),
+                    // Mesmo truque para as filiais
+                    labels: dados.map(d => d.nome.length > 15 ? d.nome.substring(0, 25) + '...' : d.nome),
                     datasets: [{
                         label: 'Faturamento (R$)',
                         data: dados.map(d => d.valor),
