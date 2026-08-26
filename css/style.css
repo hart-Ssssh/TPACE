@@ -267,7 +267,7 @@ table {
 }
 
 th, td {
-    padding: 15px;
+    padding: 12px 10px; /* Diminuímos o espaçamento global pra ficar mais alinhado */
     text-align: left;
     border-bottom: 1px solid var(--border-divisoria);
 }
@@ -531,10 +531,23 @@ tr:hover {
 
 .table-wrapper table { box-shadow: none; }
 
+/* Esconde a coluna da seta e a linha de detalhes no Computador */
+.col-mobile-seta, .td-seta { display: none; }
+.detalhes-row { display: none !important; }
+
+/* Animação da Setinha */
+.seta-tabela {
+    color: var(--btn-acao);
+    transition: transform 0.3s ease;
+}
+.seta-tabela.ativa {
+    transform: rotate(180deg);
+}
+
 @media screen and (max-width: 768px) {
     .topbar {
         padding: 15px 20px;
-        gap: 0; /* Tiramos o gap para controlar as margens manualmente */
+        gap: 0; 
         align-items: center; 
     }
 
@@ -542,13 +555,13 @@ tr:hover {
     .mobile-menu-btn {
         order: 1;
         display: flex; 
-        margin-right: 15px; /* Dá um espacinho antes do nome do sistema */
+        margin-right: 15px; 
     }
 
     /* 2. Logo T-PACE logo após o botão */
     .topbar-brand { 
         order: 2; 
-        margin-right: auto; /* Esse auto empurra o nome do usuário lá pra direita! */
+        margin-right: auto; 
         white-space: nowrap;
     }
     
@@ -566,7 +579,7 @@ tr:hover {
         order: 4; 
         width: 100%; 
         
-        display: none !important; /* Escondido por padrão */
+        display: none !important; 
         flex-direction: row; 
         justify-content: space-evenly; 
         
@@ -613,65 +626,49 @@ tr:hover {
         font-size: 12px;
     }
 
-    /* Tabela */
-    table { min-width: 700px; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full-width { grid-column: span 1; }
+   /* ==========================================
+       A MÁGICA DA TABELA MAGRINHA E COLADINHA
+       ========================================== */
+    table { 
+        min-width: 100%; 
+        width: 100%;
+        /* O SEGREDO: Deixa o navegador abraçar as colunas em vez de forçar espaços iguais! */
+        table-layout: auto !important; 
+    }
     
-    /* Empilha os Cards do Dashboard */
-    .dashboard-cards {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    /* --- Ajustes do Gráfico no Celular --- */
-    .chart-header {
-        flex-direction: column; /* Coloca o seletor embaixo do título */
-        align-items: flex-start;
-        gap: 12px;
+    th, td { 
+        /* Remove a sobra de espaço e diminui a fonte */
+        padding: 10px 6px !important; 
+        font-size: 12px !important; 
+        word-wrap: break-word; 
     }
 
-    #chart-selector {
-        width: 100%; /* Faz a caixa preencher certinho o espaço */
-        font-size: 13px; /* Letra um pouco menor pra não espremer o texto */
+    /* Coluna 1 (Código): Força a ficar o mais justa possível sem quebrar a linha */
+    th:nth-child(1), td:nth-child(1) { 
+        width: 1%; 
+        white-space: nowrap; 
     }
 
-    .canvas-wrapper {
-        height: 250px; /* Reduz um pouquinho a altura no celular pra não comer a tela toda */
+    /* Coluna 2 (Produto): Deixa usar todo o resto do espaço disponível livremente */
+    th:nth-child(2), td:nth-child(2) { 
+        width: auto; 
     }
-}
-
-/* ==========================================
-   TABELA SANFONA (ESTOQUE MOBILE)
-   ========================================== */
-
-/* Esconde a coluna da seta e a linha de detalhes no Computador */
-.col-mobile-seta, .td-seta { display: none; }
-.detalhes-row { display: none !important; }
-
-/* Animação da Setinha */
-.seta-tabela {
-    color: var(--btn-acao);
-    transition: transform 0.3s ease;
-}
-.seta-tabela.ativa {
-    transform: rotate(180deg);
-}
-
-@media screen and (max-width: 768px) {
-    /* 1. Esconde as colunas completas no celular */
+    
+    /* Esconde as colunas extras de vez! */
     .col-desktop { display: none !important; }
     
-    /* 2. Mostra a coluna da setinha */
+    /* Coluna da Setinha: Super espremida na direita */
     .col-mobile-seta, .td-seta { 
         display: table-cell !important; 
-        text-align: right; 
+        width: 1%; 
+        white-space: nowrap;
+        text-align: right !important; 
         vertical-align: middle; 
     }
 
-    /* Deixa a linha clicável com carinha de botão */
     .linha-produto { cursor: pointer; }
 
-    /* 3. A Linha de Detalhes Expandida */
+    /* Linha de Detalhes (Sanfona) */
     .detalhes-row.open {
         display: table-row !important;
         background-color: var(--bg-linha-selecionada);
@@ -695,11 +692,34 @@ tr:hover {
 
     .detalhe-item b { color: var(--text-secundario); text-transform: uppercase; font-size: 11px; }
     
-    /* Botões na linha de detalhes */
     .detalhes-acoes {
         display: flex;
         justify-content: flex-end;
         gap: 10px;
         margin-top: 10px;
+    }
+
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+    
+    /* Empilha os Cards do Dashboard */
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    /* --- Ajustes do Gráfico no Celular --- */
+    .chart-header {
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    #chart-selector {
+        width: 100%; 
+        font-size: 13px; 
+    }
+
+    .canvas-wrapper {
+        height: 250px; 
     }
 }
