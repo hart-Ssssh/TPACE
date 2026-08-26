@@ -42,6 +42,38 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* ==========================================
+   SCROLLBARS PERSONALIZADAS (GLASSMORPHISM)
+   ========================================== */
+
+/* Regra para o Firefox */
+* {
+    scrollbar-width: thin; /* Deixa a barra fininha */
+    scrollbar-color: rgba(164, 95, 206, 0.4) transparent; /* Cor do botão e fundo transparente */
+}
+
+/* Regras para Chrome, Edge, Safari e celulares Android/iOS */
+::-webkit-scrollbar {
+    width: 6px; /* Deixa a barra vertical bem delicada */
+    height: 6px; /* Deixa a barra horizontal fininha na tabela */
+}
+
+/* O Fundo da barra (Track) - Totalmente transparente! */
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+/* A "pecinha" que rola (Thumb) - Roxinho de vidro */
+::-webkit-scrollbar-thumb {
+    background: rgba(164, 95, 206, 0.4); /* Usa o roxo da paleta com transparência */
+    border-radius: 10px; /* Bordas arredondadas e chiques */
+}
+
+/* Quando o usuário clica ou passa o mouse na barra */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(164, 95, 206, 0.7); 
+}
+
 /* Fundo do Sistema em Degradê Escuro */
 body {
     background: linear-gradient(135deg, var(--bg-topo), var(--bg-base));
@@ -413,6 +445,10 @@ tr:hover {
     width: 100%;
     max-width: 750px;
     color: var(--text-escuro);
+    
+    /* O SEGREDO: Se o form for muito grande, ele cria uma barra de rolagem interna! */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -627,8 +663,46 @@ tr:hover {
         margin-top: 10px;
     }
 
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full-width { grid-column: span 1; }
+    /* ==========================================
+       MODAL E FORMULÁRIOS NO CELULAR
+       ========================================== */
+    .modal-overlay {
+        padding: 15px; /* Não deixa o vidro encostar na borda da tela */
+    }
+
+    .modal-glass {
+        padding: 20px;
+        max-height: 85vh; /* Dá espaço para o teclado virtual não bugar a tela */
+    }
+
+    /* Coloca todos os campos em 1 única coluna */
+    .form-grid { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+        margin-bottom: 15px;
+    }
+    .form-group.full-width { 
+        grid-column: span 1; 
+    }
+
+    /* Inputs confortáveis para o dedo e blindados contra o zoom do iPhone */
+    .form-group input, .form-group select {
+        padding: 12px 15px;
+        font-size: 16px !important; 
+    }
+
+    /* Botões empilhados (Salvar em cima, Cancelar embaixo) */
+    .modal-actions {
+        flex-direction: column-reverse; 
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .modal-actions button {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+    }
     
     /* Empilha os Cards do Dashboard */
     .dashboard-cards {
