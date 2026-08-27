@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <!-- Importando a biblioteca Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Apenas classes auxiliares para as abas que não estão no style.css base */
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <div class="topbar-brand">T-PACE</div>
+        <button class="mobile-menu-btn" onclick="abrirMenuMobile()">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link" title="Dashboard">
+                <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
+            </a>
+            <a href="relatorios.php" class="menu-link active" title="Relatórios">
+                <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
+            </a>
+            <a href="usuarios.html" class="menu-link" title="Usuários">
+                <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
+            </a>
+            <a href="estoque.html" class="menu-link" title="Controle de Estoque">
+                <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
+            </a>
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
+                <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
+            </a>
+        </nav>
+
+        <div class="topbar-divider"></div>
+        <div class="user-info">
+            <span id="nome-usuario-logado">Carregando...</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="screen-container">
+            <h2>Painel de Relatórios</h2>
+
+            <!-- MENU DE ABAS (Usando os botões do seu CSS) -->
+            <div class="tab-menu">
+                <button class="btn tab-button" onclick="abrirAba(event, 'aba-desempenho')">Desempenho Financeiro</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-giro')">Giro de Estoque</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-radar')">Radar de Ação</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-trocas')">Trocas</button>
+            </div>
+
+            <!-- ABA 1: DESEMPENHO E VENDAS DETALHADAS -->
+            <div id="aba-desempenho" class="tab-content active">
+                
+                <!-- Toolbar estilo Estoque para o Filtro -->
+                <div class="toolbar" style="justify-content: flex-start; gap: 15px; align-items: center;">
+                    <label style="font-weight: bold; color: var(--text-secundario);">Período:</label>
+                    <input type="date" id="filtro-inicio">
+                    <span style="color: var(--text-secundario);">até</span>
+                    <input type="date" id="filtro-fim">
+                    <button class="btn" onclick="carregarRelatorioDesempenho()">Atualizar</button>
+                </div>
+
+                <div class="card">
+                    <div class="chart-header">
+                        <h3>Gráfico de Faturamento</h3>
+                        <span class="status-badge status-good" id="total-faturamento" style="font-size: 14px;">Total: R$ 0,00</span>
+                    </div>
+                    <p id="texto-periodo" style="text-align: center; color: var(--text-secundario); font-weight: bold; margin-top: -10px; margin-bottom: 15px;"></p>
+                    
+                    <div class="canvas-wrapper">
+                        <canvas id="meuGrafico"></canvas>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Detalhamento Individual de Vendas</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data e Hora</th>
+                                    <th>Venda (ID)</th>
+                                    <th>Vendedor</th>
+                                    <th>Produtos e Quantidades</th>
+                                    <th>Subtotal</th>
+                                    <th>Total Venda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-desempenho">
+                                <tr><td colspan="6" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: GIRO DE ESTOQUE -->
+            <div id="aba-giro" class="tab-content">
+                <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Visão Geral e Giro de Estoque</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Unidade</th><th>Produto</th><th>Volume (mês)</th><th>Estoque</th><th>Giro</th></tr></thead>
+                            <tbody id="tbody-giro">
+                                <tr><td colspan="5" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: RADAR -->
+            <div id="aba-radar" class="tab-content">
+                <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Estoque Desequilibrado</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Produto</th><th>Quantidade</th><th>Ação Sugerida</th></tr></thead>
+                            <tbody id="tbody-radar">
+                                <tr><td colspan="3" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 4: TROCAS -->
+            <div id="aba-trocas" class="tab-content">
+                 <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Trocas e Devoluções</h3>
+                    <div class="table-wrapper">
+                        <table>
+                             <thead><tr><th>Produto</th><th>Qtd Devolvida</th><th>Data</th></tr></thead>
+                             <tbody id="tbody-trocas">
+                                <tr><td colspan="3" style="text-align:center;">Carregando dados...</td></tr>
+                             </tbody>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Importação do Lógica em JS -->
+    <script src="js/relatorios.js"></script>
+    
+    <script>
+        function abrirMenuMobile() {
+            document.querySelector('.topbar-menu').classList.toggle('open');
+        }
+
+        // Função de controle das abas (Muda a classe visual do CSS tpace)
+        function abrirAba(evento, idAba) {
+            let conteudos = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < conteudos.length; i++) conteudos[i].classList.remove("active");
+            
+            let botoes = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < botoes.length; i++) {
+                botoes[i].classList.remove("btn");
+                botoes[i].classList.add("btn-outline");
+            }
+            
+            document.getElementById(idAba).classList.add("active");
+            evento.currentTarget.classList.remove("btn-outline");
+            evento.currentTarget.classList.add("btn");
+        }
+    </script>
+</body>
+</html>
