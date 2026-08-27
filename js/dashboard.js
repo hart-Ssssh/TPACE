@@ -90,8 +90,8 @@ document.addEventListener("DOMContentLoaded", async function() {
             config = {
                 type: 'bar',
                 data: {
-                    // Corta o nome se for maior que 20 caracteres (agora temos mais espaço!)
-                    labels: dados.map(d => d.nome.length > 20 ? d.nome.substring(0, 20) + '...' : d.nome),
+                    // REDUZIDO PARA 8 LETRAS: Mais espaço e respiro entre as colunas!
+                    labels: dados.map(d => d.nome.length > 15 ? d.nome.substring(0, 15) + '...' : d.nome),
                     datasets: [{
                         label: 'Unidades Vendidas',
                         data: dados.map(d => d.qtd),
@@ -99,10 +99,17 @@ document.addEventListener("DOMContentLoaded", async function() {
                         borderRadius: 6
                     }]
                 },
-                options: { 
-                    indexAxis: 'y', // A MÁGICA: Deita as barras para o celular!
+                options: {
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 0, // Impede a inclinação máxima
+                                minRotation: 0  // Força o texto a ficar 100% horizontal
+                            }
+                        }
+                    },
                     plugins: {
-                        legend: { display: false } // Esconde a legenda extra pra deixar mais limpo
+                        legend: { display: false } // Tira a legenda extra
                     }
                 }
             };
