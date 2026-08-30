@@ -8,6 +8,12 @@ document.addEventListener("DOMContentLoaded", function() {
     carregarProdutos();
     // Quando o usuário clicar em "Salvar" no formulário do Modal
     document.getElementById('form-produto').addEventListener('submit', salvarProduto);
+    // Evita o envio do formulário ao pressionar Enter no campo de código de barras
+    document.getElementById('prod-codigo').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Cancela o comportamento padrão da tecla
+        }
+    });
 });
 
 // ==========================================

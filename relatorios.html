@@ -64,12 +64,18 @@
             <div id="aba-desempenho" class="tab-content active">
                 
                 <!-- Toolbar estilo Estoque para o Filtro -->
-                <div class="toolbar" style="justify-content: flex-start; gap: 15px; align-items: center;">
+                <div class="toolbar" style="justify-content: flex-start; gap: 15px; align-items: center; flex-wrap: wrap;">
                     <label style="font-weight: bold; color: var(--text-secundario);">Período:</label>
                     <input type="date" id="filtro-inicio">
                     <span style="color: var(--text-secundario);">até</span>
                     <input type="date" id="filtro-fim">
                     <button class="btn" onclick="carregarRelatorioDesempenho()">Atualizar</button>
+                    
+                    <!-- NOVO CAMPO: Busca por ID -->
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                        <label style="font-weight: bold; color: var(--text-secundario);">Buscar Venda (ID):</label>
+                        <input type="number" id="filtro-id-venda" placeholder="Ex: 123" style="width: 150px;">
+                    </div>
                 </div>
 
                 <div class="card">

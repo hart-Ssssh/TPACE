@@ -1,5 +1,6 @@
 const URL_BASE = 'https://tpace-api.whyguiih.workers.dev';
 let graficoChart = null; // Variável global para armazenar o gráfico
+let listaVendasGlobal = []; // NOVA variável para armazenar as vendas na memória
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Configurar datas padrão (Últimos 30 dias até hoje)
@@ -18,6 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarGiro();
     carregarRadar();
     carregarTrocas();
+
+    // 3. Lógica de busca por ID
+    const inputFiltroId = document.getElementById('filtro-id-venda');
+    if (inputFiltroId) {
+        inputFiltroId.addEventListener('input', (evento) => {
+            const idBuscado = evento.target.value.trim();
+            
+            // Se o campo estiver vazio, mostra todas as vendas do período
+            if (!idBuscado) {
+                renderizarTabelaDesempenho(listaVendasGlobal);
+                return;
+            }
+            
+            // Converte ambos para Número (Number). Isso faz o JS ler "0080" como apenas 80!
+            const vendasFiltradas = listaVendasGlobal.filter(venda => 
+                Number(venda.id_venda) === Number(idBuscado)
+            );
+            
+            renderizarTabelaDesempenho(vendasFiltradas);
+        });
+    }
 });
 
 // ==========================================
@@ -57,7 +79,10 @@ async function carregarRelatorioDesempenho() {
         const res = await fetch(`${URL_BASE}/relatorios/desempenho?inicio=${inicio}&fim=${fim}`);
         const dados = await res.json();
         
-        renderizarTabelaDesempenho(dados.detalhes);
+        // SALVA os detalhes na variável global antes de renderizar
+        listaVendasGlobal = dados.detalhes;
+        
+        renderizarTabelaDesempenho(listaVendasGlobal);
         renderizarGrafico(dados.grafico);
     } catch (e) {
         console.error("Erro ao carregar desempenho:", e);
