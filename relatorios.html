@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios - T-PACE</title>
@@ -13,6 +14,40 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        @media screen and (max-width: 768px) {
+            /* 1. Devolve a rolagem horizontal das tabelas */
+            .table-wrapper {
+                overflow-x: auto !important; /* Habilita deslizar para os lados */
+            }
+            table {
+                table-layout: auto !important; /* Desfaz o esmagamento das colunas */
+                min-width: 700px !important; /* Dá espaço real para os dados respirarem */
+            }
+            th, td {
+                white-space: nowrap !important; /* Impede que o texto quebre em várias linhas na vertical */
+            }
+            
+            /* 2. Ajusta os botões das abas do menu para não ficarem minúsculos */
+            .tab-menu .btn {
+                flex: 1 1 45%; /* Divide a tela, colocando 2 abas por linha */
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            /* 3. Ajusta a barra de filtros (datas e busca por ID) */
+            .toolbar {
+                align-items: stretch !important;
+            }
+            .toolbar > div {
+                margin-left: 0 !important; /* Remove o alinhamento forçado à direita */
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .toolbar input[type="date"], .toolbar input[type="number"] {
+                width: 100% !important; /* Ocupa a largura total da tela */
+            }
+        }
     </style>
 </head>
 <body>
@@ -20,7 +55,7 @@
     <!-- TOPBAR COM NAVEGAÇÃO -->
     <header class="topbar">
         <div class="topbar-brand">T-PACE</div>
-        <button class="mobile-menu-btn" onclick="abrirMenuMobile()">
+        <button class="mobile-menu-btn">
             <span></span><span></span><span></span>
         </button>
 
@@ -164,10 +199,6 @@
     <script src="js/relatorios.js"></script>
     
     <script>
-        function abrirMenuMobile() {
-            document.querySelector('.topbar-menu').classList.toggle('open');
-        }
-
         // Função de controle das abas (Muda a classe visual do CSS tpace)
         function abrirAba(evento, idAba) {
             let conteudos = document.getElementsByClassName("tab-content");

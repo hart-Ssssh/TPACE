@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - T-PACE</title>
@@ -16,7 +17,7 @@
         <div class="topbar-brand">T-PACE</div>
         
         <!-- Botão Hamburger -->
-        <button class="mobile-menu-btn" onclick="abrirMenuMobile()">
+        <button class="mobile-menu-btn">
             <span></span><span></span><span></span>
         </button>
 
@@ -89,12 +90,6 @@
     <!-- Scripts -->
     <script src="js/permissoes.js"></script>
     <script src="js/dashboard.js"></script>
-    
-    <!-- SCRIPT INFALÍVEL DO MENU MOBILE -->
-    <script>
-        function abrirMenuMobile() {
-            document.querySelector('.topbar-menu').classList.toggle('open');
-        }
-    </script>
+
 </body>
 </html>
