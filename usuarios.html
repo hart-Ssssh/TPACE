@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        #tela-detalhes { display: none; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .detalhes-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .btn-voltar { background: transparent; border: 1px solid var(--text-secundario); color: var(--text-secundario); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-voltar:hover { background: var(--text-secundario); color: #fff; }
+        .boxes-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .box-info { flex: 1; min-width: 300px; background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)); padding: 25px; border-radius: 12px; border: 1px solid var(--border-glass); box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15); backdrop-filter: blur(12px); color: var(--text-escuro); }
+        .box-info h3 { margin-top: 0; color: var(--btn-acao); border-bottom: 2px solid var(--border-divisoria); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; font-size: 16px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-item span.label { font-size: 11px; font-weight: bold; color: var(--text-secundario); text-transform: uppercase; }
+        .info-item span.valor { font-size: 14px; font-weight: 500; margin-top: 3px; }
+        .clickable-name { color: var(--btn-acao); cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .clickable-name:hover { text-decoration: underline; color: var(--text-secundario); }
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .form-section-title { grid-column: span 3; margin-top: 20px; border-bottom: 1px solid var(--border-divisoria); padding-bottom: 5px; color: var(--text-secundario); font-size: 14px; text-transform: uppercase; }
+        @media screen and (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-section-title { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-brand">T-PACE</div>
+        <button class="mobile-menu-btn" onclick="abrirMenuMobile()">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link" title="Dashboard"><img src="assets/icons/dashboard.png" class="nav-icon"></a>
+            <a href="relatorios.html" class="menu-link" title="Relatórios"><img src="assets/icons/relatorio.png" class="nav-icon"></a>
+            <a href="usuarios.html" class="menu-link active" title="Usuários"><img src="assets/icons/usuario.png" class="nav-icon"></a>
+            <a href="estoque.html" class="menu-link" title="Controle de Estoque"><img src="assets/icons/estoque.png" class="nav-icon"></a>
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair"><img src="assets/icons/sair.png" class="nav-icon"></a>
+        </nav>
+        <div class="topbar-divider"></div>
+        <div class="user-info"><span id="nome-usuario-logado">Carregando...</span></div>
+    </header>
+
+    <main class="main-content">
+        <section class="screen-container">
+            <div id="tela-lista">
+                <h2>Gerenciar Funcionários</h2>
+                <div class="toolbar">
+                    <input type="text" id="inputPesquisa" placeholder="Pesquisar funcionário..." style="width: 300px;">
+                    <button class="btn" onclick="abrirModalNovo()">+ Adicionar Funcionário</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome Completo</th>
+                            <th class="col-desktop">Tipo Contrato</th>
+                            <th class="col-desktop">Cargo</th>
+                            <th class="col-desktop">Setor</th>
+                            <th class="col-desktop">Status</th>
+                            <th class="col-desktop">Ações</th>
+                            <th class="col-mobile-seta"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-funcionarios"></tbody>
+                </table>
+            </div>
+
+            <div id="tela-detalhes">
+                <div class="detalhes-header">
+                    <button class="btn-voltar" onclick="voltarParaLista()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                    <h2 id="detalhe-nome-titulo" style="margin: 0;">Nome do Funcionário</h2>
+                </div>
+                <div class="boxes-container">
+                    <div class="box-info">
+                        <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                        <div class="info-grid" id="box-pessoal-grid"></div>
+                    </div>
+                    <div class="box-info">
+                        <h3><i class="fas fa-briefcase"></i> Informações Profissionais</h3>
+                        <div class="info-grid" id="box-profissional-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="modal-funcionario">
+        <div class="modal-glass" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Adicionar Funcionário</h3>
+                <button class="modal-close" onclick="fecharModalForm()">&times;</button>
+            </div>
+            
+            <form id="form-funcionario">
+                <input type="hidden" id="func-id">
+                
+                <div class="form-grid">
+                    <!-- SESSÃO: DADOS PESSOAIS -->
+                    <h4 class="form-section-title">Dados Pessoais básicos</h4>
+                    <div class="form-group"><label>Nome Completo</label><input type="text" id="f-nome_completo" required></div>
+                    <div class="form-group"><label>Data Nascimento</label><input type="date" id="f-data_nascimento"></div>
+                    <div class="form-group"><label>Gênero</label>
+                        <select id="f-genero">
+                            <option value="">Selecione...</option>
+                            <option value="1">Masculino</option>
+                            <option value="2">Feminino</option>
+                            <option value="3">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group"><label>Raça/Cor</label>
+                        <select id="f-raca">
+                            <option value="">Selecione...</option>
+                            <option value="1">Branca</option>
+                            <option value="2">Preta</option>
+                            <option value="3">Parda</option>
+                            <option value="4">Amarela</option>
+                            <option value="5">Indígena</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Estado Civil</label>
+                        <select id="f-estado_civil">
+                            <option value="">Selecione...</option>
+                            <option value="1">Solteiro(a)</option>
+                            <option value="2">Casado(a)</option>
+                            <option value="3">Divorciado(a)</option>
+                            <option value="4">Viúvo(a)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Nacionalidade</label><input type="text" id="f-nacionalidade"></div>
+                    
+                    <div class="form-group"><label>Naturalidade</label><input type="text" id="f-naturalidade"></div>
+                    <div class="form-group"><label>CPF</label><input type="text" id="f-cpf" required></div>
+                    <div class="form-group"><label>Órgão Emissor</label><input type="text" id="f-orgao_emissor"></div>
+
+                    <div class="form-group"><label>Email</label><input type="email" id="f-email"></div>
+                    <div class="form-group"><label>Telefone</label><input type="text" id="f-telefone"></div>
+                    <div class="form-group"><label>Contato de Emergência</label><input type="text" id="f-contato_emergencia"></div>
+                    
+                    <div class="form-group"><label>PCD?</label>
+                        <select id="f-pcd">
+                            <option value="0">Não</option>
+                            <option value="1">Sim</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Escolaridade</label>
+                        <select id="f-escolaridade">
+                            <option value="">Selecione...</option>
+                            <option value="1">Fundamental</option>
+                            <option value="2">Médio</option>
+                            <option value="3">Técnico</option>
+                            <option value="4">Superior</option>
+                            <option value="5">Pós/MBA</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Formação Acadêmica</label><input type="text" id="f-formacao_academica"></div>
+
+                    <h4 class="form-section-title">Endereço</h4>
+                    <div class="form-group"><label>CEP</label><input type="text" id="f-cep"></div>
+                    <div class="form-group"><label>Logradouro</label><input type="text" id="f-logradouro"></div>
+                    <div class="form-group"><label>Número</label><input type="text" id="f-numero"></div>
+                    <div class="form-group"><label>Complemento</label><input type="text" id="f-complemento"></div>
+                    <div class="form-group"><label>Bairro</label><input type="text" id="f-bairro"></div>
+                    <div class="form-group"><label>Cidade/UF</label><input type="text" id="f-cidade"></div>
+                    <div class="form-group"><label>Status do Cadastro</label>
+                        <select id="f-status">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+
+                    <!-- SESSÃO: DADOS PROFISSIONAIS -->
+                    <h4 class="form-section-title">Vínculo Empregatício</h4>
+                    <div class="form-group"><label>Data Admissão</label><input type="date" id="f-data_admissao"></div>
+                    <div class="form-group"><label>Tipo de Contrato</label>
+                        <select id="f-tipo_contrato">
+                            <option value="">Selecione...</option>
+                            <option value="1">CLT</option>
+                            <option value="2">PJ</option>
+                            <option value="3">Estágio</option>
+                            <option value="4">Temporário</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Cargo</label><input type="text" id="f-cargo"></div>
+                    
+                    <div class="form-group"><label>Nível Senioridade</label>
+                        <select id="f-nivel_senioridade">
+                            <option value="">Selecione...</option>
+                            <option value="1">Júnior</option>
+                            <option value="2">Pleno</option>
+                            <option value="3">Sênior</option>
+                            <option value="4">Especialista</option>
+                            <option value="5">Gestão</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Setor</label><input type="text" id="f-setor"></div>
+                    <div class="form-group"><label>Gestor</label><input type="text" id="f-gestor"></div>
+                    
+                    
+                    <div class="form-group"><label>Tempo Empregado</label><input type="text" id="f-tempo_empregado"></div>
+                    <div class="form-group"><label>Modelo Trabalho</label>
+                        <select id="f-modelo_trabalho">
+                            <option value="">Selecione...</option>
+                            <option value="1">Presencial</option>
+                            <option value="2">Híbrido</option>
+                            <option value="3">Remoto</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Escala Trabalho</label>
+                        <select id="f-escala_trabalho">
+                            <option value="">Selecione...</option>
+                            <option value="1">5x2</option>
+                            <option value="2">6x1</option>
+                            <option value="3">12x36</option>
+                            <option value="4">Outra</option>
+                        </select>
+                    </div>
+
+                    <h4 class="form-section-title">Remuneração e Financeiro</h4>
+                    <div class="form-group"><label>Salário Base (R$)</label><input type="number" step="0.01" id="f-salario_base"></div>
+                    <div class="form-group"><label>Tipo Remuneração</label>
+                        <select id="f-tipo_remuneracao">
+                            <option value="">Selecione...</option>
+                            <option value="1">Fixo</option>
+                            <option value="2">Comissão</option>
+                            <option value="3">Fixo + Comissão</option>
+                            <option value="4">Horista</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Centro de Custo</label><input type="text" id="f-centro_custo"></div>
+                    
+                    <div class="form-group"><label>Banco</label><input type="text" id="f-banco"></div>
+                    <div class="form-group"><label>Agência e Conta</label><input type="text" id="f-agencia"></div>
+                    <div class="form-group"><label>Chave PIX</label><input type="text" id="f-chave_pix"></div>
+
+                    <h4 class="form-section-title">Desligamento (Se aplicável)</h4>
+                    <div class="form-group"><label>Data Demissão</label><input type="date" id="f-data_demissao"></div>
+                    <div class="form-group"><label>Tipo Demissão</label>
+                        <select id="f-tipo_demissao">
+                            <option value="">Selecione...</option>
+                            <option value="1">Sem Justa Causa</option>
+                            <option value="2">Com Justa Causa</option>
+                            <option value="3">Pedido de Demissão</option>
+                            <option value="4">Acordo</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Motivo Demissão</label><input type="text" id="f-motivo_demissao"></div>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 25px;">
+                    <button type="button" class="btn btn-outline" onclick="fecharModalForm()">Cancelar</button>
+                    <button type="submit" class="btn">Salvar Funcionário</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/permissoes.js"></script>
+    <script src="js/usuarios.js"></script>
+    <script>
+        function abrirMenuMobile() {
+            document.querySelector('.topbar-menu').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
