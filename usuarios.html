@@ -4,26 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Usuários - T-PACE</title>
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* Estilos da "Página" de Detalhes e Caixas (Boxes) */
         #tela-detalhes { display: none; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .detalhes-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        
+        .detalhes-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
         .btn-voltar { background: transparent; border: 1px solid var(--text-secundario); color: var(--text-secundario); padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .btn-voltar:hover { background: var(--text-secundario); color: #fff; }
-        .boxes-container { display: flex; gap: 20px; flex-wrap: wrap; }
-        .box-info { flex: 1; min-width: 300px; background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)); padding: 25px; border-radius: 12px; border: 1px solid var(--border-glass); box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15); backdrop-filter: blur(12px); color: var(--text-escuro); }
+
+        /* Estilo da Foto e Título */
+        .perfil-destaque { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)); padding: 20px; border-radius: 12px; border: 1px solid var(--border-glass); box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15); backdrop-filter: blur(12px); }
+        .foto-espaco { width: 100px; height: 100px; border-radius: 50%; background-color: var(--bg-pesquisa); border: 3px solid var(--btn-acao); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .foto-espaco img { width: 100%; height: 100%; object-fit: cover; }
+        .foto-espaco i { font-size: 40px; color: var(--text-secundario); opacity: 0.5; }
+        .perfil-info h2 { margin: 0; color: var(--text-escuro); font-size: 22px; margin-bottom: 5px; text-shadow: none; }
+        .perfil-info p { margin: 0; color: var(--text-secundario); font-weight: bold; font-size: 14px; }
+
+        /* As duas Boxes Bonitinhas */
+        .boxes-container { display: flex; gap: 25px; flex-wrap: wrap; }
+        .box-info { flex: 1; min-width: 320px; background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)); padding: 30px; border-radius: 12px; border: 1px solid var(--border-glass); box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15); backdrop-filter: blur(12px); color: var(--text-escuro); }
         .box-info h3 { margin-top: 0; color: var(--btn-acao); border-bottom: 2px solid var(--border-divisoria); padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; font-size: 16px; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .info-item { display: flex; flex-direction: column; }
-        .info-item span.label { font-size: 11px; font-weight: bold; color: var(--text-secundario); text-transform: uppercase; }
-        .info-item span.valor { font-size: 14px; font-weight: 500; margin-top: 3px; }
+        
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-item { display: flex; flex-direction: column; background: var(--bg-pesquisa); padding: 10px; border-radius: 8px; border: 1px solid var(--border-divisoria); }
+        .info-item span.label { font-size: 11px; font-weight: bold; color: var(--text-secundario); text-transform: uppercase; margin-bottom: 4px; }
+        .info-item span.valor { font-size: 14px; font-weight: 600; color: var(--text-escuro); }
+
         .clickable-name { color: var(--btn-acao); cursor: pointer; font-weight: bold; transition: 0.2s; }
         .clickable-name:hover { text-decoration: underline; color: var(--text-secundario); }
+
+        /* Modal */
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .form-section-title { grid-column: span 3; margin-top: 20px; border-bottom: 1px solid var(--border-divisoria); padding-bottom: 5px; color: var(--text-secundario); font-size: 14px; text-transform: uppercase; }
-        @media screen and (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-section-title { grid-column: span 1; } }
+        @media screen and (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .form-section-title { grid-column: span 1; } .info-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -45,6 +61,7 @@
 
     <main class="main-content">
         <section class="screen-container">
+            
             <div id="tela-lista">
                 <h2>Gerenciar Funcionários</h2>
                 <div class="toolbar">
@@ -67,14 +84,26 @@
                 </table>
             </div>
 
+            <!-- TELA DE DETALHES (BOXES E FOTO) -->
             <div id="tela-detalhes">
                 <div class="detalhes-header">
                     <button class="btn-voltar" onclick="voltarParaLista()"><i class="fas fa-arrow-left"></i> Voltar</button>
-                    <h2 id="detalhe-nome-titulo" style="margin: 0;">Nome do Funcionário</h2>
                 </div>
+
+                <div class="perfil-destaque">
+                    <!-- Espaço para a foto futura -->
+                    <div class="foto-espaco">
+                        <i class="fas fa-user"></i> <!-- Ícone provisório -->
+                    </div>
+                    <div class="perfil-info">
+                        <h2 id="detalhe-nome-titulo">Nome do Funcionário</h2>
+                        <p id="detalhe-cargo-titulo">Cargo e Setor</p>
+                    </div>
+                </div>
+
                 <div class="boxes-container">
                     <div class="box-info">
-                        <h3><i class="fas fa-user"></i> Informações Pessoais</h3>
+                        <h3><i class="fas fa-address-card"></i> Informações Pessoais</h3>
                         <div class="info-grid" id="box-pessoal-grid"></div>
                     </div>
                     <div class="box-info">
@@ -97,7 +126,6 @@
                 <input type="hidden" id="func-id">
                 
                 <div class="form-grid">
-                    <!-- SESSÃO: DADOS PESSOAIS -->
                     <h4 class="form-section-title">Dados Pessoais básicos</h4>
                     <div class="form-group"><label>Nome Completo</label><input type="text" id="f-nome_completo" required></div>
                     <div class="form-group"><label>Data Nascimento</label><input type="date" id="f-data_nascimento"></div>
@@ -166,12 +194,11 @@
                     <div class="form-group"><label>Cidade/UF</label><input type="text" id="f-cidade"></div>
                     <div class="form-group"><label>Status do Cadastro</label>
                         <select id="f-status">
-                            <option value="Ativo">Ativo</option>
-                            <option value="Inativo">Inativo</option>
+                            <option value="1">Ativo</option>
+                            <option value="0">Inativo</option>
                         </select>
                     </div>
 
-                    <!-- SESSÃO: DADOS PROFISSIONAIS -->
                     <h4 class="form-section-title">Vínculo Empregatício</h4>
                     <div class="form-group"><label>Data Admissão</label><input type="date" id="f-data_admissao"></div>
                     <div class="form-group"><label>Tipo de Contrato</label>
@@ -196,8 +223,7 @@
                         </select>
                     </div>
                     <div class="form-group"><label>Setor</label><input type="text" id="f-setor"></div>
-                    <div class="form-group"><label>Gestor</label><input type="text" id="f-gestor"></div>
-                    
+                    <div class="form-group"><label>Gestor</label><input type="text"id="f-gestor">                    </div>
                     
                     <div class="form-group"><label>Tempo Empregado</label><input type="text" id="f-tempo_empregado"></div>
                     <div class="form-group"><label>Modelo Trabalho</label>

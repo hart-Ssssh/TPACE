@@ -8,13 +8,13 @@ const urlAPIFuncionariosGeral = "https://tpace-api.whyguiih.workers.dev/api/web/
 let listaFuncionarios = [];
 
 // ==========================================
-// TRADUTOR DE NÚMEROS DO BANCO DE DADOS
+// TRADUTOR DE NÚMEROS DO BANCO
 // ==========================================
 const DICIONARIOS = {
     genero: { 1: 'Masculino', 2: 'Feminino', 3: 'Outros' },
     raca: { 1: 'Branca', 2: 'Preta', 3: 'Parda', 4: 'Amarela', 5: 'Indígena' },
     estado_civil: { 1: 'Solteiro(a)', 2: 'Casado(a)', 3: 'Divorciado(a)', 4: 'Viúvo(a)' },
-    pcd: { 0: 'Não', 1: 'Sim', '0': 'Não', '1': 'Sim', 'false': 'Não', 'true': 'Sim' },
+    pcd: { 0: 'Não', 1: 'Sim', 'false': 'Não', 'true': 'Sim' },
     escolaridade: { 1: 'Fundamental', 2: 'Médio', 3: 'Técnico', 4: 'Superior', 5: 'Pós/MBA' },
     tipo_contrato: { 1: 'CLT', 2: 'PJ', 3: 'Estágio', 4: 'Temporário' },
     nivel_senioridade: { 1: 'Júnior', 2: 'Pleno', 3: 'Sênior', 4: 'Especialista', 5: 'Gestão' },
@@ -26,7 +26,33 @@ const DICIONARIOS = {
 
 function traduzir(dicionario, valor) {
     if (valor === null || valor === undefined || valor === "") return '-';
-    return dicionario[valor] || valor;
+    const valStr = String(valor).toLowerCase();
+    for (let key in dicionario) {
+        if (String(key).toLowerCase() === valStr) return dicionario[key];
+    }
+    return valor;
+}
+
+// Preenche inputs corretamente convertendo Boolean e Numéricos para o formato HTML
+function preencherCampo(id, valor) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    if (valor === null || valor === undefined || valor === "") {
+        el.value = "";
+        return;
+    }
+
+    let valConvertido = valor;
+    if (typeof valor === "boolean") valConvertido = valor ? "1" : "0";
+
+    if (el.tagName === 'SELECT') {
+        el.value = valConvertido.toString();
+    } else if (el.type === 'date') {
+        el.value = valConvertido.toString().split('T')[0];
+    } else {
+        el.value = valConvertido;
+    }
 }
 
 // ==========================================
@@ -51,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // ==========================================
-// 1. CARREGAR E MESCLAR (CORREÇÃO DE ID)
+// 1. CARREGAR E MESCLAR
 // ==========================================
 async function carregarFuncionarios() {
     const tbody = document.getElementById('tabela-funcionarios');
@@ -63,9 +89,7 @@ async function carregarFuncionarios() {
             fetch(urlAPIProfissional)
         ]);
 
-        if (!resPessoal.ok || !resProfissional.ok) {
-            throw new Error("Erro nas rotas de GET");
-        }
+        if (!resPessoal.ok || !resProfissional.ok) throw new Error("Erro nas rotas de GET");
 
         const dadosPessoal = await resPessoal.json();
         const dadosProfissional = await resProfissional.json();
@@ -80,7 +104,6 @@ async function carregarFuncionarios() {
 
     } catch (erro) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--chart-rosa);">Erro ao conectar com a API. Verifique o console.</td></tr>';
-        console.error("Erro no Carregamento:", erro);
     }
 }
 
@@ -98,7 +121,7 @@ function renderizarTabela(funcionarios) {
 
     funcionarios.forEach(func => {
         const tipoContrato = traduzir(DICIONARIOS.tipo_contrato, func.tipo);
-        let statusBadge = (func.status == 1 || func.status === 'Ativo') ? '<span class="status-badge status-good">Ativo</span>' : '<span class="status-badge status-critical">Inativo</span>';
+        const statusBadge = (func.status == 1 || func.status === 'Ativo' || func.status === true) ? '<span class="status-badge status-good">Ativo</span>' : '<span class="status-badge status-critical">Inativo</span>';
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -141,7 +164,9 @@ window.abrirPaginaDetalhes = function(id) {
 
     document.getElementById('tela-lista').style.display = 'none';
     document.getElementById('tela-detalhes').style.display = 'block';
-    document.getElementById('detalhe-nome-titulo').innerText = func.nome_completo || "Detalhes do Funcionário";
+    
+    document.getElementById('detalhe-nome-titulo').innerText = func.nome_completo || "Nome do Funcionário";
+    document.getElementById('detalhe-cargo-titulo').innerText = (func.cargo || 'Cargo Indefinido') + (func.setor ? ` | ${func.setor}` : '');
 
     const renderItem = (label, valor) => `
         <div class="info-item"><span class="label">${label}</span><span class="valor">${valor || '-'}</span></div>
@@ -149,7 +174,7 @@ window.abrirPaginaDetalhes = function(id) {
 
     document.getElementById('box-pessoal-grid').innerHTML = `
         ${renderItem('CPF', func.cpf)}
-        ${renderItem('Nascimento', func.data_nascimento)}
+        ${renderItem('Nascimento', func.data_nascimento ? String(func.data_nascimento).split('T')[0] : '')}
         ${renderItem('Gênero', traduzir(DICIONARIOS.genero, func.genero))}
         ${renderItem('Raça/Cor', traduzir(DICIONARIOS.raca, func.raca))}
         ${renderItem('Estado Civil', traduzir(DICIONARIOS.estado_civil, func.estado_civil))}
@@ -162,12 +187,12 @@ window.abrirPaginaDetalhes = function(id) {
         ${renderItem('PCD', traduzir(DICIONARIOS.pcd, func.pcd))}
         ${renderItem('Escolaridade', traduzir(DICIONARIOS.escolaridade, func.escolaridade))}
         ${renderItem('Formação', func.formacao_academica)}
-        ${renderItem('Endereço', func.logradouro + ', ' + (func.numero || 'S/N'))}
+        ${renderItem('Endereço', func.logradouro + (func.numero ? `, ${func.numero}` : ''))}
         ${renderItem('Bairro', func.bairro)}
         ${renderItem('Cidade', func.cidade)}
         ${renderItem('CEP', func.cep)}
         ${renderItem('Complemento', func.complemento)}
-        ${renderItem('Status', (func.status == 1 || func.status === 'Ativo') ? 'Ativo' : 'Inativo')}
+        ${renderItem('Status', (func.status == 1 || func.status === 'Ativo' || func.status === true) ? 'Ativo' : 'Inativo')}
     `;
 
     let nomeGestor = '-';
@@ -177,7 +202,7 @@ window.abrirPaginaDetalhes = function(id) {
     }
 
     document.getElementById('box-profissional-grid').innerHTML = `
-        ${renderItem('Data Admissão', func.data_admissao)}
+        ${renderItem('Data Admissão', func.data_admissao ? String(func.data_admissao).split('T')[0] : '')}
         ${renderItem('Tipo Contrato', traduzir(DICIONARIOS.tipo_contrato, func.tipo))}
         ${renderItem('Cargo', func.cargo)}
         ${renderItem('Nível/Senioridade', traduzir(DICIONARIOS.nivel_senioridade, func.nivel_senioridade))}
@@ -192,7 +217,7 @@ window.abrirPaginaDetalhes = function(id) {
         ${renderItem('Agência/Conta', func.agencia)}
         ${renderItem('Chave PIX', func.chave_pix)}
         ${renderItem('Centro Custo', func.centro_custo)}
-        ${renderItem('Data Demissão', func.data_demissao)}
+        ${renderItem('Data Demissão', func.data_demissao ? String(func.data_demissao).split('T')[0] : '')}
         ${renderItem('Tipo Demissão', traduzir(DICIONARIOS.tipo_demissao, func.tipo_demissao))}
         ${renderItem('Motivo Demissão', func.motivo_demissao)}
     `;
@@ -240,18 +265,11 @@ window.abrirModalEditar = function(id) {
     ];
 
     mapeamento.forEach(([idInput, campoBD]) => {
-        const input = document.getElementById(idInput);
-        if(input) {
-            if (input.type === 'date' && func[campoBD]) {
-                input.value = func[campoBD].split('T')[0];
-            } else {
-                input.value = func[campoBD] !== null && func[campoBD] !== undefined ? func[campoBD] : "";
-            }
-        }
+        preencherCampo(idInput, func[campoBD]);
     });
 
     const statusSelect = document.getElementById('f-status');
-    if (statusSelect) statusSelect.value = (func.status == 1 || func.status === 'Ativo') ? 'Ativo' : 'Inativo';
+    if (statusSelect) statusSelect.value = (func.status == 1 || func.status === 'Ativo' || func.status === true) ? '1' : '0';
 
     document.getElementById('modal-funcionario').classList.add('active');
 };
@@ -269,13 +287,12 @@ window.salvarFuncionario = async function(event) {
     const id = document.getElementById('func-id').value;
     const isNovo = (id === ""); 
 
-    // Helper para converter string vazia de inputs ou selects em null para o BD numérico
-    const parseNum = (val) => val === "" ? null : Number(val);
-    const parseText = (val) => val.trim() === "" ? null : val.trim();
+    const parseNum = (val) => (!val || val === "") ? null : Number(val);
+    const parseText = (val) => (!val || val.trim() === "") ? null : val.trim();
 
     const dados = {
         nome_completo: document.getElementById('f-nome_completo').value,
-        data_nascimento: document.getElementById('f-data_nascimento').value || null,
+        data_nascimento: parseText(document.getElementById('f-data_nascimento').value),
         genero: parseNum(document.getElementById('f-genero').value),
         raca: parseNum(document.getElementById('f-raca').value),
         estado_civil: parseNum(document.getElementById('f-estado_civil').value),
@@ -295,9 +312,9 @@ window.salvarFuncionario = async function(event) {
         complemento: parseText(document.getElementById('f-complemento').value),
         bairro: parseText(document.getElementById('f-bairro').value),
         cidade: parseText(document.getElementById('f-cidade').value),
-        status: document.getElementById('f-status').value === "Ativo" ? 1 : 0,
+        status: parseNum(document.getElementById('f-status').value),
 
-        data_admissao: document.getElementById('f-data_admissao').value || null,
+        data_admissao: parseText(document.getElementById('f-data_admissao').value),
         tipo: parseNum(document.getElementById('f-tipo_contrato').value),
         cargo: parseText(document.getElementById('f-cargo').value),
         nivel_senioridade: parseNum(document.getElementById('f-nivel_senioridade').value),
@@ -312,7 +329,7 @@ window.salvarFuncionario = async function(event) {
         banco: parseText(document.getElementById('f-banco').value),
         agencia: parseNum(document.getElementById('f-agencia').value),
         chave_pix: parseText(document.getElementById('f-chave_pix').value),
-        data_demissao: document.getElementById('f-data_demissao').value || null,
+        data_demissao: parseText(document.getElementById('f-data_demissao').value),
         tipo_demissao: parseNum(document.getElementById('f-tipo_demissao').value),
         motivo_demissao: parseText(document.getElementById('f-motivo_demissao').value)
     };
