@@ -1,61 +1,138 @@
-// Substitua o bloco do Cloudinary no topo por isso:
 const urlAPIProdutos = "https://tpace-api.whyguiih.workers.dev/api/web/produtos";
 const urlAPIUpload = "https://tpace-api.whyguiih.workers.dev/api/web/upload";
-
-// Variável global para guardar a lista de produtos na memória e facilitar a edição
 let listaProdutos = [];
+let codigosBipados = []; // NOSSA VARIÁVEL GLOBAL SALVADORA!
 
 document.addEventListener("DOMContentLoaded", function() {
     carregarProdutos();
-    // Quando o usuário clicar em "Salvar" no formulário do Modal
+    
     document.getElementById('form-produto').addEventListener('submit', salvarProduto);
-    // Evita o envio do formulário ao pressionar Enter no campo de código de barras
-    document.getElementById('prod-codigo').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Cancela o comportamento padrão da tecla
-        }
-    });
+    
+    // Evita enviar o form sem querer ao dar Enter no código da edição
+    const inputCodigoOriginal = document.getElementById('prod-codigo');
+    if(inputCodigoOriginal) {
+        inputCodigoOriginal.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') event.preventDefault(); 
+        });
+    }
+
+    // O Input do Passo 2 (Bipar Vários)
+    const inputBipar = document.getElementById('input-bipar');
+    if (inputBipar) {
+        inputBipar.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const codigo = this.value.trim();
+                if (codigo && !codigosBipados.includes(codigo)) {
+                    codigosBipados.push(codigo);
+                    atualizarListaCodigos();
+                    this.value = ''; // Limpa pra bipar o próximo
+                }
+            }
+        });
+    }
 });
 
 // ==========================================
-// 1. LISTAR PRODUTOS NA TABELA
+// TRANSIÇÕES DE PASSOS E LISTA
+// ==========================================
+window.irParaPasso2 = function() {
+    const form = document.getElementById('form-produto');
+    if (!form.reportValidity()) return; // Barra se faltar campo obrigatório!
+    
+    document.getElementById('passo-1').style.display = 'none';
+    document.getElementById('passo-2').style.display = 'block';
+    setTimeout(() => document.getElementById('input-bipar').focus(), 100); 
+};
+
+window.voltarPasso1 = function() {
+    document.getElementById('passo-2').style.display = 'none';
+    document.getElementById('passo-1').style.display = 'block';
+};
+
+window.atualizarListaCodigos = function() {
+    const divLista = document.getElementById('lista-codigos');
+    divLista.innerHTML = '';
+    codigosBipados.forEach((cod, index) => {
+        divLista.innerHTML += `
+        <div style="display: flex; justify-content: space-between; background: var(--bg-pesquisa); padding: 8px 12px; border-radius: 4px; color: var(--text-escuro);">
+            <span><i class="fas fa-barcode"></i> ${cod}</span>
+            <span style="color: var(--chart-rosa); cursor: pointer;" onclick="removerCodigo(${index})"><i class="fas fa-trash"></i></span>
+        </div>`;
+    });
+};
+
+window.removerCodigo = function(index) {
+    codigosBipados.splice(index, 1);
+    atualizarListaCodigos();
+};
+
+window.previewImagem = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-imagem').src = e.target.result;
+            document.getElementById('preview-imagem').style.display = 'block';
+            document.getElementById('icone-imagem').style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    }
+};
+
+// ==========================================
+// 1. CARREGAR E RENDERIZAR TABELA
 // ==========================================
 async function carregarProdutos() {
     const tbody = document.getElementById('tabela-estoque');
     tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Carregando produtos...</td></tr>';
-
     try {
         const resposta = await fetch(urlAPIProdutos);
         listaProdutos = await resposta.json();
-        
-        // Usa a nova função renderizarTabela para desenhar
         renderizarTabela(listaProdutos);
-
     } catch (erro) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar o estoque.</td></tr>';
     }
 }
 
-function abrirModalNovo() {
+// ==========================================
+// 2. CONTROLE DO MODAL 
+// ==========================================
+window.abrirModalNovo = function() {
     document.getElementById('modal-titulo').innerText = "Adicionar Produto";
     document.getElementById('form-produto').reset();
-    document.getElementById('prod-id').value = ""; 
+    document.getElementById('prod-id').value = "";
     
-    // LIMPA A FOTO
+    // Configura layout pra NOVO
+    document.getElementById('container-codigo-barras').style.display = 'none';
+    document.getElementById('btn-proximo').style.display = 'inline-block';
+    document.getElementById('btn-salvar-edicao').style.display = 'none';
+    
+    // Reseta foto e códigos bipados
     document.getElementById('preview-imagem').src = "";
     document.getElementById('preview-imagem').style.display = "none";
     document.getElementById('icone-imagem').style.display = "block";
     document.getElementById('prod-imagem-url').value = "";
     document.getElementById('prod-imagem').value = "";
-
+    
+    codigosBipados = [];
+    atualizarListaCodigos();
+    voltarPasso1();
+    
     document.getElementById('modal-produto').classList.add('active');
-}
-function abrirModalEditar(id) {
+};
+
+window.abrirModalEditar = function(id) {
     const produto = listaProdutos.find(p => p.id === id);
     if (!produto) return;
     document.getElementById('modal-titulo').innerText = "Editar Produto";
     
-    // Preenche os outros inputs
+    // Configura layout pra EDIÇÃO
+    document.getElementById('container-codigo-barras').style.display = 'flex';
+    document.getElementById('btn-proximo').style.display = 'none';
+    document.getElementById('btn-salvar-edicao').style.display = 'inline-block';
+    voltarPasso1(); 
+    
     document.getElementById('prod-id').value = produto.id;
     document.getElementById('prod-nome').value = produto.nome;
     document.getElementById('prod-codigo').value = produto.codigo_barras;
@@ -71,8 +148,7 @@ function abrirModalEditar(id) {
     document.getElementById('prod-em-promocao').value = produto.em_promocao || 0;
     document.getElementById('prod-lote').value = produto.lote || "";
     document.getElementById('prod-validade').value = produto.validade ? produto.validade.split('T')[0] : "";
-
-    // CORREÇÃO: CARREGA A FOTO usando 'produto.foto'
+    
     document.getElementById('prod-imagem-url').value = produto.foto || "";
     if (produto.foto) {
         document.getElementById('preview-imagem').src = produto.foto;
@@ -83,85 +159,94 @@ function abrirModalEditar(id) {
         document.getElementById('preview-imagem').style.display = "none";
         document.getElementById('icone-imagem').style.display = "block";
     }
-
+    
     document.getElementById('modal-produto').classList.add('active');
-}
+};
 
-function fecharModal() {
+window.fecharModal = function() {
     document.getElementById('modal-produto').classList.remove('active');
-}
+};
+
 // ==========================================
-// 3. SALVAR / ATUALIZAR PRODUTO (COM R2)
+// 3. SALVAR PRODUTO(S) NA API
 // ==========================================
 async function salvarProduto(event) {
-    event.preventDefault(); 
-    
+    event.preventDefault();
     const btn = event.submitter;
     const textoOriginal = btn.innerText;
-    btn.innerText = "Salvando imagem...";
+    btn.innerText = "Salvando...";
     btn.disabled = true;
 
     try {
         let imagemUrl = document.getElementById('prod-imagem-url').value;
         const fileInput = document.getElementById('prod-imagem');
-
-        // Se o usuário selecionou uma foto nova, envia para a sua API (Worker -> R2)
+        
+        // --- UPLOAD DA FOTO ---
         if (fileInput.files.length > 0) {
+            btn.innerText = "Enviando Imagem...";
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
-
-            const resUpload = await fetch(urlAPIUpload, { 
-                method: 'POST', 
-                body: formData 
-            });
-
+            const resUpload = await fetch(urlAPIUpload, { method: 'POST', body: formData });
             const dataUpload = await resUpload.json();
             
             if (dataUpload.sucesso && dataUpload.url) {
                 imagemUrl = dataUpload.url;
             } else {
-                throw new Error(dataUpload.erro || "Falha ao enviar imagem para o R2.");
+                throw new Error("Falha no upload da imagem");
             }
         }
-
-        btn.innerText = "Salvando Produto...";
-
+        
+        btn.innerText = "Salvando Banco...";
         const id = document.getElementById('prod-id').value;
-        const isNovo = (id === ""); 
+        const isNovo = (id === "");
+        
+        // TRATAMENTO CONTRA O "ERRO 500" DO BANCO
+        const parseNum = (val) => (!val || val.trim() === "") ? null : Number(val);
+        const parseText = (val) => (!val || val.trim() === "") ? null : val.trim();
 
-        const dados = {
-            nome: document.getElementById('prod-nome').value,
-            codigo_barras: document.getElementById('prod-codigo').value,
-            preco_venda: document.getElementById('prod-preco').value,
-            quantidade: document.getElementById('prod-qtd').value,
-            quantidade_minima: document.getElementById('prod-minimo').value,
+        // Dados base (sem o código de barras, que vai depender de qual modo estamos)
+        const dadosBase = {
+            nome: parseText(document.getElementById('prod-nome').value),
+            preco_venda: parseNum(document.getElementById('prod-preco').value),
+            quantidade: parseNum(document.getElementById('prod-qtd').value),
+            quantidade_minima: parseNum(document.getElementById('prod-minimo').value),
             unidade_venda: document.getElementById('prod-unidade').value,
-            custo: document.getElementById('prod-custo').value,
-            cest: document.getElementById('prod-cest').value,
-            aliquotas_imposto: document.getElementById('prod-imposto').value,
-            ncm: document.getElementById('prod-ncm').value,
-            valor_promocional: document.getElementById('prod-promocional').value,
-            em_promocao: document.getElementById('prod-em-promocao').value,
-            lote: document.getElementById('prod-lote').value,
-            validade: document.getElementById('prod-validade').value,
-            foto: imagemUrl // CORREÇÃO: Enviando sob a chave "foto" conforme esperado pela API
+            custo: parseNum(document.getElementById('prod-custo').value),
+            cest: parseText(document.getElementById('prod-cest').value),
+            aliquotas_imposto: parseNum(document.getElementById('prod-imposto').value),
+            ncm: parseText(document.getElementById('prod-ncm').value),
+            valor_promocional: parseNum(document.getElementById('prod-promocional').value),
+            em_promocao: parseNum(document.getElementById('prod-em-promocao').value),
+            lote: parseText(document.getElementById('prod-lote').value),
+            validade: parseText(document.getElementById('prod-validade').value),
+            foto: imagemUrl
         };
 
-        const url = isNovo ? urlAPIProdutos : `${urlAPIProdutos}/${id}`;
-        const metodo = isNovo ? 'POST' : 'PUT';
-
-        const resposta = await fetch(url, {
-            method: metodo,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dados)
-        });
-
-        if (resposta.ok) {
-            fecharModal();
-            carregarProdutos(); 
+        if (isNovo) {
+            // == MODO LOTE (VARIOS PRODUTOS) ==
+            if (codigosBipados.length === 0) codigosBipados.push(""); // Se não bipou nada, salva um sem código
+            
+            for (let codigo of codigosBipados) {
+                const dadosLote = { ...dadosBase, codigo_barras: parseText(codigo) };
+                await fetch(urlAPIProdutos, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosLote)
+                });
+            }
         } else {
-            alert("Erro ao salvar produto no banco de dados.");
+            // == MODO EDIÇÃO (UM PRODUTO SÓ) ==
+            const dadosUnico = { ...dadosBase, codigo_barras: parseText(document.getElementById('prod-codigo').value) };
+            await fetch(`${urlAPIProdutos}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosUnico)
+            });
         }
+
+        fecharModal();
+        carregarProdutos();
+        
     } catch (erro) {
         alert("Erro no processamento: " + erro.message);
     } finally {
@@ -171,86 +256,56 @@ async function salvarProduto(event) {
 }
 
 // ==========================================
-// 4. EXCLUIR PRODUTO
+// 4. RESTANTE DAS FUNÇÕES ORIGINAIS
 // ==========================================
-async function excluirProduto(id, nomeProduto) {
-    // Estilo "JOptionPane": Pergunta antes de deletar!
-    const confirmacao = confirm(`Tem certeza que deseja excluir o produto "${nomeProduto}"? Essa ação não pode ser desfeita.`);
-    
+window.excluirProduto = async function(id, nomeProduto) {
+    const confirmacao = confirm(`Tem certeza que deseja excluir o produto "${nomeProduto}"?`);
     if (confirmacao) {
         try {
             const resposta = await fetch(`${urlAPIProdutos}/${id}`, { method: 'DELETE' });
-            if (resposta.ok) {
-                carregarProdutos(); // Atualiza a tabela após sumir com ele
-            } else {
-                alert("Erro ao excluir produto.");
-            }
+            if (resposta.ok) carregarProdutos();
+            else alert("Erro ao excluir produto.");
         } catch (erro) {
             alert("Erro de conexão com a API.");
         }
     }
-}
+};
 
-// ==========================================
-// 5. PROTEÇÃO DE PERMISSÕES RE-APLICADA
-// ==========================================
 function ocultarBotoesSeRepositor() {
     const nivel = parseInt(localStorage.getItem('tpace_usuario_nivel'));
     if (nivel === 5) {
-        const tdAcoes = document.querySelectorAll('.action-links, .action-links-mobile');
-        tdAcoes.forEach(td => td.style.display = 'none');
+        document.querySelectorAll('.action-links, .action-links-mobile').forEach(td => td.style.display = 'none');
     }
 }
 
-// ==========================================
-// 6. PESQUISA EM TEMPO REAL (DEBOUNCE)
-// ==========================================
 const inputPesquisa = document.getElementById('inputPesquisa');
 let debounceTimer;
-
 if (inputPesquisa) {
     inputPesquisa.addEventListener('input', (evento) => {
         clearTimeout(debounceTimer);
-        const termo = evento.target.value.trim().toLowerCase();
-
-        // Aguarda 300ms após o usuário parar de digitar
-        debounceTimer = setTimeout(() => {
-            filtrarTabela(termo);
-        }, 300);
+        debounceTimer = setTimeout(() => filtrarTabela(evento.target.value.trim().toLowerCase()), 300);
     });
 }
 
-// Filtro Local Rápido
 function filtrarTabela(termo) {
-    if (!termo) {
-        renderizarTabela(listaProdutos);
-        return;
-    }
-
-    const produtosFiltrados = listaProdutos.filter(prod => {
+    if (!termo) return renderizarTabela(listaProdutos);
+    const filtrados = listaProdutos.filter(prod => {
         const nome = (prod.nome || "").toLowerCase();
         const codigo = (prod.codigo_barras || "").toLowerCase();
         return nome.includes(termo) || codigo.includes(termo);
     });
-
-    renderizarTabela(produtosFiltrados);
+    renderizarTabela(filtrados);
 }
 
-// ==========================================
-// 7. RENDERIZAR TABELA COM SANFONA (MOBILE)
-// ==========================================
 function renderizarTabela(produtos) {
     const tbody = document.getElementById('tabela-estoque');
     tbody.innerHTML = '';
-
     if (!produtos || produtos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum produto encontrado.</td></tr>';
         return;
     }
-
     produtos.forEach(prod => {
-        let classeBadge = '';
-        let textoStatus = '';
+        let classeBadge = '', textoStatus = '';
         const qtd = parseFloat(prod.quantidade) || 0;
         const min = parseFloat(prod.quantidade_minima) || 1;
         
@@ -262,19 +317,13 @@ function renderizarTabela(produtos) {
 
         let precoFinal = parseFloat(prod.preco_venda) || 0;
         let isPromocao = (prod.em_promocao == 1 || prod.em_promocao === '1' || prod.em_promocao === true);
-        
-        if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) {
-            precoFinal = parseFloat(prod.valor_promocional);
-        }
-
+        if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) precoFinal = parseFloat(prod.valor_promocional);
         const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        
-        let conteudoPreco = isPromocao ? `<span class="promo-badge" title="Preço Promocional">${precoFormatado}</span>` : precoFormatado;
+        let conteudoPreco = isPromocao ? `<span class="promo-badge">${precoFormatado}</span>` : precoFormatado;
 
-        // LINHA 1: LINHA PRINCIPAL (Visível sempre)
         const trPrincipal = document.createElement('tr');
         trPrincipal.className = "linha-produto";
-        trPrincipal.onclick = () => toggleDetalhesEstoque(prod.id); // O clique na linha aciona a sanfona!
+        trPrincipal.onclick = () => toggleDetalhesEstoque(prod.id); 
         trPrincipal.innerHTML = `
             <td>${prod.codigo_barras || 'N/A'}</td>
             <td>${prod.nome}</td>
@@ -286,18 +335,15 @@ function renderizarTabela(produtos) {
                 <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalEditar(${prod.id})">Editar</button>
                 <button class="btn-action btn-delete" onclick="event.stopPropagation(); excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
             </td>
-            <td class="td-seta">
-                <i class="fas fa-chevron-down seta-tabela" id="seta-${prod.id}"></i>
-            </td>
+            <td class="td-seta"><i class="fas fa-chevron-down seta-tabela" id="seta-${prod.id}"></i></td>
         `;
         tbody.appendChild(trPrincipal);
 
-        // LINHA 2: LINHA DE DETALHES FANTASMA (Só Mobile)
         const trDetalhes = document.createElement('tr');
         trDetalhes.id = `detalhes-${prod.id}`;
         trDetalhes.className = 'detalhes-row';
         trDetalhes.innerHTML = `
-            <td colspan="3"> <!-- Ocupa as 3 colunas do celular: Código, Nome e Seta -->
+            <td colspan="3">
                 <div class="detalhes-content">
                     <div class="detalhe-item"><b>Quantidade:</b> <span>${qtd} ${prod.unidade_venda}</span></div>
                     <div class="detalhe-item"><b>Preço:</b> <span>${conteudoPreco}</span></div>
@@ -311,41 +357,14 @@ function renderizarTabela(produtos) {
         `;
         tbody.appendChild(trDetalhes);
     });
-
     ocultarBotoesSeRepositor();
 }
 
-// Função que abre a sanfona de detalhes da tabela no celular
 window.toggleDetalhesEstoque = function(id) {
     const linha = document.getElementById(`detalhes-${id}`);
     const seta = document.getElementById(`seta-${id}`);
-    
     if (linha && seta) {
         linha.classList.toggle('open');
         seta.classList.toggle('ativa');
-    }
-};
-
-// Função que abre a sanfona de detalhes da tabela no celular
-window.toggleDetalhesEstoque = function(id) {
-    const linha = document.getElementById(`detalhes-${id}`);
-    const seta = document.getElementById(`seta-${id}`);
-    
-    if (linha && seta) {
-        linha.classList.toggle('open');
-        seta.classList.toggle('ativa');
-    }
-};
-
-window.previewImagem = function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('preview-imagem').src = e.target.result;
-            document.getElementById('preview-imagem').style.display = 'block';
-            document.getElementById('icone-imagem').style.display = 'none';
-        }
-        reader.readAsDataURL(file);
     }
 };
