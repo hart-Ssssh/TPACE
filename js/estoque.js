@@ -1,14 +1,13 @@
 const urlAPIProdutos = "https://tpace-api.whyguiih.workers.dev/api/web/produtos";
 const urlAPIUpload = "https://tpace-api.whyguiih.workers.dev/api/web/upload";
 let listaProdutos = [];
-let codigosBipados = []; // NOSSA VARIÁVEL GLOBAL SALVADORA!
+let codigosBipados = []; 
 
 document.addEventListener("DOMContentLoaded", function() {
     carregarProdutos();
     
     document.getElementById('form-produto').addEventListener('submit', salvarProduto);
     
-    // Evita enviar o form sem querer ao dar Enter no código da edição
     const inputCodigoOriginal = document.getElementById('prod-codigo');
     if(inputCodigoOriginal) {
         inputCodigoOriginal.addEventListener('keydown', function(event) {
@@ -16,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // O Input do Passo 2 (Bipar Vários)
     const inputBipar = document.getElementById('input-bipar');
     if (inputBipar) {
         inputBipar.addEventListener('keydown', function(event) {
@@ -26,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (codigo && !codigosBipados.includes(codigo)) {
                     codigosBipados.push(codigo);
                     atualizarListaCodigos();
-                    this.value = ''; // Limpa pra bipar o próximo
+                    this.value = ''; 
                 }
             }
         });
@@ -38,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // ==========================================
 window.irParaPasso2 = function() {
     const form = document.getElementById('form-produto');
-    if (!form.reportValidity()) return; // Barra se faltar campo obrigatório!
+    if (!form.reportValidity()) return; 
     
     document.getElementById('passo-1').style.display = 'none';
     document.getElementById('passo-2').style.display = 'block';
@@ -80,8 +78,16 @@ window.previewImagem = function(event) {
     }
 };
 
+function gerarCodigoGeral() {
+    let codigo = '';
+    for (let i = 0; i < 13; i++) {
+        codigo += Math.floor(Math.random() * 10);
+    }
+    return codigo;
+}
+
 // ==========================================
-// 1. CARREGAR E RENDERIZAR TABELA
+// 1. CARREGAR E RENDERIZAR TABELA (AGRUPADA)
 // ==========================================
 async function carregarProdutos() {
     const tbody = document.getElementById('tabela-estoque');
@@ -98,21 +104,12 @@ async function carregarProdutos() {
 // ==========================================
 // 2. CONTROLE DO MODAL 
 // ==========================================
-// Gera um código numérico aleatório de exatos 13 dígitos
-function gerarCodigoGeral() {
-    let codigo = '';
-    for (let i = 0; i < 13; i++) {
-        codigo += Math.floor(Math.random() * 10);
-    }
-    return codigo;
-}
-
 window.abrirModalNovo = function() {
     document.getElementById('modal-titulo').innerText = "Adicionar Produto";
     document.getElementById('form-produto').reset();
     document.getElementById('prod-id').value = "";
     
-    // GERA O CÓDIGO GERAL PARA O LOTE NESTE MOMENTO
+    // GERA O CÓDIGO GERAL PARA O NOVO LOTE
     document.getElementById('prod-codigo-geral').value = gerarCodigoGeral();
     
     document.getElementById('container-codigo-barras').style.display = 'none';
@@ -132,39 +129,52 @@ window.abrirModalNovo = function() {
     document.getElementById('modal-produto').classList.add('active');
 };
 
-window.abrirModalEditar = function(id) {
-    const produto = listaProdutos.find(p => p.id === id);
-    if (!produto) return;
+// Agora a função recebe a CHAVE do grupo em vez de um único ID
+window.abrirModalEditar = function(chave_grupo) {
+    // Filtra todos os itens que pertencem a este grupo (mesmo codigo_geral ou mesmo id se for solto)
+    const itensDoGrupo = listaProdutos.filter(p => {
+        const c = p.codigo_geral ? `geral_${p.codigo_geral}` : `id_${p.id}`;
+        return c === chave_grupo;
+    });
+    
+    if (itensDoGrupo.length === 0) return;
+    const produtoBase = itensDoGrupo[0]; // Usamos o primeiro item como base para preencher o formulário
+    
     document.getElementById('modal-titulo').innerText = "Editar Produto";
     
-    document.getElementById('container-codigo-barras').style.display = 'flex';
+    // Se tiver mais de 1 item no grupo, escondemos o input de código de barras para não sobrescrever
+    if (itensDoGrupo.length > 1) {
+        document.getElementById('container-codigo-barras').style.display = 'none';
+    } else {
+        document.getElementById('container-codigo-barras').style.display = 'flex';
+    }
+    
     document.getElementById('btn-proximo').style.display = 'none';
     document.getElementById('btn-salvar-edicao').style.display = 'inline-block';
     voltarPasso1(); 
     
-    document.getElementById('prod-id').value = produto.id;
+    // Salvamos a lista de IDs como um Array (texto JSON) no input oculto
+    document.getElementById('prod-id').value = JSON.stringify(itensDoGrupo.map(i => i.id));
     
-    // PRESERVA O CÓDIGO GERAL EXISTENTE (se não houver, deixa vazio)
-    document.getElementById('prod-codigo-geral').value = produto.codigo_geral || "";
+    document.getElementById('prod-codigo-geral').value = produtoBase.codigo_geral || "";
+    document.getElementById('prod-nome').value = produtoBase.nome;
+    document.getElementById('prod-codigo').value = produtoBase.codigo_barras || "";
+    document.getElementById('prod-preco').value = produtoBase.preco_venda;
+    document.getElementById('prod-qtd').value = produtoBase.quantidade;
+    document.getElementById('prod-minimo').value = produtoBase.quantidade_minima;
+    document.getElementById('prod-unidade').value = produtoBase.unidade_venda;
+    document.getElementById('prod-custo').value = produtoBase.custo || "";
+    document.getElementById('prod-cest').value = produtoBase.cest || "";
+    document.getElementById('prod-imposto').value = produtoBase.aliquotas_imposto || "";
+    document.getElementById('prod-ncm').value = produtoBase.ncm || "";
+    document.getElementById('prod-promocional').value = produtoBase.valor_promocional || "";
+    document.getElementById('prod-em-promocao').value = produtoBase.em_promocao || 0;
+    document.getElementById('prod-lote').value = produtoBase.lote || "";
+    document.getElementById('prod-validade').value = produtoBase.validade ? produtoBase.validade.split('T')[0] : "";
     
-    document.getElementById('prod-nome').value = produto.nome;
-    document.getElementById('prod-codigo').value = produto.codigo_barras;
-    document.getElementById('prod-preco').value = produto.preco_venda;
-    document.getElementById('prod-qtd').value = produto.quantidade;
-    document.getElementById('prod-minimo').value = produto.quantidade_minima;
-    document.getElementById('prod-unidade').value = produto.unidade_venda;
-    document.getElementById('prod-custo').value = produto.custo || "";
-    document.getElementById('prod-cest').value = produto.cest || "";
-    document.getElementById('prod-imposto').value = produto.aliquotas_imposto || "";
-    document.getElementById('prod-ncm').value = produto.ncm || "";
-    document.getElementById('prod-promocional').value = produto.valor_promocional || "";
-    document.getElementById('prod-em-promocao').value = produto.em_promocao || 0;
-    document.getElementById('prod-lote').value = produto.lote || "";
-    document.getElementById('prod-validade').value = produto.validade ? produto.validade.split('T')[0] : "";
-    
-    document.getElementById('prod-imagem-url').value = produto.foto || "";
-    if (produto.foto) {
-        document.getElementById('preview-imagem').src = produto.foto;
+    document.getElementById('prod-imagem-url').value = produtoBase.foto || "";
+    if (produtoBase.foto) {
+        document.getElementById('preview-imagem').src = produtoBase.foto;
         document.getElementById('preview-imagem').style.display = "block";
         document.getElementById('icone-imagem').style.display = "none";
     } else {
@@ -174,13 +184,14 @@ window.abrirModalEditar = function(id) {
     }
     
     document.getElementById('modal-produto').classList.add('active');
-}
+};
+
 window.fecharModal = function() {
     document.getElementById('modal-produto').classList.remove('active');
 };
 
 // ==========================================
-// 3. SALVAR PRODUTO(S) NA API
+// 3. SALVAR (CRIAÇÃO OU ATUALIZAÇÃO EM LOTE)
 // ==========================================
 async function salvarProduto(event) {
     event.preventDefault();
@@ -209,14 +220,12 @@ async function salvarProduto(event) {
         }
         
         btn.innerText = "Salvando Banco...";
-        const id = document.getElementById('prod-id').value;
-        const isNovo = (id === "");
+        const idValue = document.getElementById('prod-id').value;
+        const isNovo = (idValue === "");
         
-        // TRATAMENTO CONTRA O "ERRO 500" DO BANCO
         const parseNum = (val) => (!val || val.trim() === "") ? null : Number(val);
         const parseText = (val) => (!val || val.trim() === "") ? null : val.trim();
 
-        // Dados base (sem o código de barras, que vai depender de qual modo estamos)
         const dadosBase = {
             nome: parseText(document.getElementById('prod-nome').value),
             codigo_geral: parseText(document.getElementById('prod-codigo-geral').value),
@@ -236,25 +245,38 @@ async function salvarProduto(event) {
         };
 
         if (isNovo) {
-            // == MODO LOTE (VARIOS PRODUTOS) ==
-            if (codigosBipados.length === 0) codigosBipados.push(""); // Se não bipou nada, salva um sem código
+            // == MODO LOTE NOVO ==
+            if (codigosBipados.length === 0) codigosBipados.push(""); 
             
-            for (let codigo of codigosBipados) {
+            // Promise.all executa todos os envios juntos de uma vez, muito mais rápido!
+            const promessas = codigosBipados.map(codigo => {
                 const dadosLote = { ...dadosBase, codigo_barras: parseText(codigo) };
-                await fetch(urlAPIProdutos, {
+                return fetch(urlAPIProdutos, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dadosLote)
                 });
-            }
-        } else {
-            // == MODO EDIÇÃO (UM PRODUTO SÓ) ==
-            const dadosUnico = { ...dadosBase, codigo_barras: parseText(document.getElementById('prod-codigo').value) };
-            await fetch(`${urlAPIProdutos}/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dadosUnico)
             });
+            await Promise.all(promessas);
+
+        } else {
+            // == MODO EDIÇÃO (ÚNICO OU LOTE) ==
+            const idsArray = JSON.parse(idValue); // Transforma o texto de volta num array de IDs
+            
+            const promessas = idsArray.map(id => {
+                const original = listaProdutos.find(p => p.id === id);
+                // Mantém o código de barras original do item, apenas atualiza o resto
+                const dadosAtualizados = { 
+                    ...dadosBase, 
+                    codigo_barras: original ? original.codigo_barras : null 
+                };
+                return fetch(`${urlAPIProdutos}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosAtualizados)
+                });
+            });
+            await Promise.all(promessas);
         }
 
         fecharModal();
@@ -269,17 +291,25 @@ async function salvarProduto(event) {
 }
 
 // ==========================================
-// 4. RESTANTE DAS FUNÇÕES ORIGINAIS
+// 4. EXCLUIR PRODUTO(S) AGRUPADO(S)
 // ==========================================
-window.excluirProduto = async function(id, nomeProduto) {
-    const confirmacao = confirm(`Tem certeza que deseja excluir o produto "${nomeProduto}"?`);
+window.excluirProduto = async function(chave_grupo, nomeProduto) {
+    const confirmacao = confirm(`Tem certeza que deseja excluir "${nomeProduto}"? Isso apagará todas as unidades vinculadas.`);
     if (confirmacao) {
         try {
-            const resposta = await fetch(`${urlAPIProdutos}/${id}`, { method: 'DELETE' });
-            if (resposta.ok) carregarProdutos();
-            else alert("Erro ao excluir produto.");
+            // Encontra todos os IDs vinculados a essa chave
+            const itens = listaProdutos.filter(p => {
+                const c = p.codigo_geral ? `geral_${p.codigo_geral}` : `id_${p.id}`;
+                return c === chave_grupo;
+            });
+            
+            // Deleta todos juntos
+            const promessas = itens.map(item => fetch(`${urlAPIProdutos}/${item.id}`, { method: 'DELETE' }));
+            await Promise.all(promessas);
+            
+            carregarProdutos();
         } catch (erro) {
-            alert("Erro de conexão com a API.");
+            alert("Erro de conexão ao excluir produtos.");
         }
     }
 };
@@ -305,7 +335,8 @@ function filtrarTabela(termo) {
     const filtrados = listaProdutos.filter(prod => {
         const nome = (prod.nome || "").toLowerCase();
         const codigo = (prod.codigo_barras || "").toLowerCase();
-        return nome.includes(termo) || codigo.includes(termo);
+        const geral = (prod.codigo_geral || "").toLowerCase();
+        return nome.includes(termo) || codigo.includes(termo) || geral.includes(termo);
     });
     renderizarTabela(filtrados);
 }
@@ -313,14 +344,37 @@ function filtrarTabela(termo) {
 function renderizarTabela(produtos) {
     const tbody = document.getElementById('tabela-estoque');
     tbody.innerHTML = '';
+    
     if (!produtos || produtos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum produto encontrado.</td></tr>';
         return;
     }
+
+    // A MÁGICA DO AGRUPAMENTO (SEM SOMAR QUANTIDADES)
+    const grupos = {};
     produtos.forEach(prod => {
+        const chave = prod.codigo_geral ? `geral_${prod.codigo_geral}` : `id_${prod.id}`;
+        if (!grupos[chave]) {
+            // Guarda o produto como base (molde) para o grupo inteiro
+            grupos[chave] = { 
+                ...prod, 
+                chave_grupo: chave,
+                ids: [prod.id]
+            };
+        } else {
+            // Apenas adiciona o ID novo na lista, mas mantém as informações do molde intactas
+            grupos[chave].ids.push(prod.id);
+        }
+    });
+
+    const produtosAgrupados = Object.values(grupos);
+
+    produtosAgrupados.forEach(grupo => {
         let classeBadge = '', textoStatus = '';
-        const qtd = parseFloat(prod.quantidade) || 0;
-        const min = parseFloat(prod.quantidade_minima) || 1;
+        
+        // Agora pegamos a quantidade exata do molde, sem multiplicar nada!
+        const qtd = parseFloat(grupo.quantidade) || 0; 
+        const min = parseFloat(grupo.quantidade_minima) || 1; 
         
         if (qtd < min) { classeBadge = 'status-critical'; textoStatus = 'Crítico'; } 
         else if (qtd === min) { classeBadge = 'status-warning'; textoStatus = 'Alerta'; } 
@@ -328,56 +382,67 @@ function renderizarTabela(produtos) {
         else if (qtd <= (min * 4)) { classeBadge = 'status-medium'; textoStatus = 'Médio'; } 
         else { classeBadge = 'status-good'; textoStatus = 'Bom'; }
 
-        let precoFinal = parseFloat(prod.preco_venda) || 0;
-        let isPromocao = (prod.em_promocao == 1 || prod.em_promocao === '1' || prod.em_promocao === true);
-        if (isPromocao && prod.valor_promocional && parseFloat(prod.valor_promocional) > 0) precoFinal = parseFloat(prod.valor_promocional);
+        let precoFinal = parseFloat(grupo.preco_venda) || 0;
+        let isPromocao = (grupo.em_promocao == 1 || grupo.em_promocao === '1' || grupo.em_promocao === true);
+        
+        if (isPromocao && grupo.valor_promocional && parseFloat(grupo.valor_promocional) > 0) {
+            precoFinal = parseFloat(grupo.valor_promocional);
+        }
+        
         const precoFormatado = precoFinal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         let conteudoPreco = isPromocao ? `<span class="promo-badge">${precoFormatado}</span>` : precoFormatado;
 
+        // Se for lote, mostra "Múltiplos", senão mostra o código normal
+        let textoCodigo = grupo.codigo_barras || 'N/A';
+        if (grupo.ids.length > 1) {
+            textoCodigo = `<i class="fas fa-layer-group" style="color: var(--text-secundario); margin-right: 5px;"></i>Múltiplos (${grupo.ids.length})`;
+        }
+
         const trPrincipal = document.createElement('tr');
         trPrincipal.className = "linha-produto";
-        trPrincipal.onclick = () => toggleDetalhesEstoque(prod.id); 
+        trPrincipal.onclick = () => toggleDetalhesEstoque(grupo.chave_grupo); 
         trPrincipal.innerHTML = `
-            <td>${prod.codigo_barras || 'N/A'}</td>
-            <td>${prod.nome}</td>
+            <td>${textoCodigo}</td>
+            <td>${grupo.nome}</td>
             <td class="col-desktop">Geral</td>
-            <td class="col-desktop">${qtd} ${prod.unidade_venda}</td>
+            <td class="col-desktop">${qtd} ${grupo.unidade_venda}</td>
             <td class="col-desktop">${conteudoPreco}</td>
             <td class="col-desktop"><span class="status-badge ${classeBadge}">${textoStatus}</span></td>
             <td class="col-desktop action-links">
-                <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalEditar(${prod.id})">Editar</button>
-                <button class="btn-action btn-delete" onclick="event.stopPropagation(); excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+                <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalEditar('${grupo.chave_grupo}')">Editar</button>
+                <button class="btn-action btn-delete" onclick="event.stopPropagation(); excluirProduto('${grupo.chave_grupo}', '${grupo.nome}')">Excluir</button>
             </td>
-            <td class="td-seta"><i class="fas fa-chevron-down seta-tabela" id="seta-${prod.id}"></i></td>
+            <td class="td-seta"><i class="fas fa-chevron-down seta-tabela" id="seta-${grupo.chave_grupo}"></i></td>
         `;
         tbody.appendChild(trPrincipal);
 
         const trDetalhes = document.createElement('tr');
-        trDetalhes.id = `detalhes-${prod.id}`;
+        trDetalhes.id = `detalhes-${grupo.chave_grupo}`;
         trDetalhes.className = 'detalhes-row';
         trDetalhes.innerHTML = `
             <td colspan="3">
                 <div class="detalhes-content">
-                    <div class="detalhe-item"><b>Quantidade:</b> <span>${qtd} ${prod.unidade_venda}</span></div>
+                    <div class="detalhe-item"><b>Quantidade:</b> <span>${qtd} ${grupo.unidade_venda}</span></div>
                     <div class="detalhe-item"><b>Preço:</b> <span>${conteudoPreco}</span></div>
                     <div class="detalhe-item"><b>Status:</b> <span class="status-badge ${classeBadge}">${textoStatus}</span></div>
                     <div class="detalhes-acoes action-links-mobile">
-                        <button class="btn-action btn-edit" onclick="abrirModalEditar(${prod.id})">Editar</button>
-                        <button class="btn-action btn-delete" onclick="excluirProduto(${prod.id}, '${prod.nome}')">Excluir</button>
+                        <button class="btn-action btn-edit" onclick="abrirModalEditar('${grupo.chave_grupo}')">Editar</button>
+                        <button class="btn-action btn-delete" onclick="excluirProduto('${grupo.chave_grupo}', '${grupo.nome}')">Excluir</button>
                     </div>
                 </div>
             </td>
         `;
         tbody.appendChild(trDetalhes);
     });
+    
     ocultarBotoesSeRepositor();
 }
 
-window.toggleDetalhesEstoque = function(id) {
-    const linha = document.getElementById(`detalhes-${id}`);
-    const seta = document.getElementById(`seta-${id}`);
+window.toggleDetalhesEstoque = function(chave) {
+    const linha = document.getElementById(`detalhes-${chave}`);
+    const seta = document.getElementById(`seta-${chave}`);
     if (linha && seta) {
         linha.classList.toggle('open');
         seta.classList.toggle('ativa');
     }
-}
+};
