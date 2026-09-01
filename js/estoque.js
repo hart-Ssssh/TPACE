@@ -98,17 +98,27 @@ async function carregarProdutos() {
 // ==========================================
 // 2. CONTROLE DO MODAL 
 // ==========================================
+// Gera um código numérico aleatório de exatos 13 dígitos
+function gerarCodigoGeral() {
+    let codigo = '';
+    for (let i = 0; i < 13; i++) {
+        codigo += Math.floor(Math.random() * 10);
+    }
+    return codigo;
+}
+
 window.abrirModalNovo = function() {
     document.getElementById('modal-titulo').innerText = "Adicionar Produto";
     document.getElementById('form-produto').reset();
     document.getElementById('prod-id').value = "";
     
-    // Configura layout pra NOVO
+    // GERA O CÓDIGO GERAL PARA O LOTE NESTE MOMENTO
+    document.getElementById('prod-codigo-geral').value = gerarCodigoGeral();
+    
     document.getElementById('container-codigo-barras').style.display = 'none';
     document.getElementById('btn-proximo').style.display = 'inline-block';
     document.getElementById('btn-salvar-edicao').style.display = 'none';
     
-    // Reseta foto e códigos bipados
     document.getElementById('preview-imagem').src = "";
     document.getElementById('preview-imagem').style.display = "none";
     document.getElementById('icone-imagem').style.display = "block";
@@ -127,13 +137,16 @@ window.abrirModalEditar = function(id) {
     if (!produto) return;
     document.getElementById('modal-titulo').innerText = "Editar Produto";
     
-    // Configura layout pra EDIÇÃO
     document.getElementById('container-codigo-barras').style.display = 'flex';
     document.getElementById('btn-proximo').style.display = 'none';
     document.getElementById('btn-salvar-edicao').style.display = 'inline-block';
     voltarPasso1(); 
     
     document.getElementById('prod-id').value = produto.id;
+    
+    // PRESERVA O CÓDIGO GERAL EXISTENTE (se não houver, deixa vazio)
+    document.getElementById('prod-codigo-geral').value = produto.codigo_geral || "";
+    
     document.getElementById('prod-nome').value = produto.nome;
     document.getElementById('prod-codigo').value = produto.codigo_barras;
     document.getElementById('prod-preco').value = produto.preco_venda;
@@ -161,8 +174,7 @@ window.abrirModalEditar = function(id) {
     }
     
     document.getElementById('modal-produto').classList.add('active');
-};
-
+}
 window.fecharModal = function() {
     document.getElementById('modal-produto').classList.remove('active');
 };
@@ -207,6 +219,7 @@ async function salvarProduto(event) {
         // Dados base (sem o código de barras, que vai depender de qual modo estamos)
         const dadosBase = {
             nome: parseText(document.getElementById('prod-nome').value),
+            codigo_geral: parseText(document.getElementById('prod-codigo-geral').value),
             preco_venda: parseNum(document.getElementById('prod-preco').value),
             quantidade: parseNum(document.getElementById('prod-qtd').value),
             quantidade_minima: parseNum(document.getElementById('prod-minimo').value),
@@ -367,4 +380,4 @@ window.toggleDetalhesEstoque = function(id) {
         linha.classList.toggle('open');
         seta.classList.toggle('ativa');
     }
-};
+}
