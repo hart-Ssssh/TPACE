@@ -1,5 +1,6 @@
-// ATENÇÃO: Verifique se essa é a URL correta do seu Worker
+// Substitua o bloco do Cloudinary no topo por isso:
 const urlAPIProdutos = "https://tpace-api.whyguiih.workers.dev/api/web/produtos";
+const urlAPIUpload = "https://tpace-api.whyguiih.workers.dev/api/web/upload";
 
 // Variável global para guardar a lista de produtos na memória e facilitar a edição
 let listaProdutos = [];
@@ -35,24 +36,26 @@ async function carregarProdutos() {
     }
 }
 
-// ==========================================
-// 2. CONTROLE DA JANELA MODAL
-// ==========================================
 function abrirModalNovo() {
     document.getElementById('modal-titulo').innerText = "Adicionar Produto";
     document.getElementById('form-produto').reset();
-    document.getElementById('prod-id').value = ""; // Limpa o ID (indica que é novo)
+    document.getElementById('prod-id').value = ""; 
+    
+    // LIMPA A FOTO
+    document.getElementById('preview-imagem').src = "";
+    document.getElementById('preview-imagem').style.display = "none";
+    document.getElementById('icone-imagem').style.display = "block";
+    document.getElementById('prod-imagem-url').value = "";
+    document.getElementById('prod-imagem').value = "";
+
     document.getElementById('modal-produto').classList.add('active');
 }
-
 function abrirModalEditar(id) {
-    // Busca o produto na nossa memória pelo ID
     const produto = listaProdutos.find(p => p.id === id);
     if (!produto) return;
-
     document.getElementById('modal-titulo').innerText = "Editar Produto";
     
-    // Preenche o formulário
+    // Preenche os outros inputs
     document.getElementById('prod-id').value = produto.id;
     document.getElementById('prod-nome').value = produto.nome;
     document.getElementById('prod-codigo').value = produto.codigo_barras;
@@ -67,44 +70,83 @@ function abrirModalEditar(id) {
     document.getElementById('prod-promocional').value = produto.valor_promocional || "";
     document.getElementById('prod-em-promocao').value = produto.em_promocao || 0;
     document.getElementById('prod-lote').value = produto.lote || "";
-    // Validade vem do banco, garantir que corte a hora se houver
     document.getElementById('prod-validade').value = produto.validade ? produto.validade.split('T')[0] : "";
 
-    // Mostra a janela
+    // CORREÇÃO: CARREGA A FOTO usando 'produto.foto'
+    document.getElementById('prod-imagem-url').value = produto.foto || "";
+    if (produto.foto) {
+        document.getElementById('preview-imagem').src = produto.foto;
+        document.getElementById('preview-imagem').style.display = "block";
+        document.getElementById('icone-imagem').style.display = "none";
+    } else {
+        document.getElementById('preview-imagem').src = "";
+        document.getElementById('preview-imagem').style.display = "none";
+        document.getElementById('icone-imagem').style.display = "block";
+    }
+
     document.getElementById('modal-produto').classList.add('active');
 }
 
 function fecharModal() {
     document.getElementById('modal-produto').classList.remove('active');
 }
-
 // ==========================================
-// 3. SALVAR / ATUALIZAR PRODUTO
+// 3. SALVAR / ATUALIZAR PRODUTO (COM R2)
 // ==========================================
 async function salvarProduto(event) {
-    event.preventDefault(); // Evita que a página recarregue
-
-    const id = document.getElementById('prod-id').value;
-    const isNovo = (id === ""); // Se não tem ID, estamos criando um novo
-
-    const dados = {
-        nome: document.getElementById('prod-nome').value,
-        codigo_barras: document.getElementById('prod-codigo').value,
-        preco_venda: document.getElementById('prod-preco').value,
-        quantidade: document.getElementById('prod-qtd').value,
-        quantidade_minima: document.getElementById('prod-minimo').value,
-        unidade_venda: document.getElementById('prod-unidade').value,
-        custo: document.getElementById('prod-custo').value,
-        cest: document.getElementById('prod-cest').value,
-        aliquotas_imposto: document.getElementById('prod-imposto').value,
-        ncm: document.getElementById('prod-ncm').value,
-        valor_promocional: document.getElementById('prod-promocional').value,
-        em_promocao: document.getElementById('prod-em-promocao').value,
-        lote: document.getElementById('prod-lote').value,
-        validade: document.getElementById('prod-validade').value
-    };
+    event.preventDefault(); 
+    
+    const btn = event.submitter;
+    const textoOriginal = btn.innerText;
+    btn.innerText = "Salvando imagem...";
+    btn.disabled = true;
 
     try {
+        let imagemUrl = document.getElementById('prod-imagem-url').value;
+        const fileInput = document.getElementById('prod-imagem');
+
+        // Se o usuário selecionou uma foto nova, envia para a sua API (Worker -> R2)
+        if (fileInput.files.length > 0) {
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const resUpload = await fetch(urlAPIUpload, { 
+                method: 'POST', 
+                body: formData 
+            });
+
+            const dataUpload = await resUpload.json();
+            
+            if (dataUpload.sucesso && dataUpload.url) {
+                imagemUrl = dataUpload.url;
+            } else {
+                throw new Error(dataUpload.erro || "Falha ao enviar imagem para o R2.");
+            }
+        }
+
+        btn.innerText = "Salvando Produto...";
+
+        const id = document.getElementById('prod-id').value;
+        const isNovo = (id === ""); 
+
+        const dados = {
+            nome: document.getElementById('prod-nome').value,
+            codigo_barras: document.getElementById('prod-codigo').value,
+            preco_venda: document.getElementById('prod-preco').value,
+            quantidade: document.getElementById('prod-qtd').value,
+            quantidade_minima: document.getElementById('prod-minimo').value,
+            unidade_venda: document.getElementById('prod-unidade').value,
+            custo: document.getElementById('prod-custo').value,
+            cest: document.getElementById('prod-cest').value,
+            aliquotas_imposto: document.getElementById('prod-imposto').value,
+            ncm: document.getElementById('prod-ncm').value,
+            valor_promocional: document.getElementById('prod-promocional').value,
+            em_promocao: document.getElementById('prod-em-promocao').value,
+            lote: document.getElementById('prod-lote').value,
+            validade: document.getElementById('prod-validade').value,
+            foto: imagemUrl // CORREÇÃO: Enviando sob a chave "foto" conforme esperado pela API
+        };
+
         const url = isNovo ? urlAPIProdutos : `${urlAPIProdutos}/${id}`;
         const metodo = isNovo ? 'POST' : 'PUT';
 
@@ -116,12 +158,15 @@ async function salvarProduto(event) {
 
         if (resposta.ok) {
             fecharModal();
-            carregarProdutos(); // Recarrega a tabela para mostrar o novo produto
+            carregarProdutos(); 
         } else {
             alert("Erro ao salvar produto no banco de dados.");
         }
     } catch (erro) {
-        alert("Erro de conexão com a API.");
+        alert("Erro no processamento: " + erro.message);
+    } finally {
+        btn.innerText = textoOriginal;
+        btn.disabled = false;
     }
 }
 
@@ -289,5 +334,18 @@ window.toggleDetalhesEstoque = function(id) {
     if (linha && seta) {
         linha.classList.toggle('open');
         seta.classList.toggle('ativa');
+    }
+};
+
+window.previewImagem = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-imagem').src = e.target.result;
+            document.getElementById('preview-imagem').style.display = 'block';
+            document.getElementById('icone-imagem').style.display = 'none';
+        }
+        reader.readAsDataURL(file);
     }
 };
