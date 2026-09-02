@@ -113,7 +113,7 @@ async function carregarFuncionarios() {
 function renderizarTabela(funcionarios) {
     const tbody = document.getElementById('tabela-funcionarios');
     tbody.innerHTML = '';
-
+    
     if(funcionarios.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum funcionário encontrado.</td></tr>';
         return;
@@ -122,24 +122,64 @@ function renderizarTabela(funcionarios) {
     funcionarios.forEach(func => {
         const tipoContrato = traduzir(DICIONARIOS.tipo_contrato, func.tipo);
         const statusBadge = (func.status == 1 || func.status === 'Ativo' || func.status === true) ? '<span class="status-badge status-good">Ativo</span>' : '<span class="status-badge status-critical">Inativo</span>';
+        
+        // --- 1. LINHA PRINCIPAL ---
+        const trPrincipal = document.createElement('tr');
+        trPrincipal.className = "linha-produto"; // Reaproveitando o CSS do Estoque (cursor pointer)
+        trPrincipal.onclick = (event) => {
+            // Só abre a sanfona se não clicar no Nome (que abre outra tela) nem no botão Editar
+            if (!event.target.classList.contains('clickable-name') && !event.target.classList.contains('btn-action')) {
+                toggleDetalhesUsuario(func.id);
+            }
+        };
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        trPrincipal.innerHTML = `
             <td><span class="clickable-name" onclick="abrirPaginaDetalhes(${func.id})">${func.nome_completo || '-'}</span></td>
             <td class="col-desktop">${tipoContrato}</td>
             <td class="col-desktop">${func.cargo || '-'}</td>
             <td class="col-desktop">${func.setor || '-'}</td>
             <td class="col-desktop">${statusBadge}</td>
             <td class="col-desktop action-links">
-                <button class="btn-action btn-edit" onclick="abrirModalEditar(${func.id})">Editar</button>
+                <button class="btn-action btn-edit" onclick="event.stopPropagation(); abrirModalEditar(${func.id})">Editar</button>
             </td>
             <td class="td-seta">
-                <i class="fas fa-chevron-down seta-tabela"></i>
+                <i class="fas fa-chevron-down seta-tabela" id="seta-user-${func.id}"></i>
             </td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(trPrincipal);
+
+        // --- 2. LINHA DA SANFONA (Visível apenas no Mobile) ---
+        const trDetalhes = document.createElement('tr');
+        trDetalhes.id = `detalhes-user-${func.id}`;
+        trDetalhes.className = 'detalhes-row';
+        trDetalhes.innerHTML = `
+            <td colspan="2">
+                <div class="detalhes-content">
+                    <div class="detalhe-item"><b>Cargo:</b> <span>${func.cargo || '-'}</span></div>
+                    <div class="detalhe-item"><b>Setor:</b> <span>${func.setor || '-'}</span></div>
+                    <div class="detalhe-item"><b>Status:</b> ${statusBadge}</div>
+                    <div class="detalhes-acoes action-links-mobile">
+                        <button class="btn-action btn-edit" onclick="abrirModalEditar(${func.id})">Editar</button>
+                    </div>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(trDetalhes);
     });
 }
+
+// ==========================================
+// FUNÇÃO PARA ABRIR/FECHAR A SANFONA NO MOBILE
+// ==========================================
+window.toggleDetalhesUsuario = function(id) {
+    const linha = document.getElementById(`detalhes-user-${id}`);
+    const seta = document.getElementById(`seta-user-${id}`);
+    
+    if (linha && seta) {
+        linha.classList.toggle('open');
+        seta.classList.toggle('ativa');
+    }
+};
 
 // ==========================================
 // 3. PREENCHER LISTA DE GESTORES
