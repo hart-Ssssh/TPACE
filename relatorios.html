@@ -54,16 +54,21 @@
 
     <!-- TOPBAR COM NAVEGAÇÃO -->
     <header class="topbar">
+        <!-- Logo -->
         <div class="topbar-brand">T-PACE</div>
+        <!-- ... resto do seu código continua normal abaixo ... -->
+        
+        <!-- Botão Hamburger -->
         <button class="mobile-menu-btn">
             <span></span><span></span><span></span>
         </button>
 
+        <!-- Menu Principal (Fica oculto no celular até clicar) -->
         <nav class="topbar-menu">
             <a href="dashboard.html" class="menu-link" title="Dashboard">
                 <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
             </a>
-            <a href="relatorios.php" class="menu-link active" title="Relatórios">
+            <a href="relatorios.html" class="menu-link active" title="Relatórios">
                 <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
             </a>
             <a href="usuarios.html" class="menu-link" title="Usuários">
@@ -197,23 +202,6 @@
 
     <!-- Importação do Lógica em JS -->
     <script src="js/relatorios.js"></script>
-    
-    <script>
-        // Função de controle das abas (Muda a classe visual do CSS tpace)
-        function abrirAba(evento, idAba) {
-            let conteudos = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < conteudos.length; i++) conteudos[i].classList.remove("active");
-            
-            let botoes = document.getElementsByClassName("tab-button");
-            for (let i = 0; i < botoes.length; i++) {
-                botoes[i].classList.remove("btn");
-                botoes[i].classList.add("btn-outline");
-            }
-            
-            document.getElementById(idAba).classList.add("active");
-            evento.currentTarget.classList.remove("btn-outline");
-            evento.currentTarget.classList.add("btn");
-        }
-    </script>
+    <script src="js/permissoes.js"></script>
 </body>
 </html>
