@@ -727,3 +727,30 @@ tr:hover {
 
     .canvas-wrapper { height: 250px; }
 }
+
+/* ==========================================
+   RODAPÉ THREEE (Páginas Internas)
+   ========================================== */
+.threeeo-footer {
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 5px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-secundario);
+    border-top: 1px solid var(--border-divisoria);
+}
+
+.threeeo-footer a {
+    color: var(--btn-acao);
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.threeeo-footer a:hover {
+    color: var(--chart-turquesa); /* Muda para a cor turquesa dos gráficos */
+    text-shadow: 0 0 8px rgba(104, 187, 186, 0.4);
+}

@@ -36,10 +36,35 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh; /* min-height evita corte de conteúdo em telas pequenas */
+    min-height: 100vh;
     width: 100vw;
-    padding: 20px; /* Margem de segurança para o celular */
-    box-sizing: border-box; /* Garante que o padding não crie rolagem horizontal */
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative; /* ADICIONE ESTA LINHA */
+}
+
+/* ADICIONE ESTE BLOCO NO FINAL DO ARQUIVO */
+.login-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-rodape);
+}
+
+.login-footer a {
+    color: var(--btn-acao);
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.login-footer a:hover {
+    color: var(--text-claro);
+    text-shadow: 0 0 8px rgba(248, 243, 252, 0.5);
 }
 
 /* O Cartão de Vidro do Login */
