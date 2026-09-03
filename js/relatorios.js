@@ -24,22 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputFiltroId = document.getElementById('filtro-id-venda');
     if (inputFiltroId) {
         inputFiltroId.addEventListener('input', (evento) => {
-            const idBuscado = evento.target.value.trim();
+            const idBuscado = evento.target.value.trim().toLowerCase();
             
-            // Se o campo estiver vazio, mostra todas as vendas do período
             if (!idBuscado) {
                 renderizarTabelaDesempenho(listaVendasGlobal);
                 return;
             }
             
-            // Converte ambos para Número (Number). Isso faz o JS ler "0080" como apenas 80!
-            const vendasFiltradas = listaVendasGlobal.filter(venda => 
-                Number(venda.id_venda) === Number(idBuscado)
-            );
+            const vendasFiltradas = listaVendasGlobal.filter(venda => {
+                const cupom = venda.id_cupom ? String(venda.id_cupom).toLowerCase() : "";
+                return cupom.includes(idBuscado);
+            });
             
             renderizarTabelaDesempenho(vendasFiltradas);
         });
-    } 
+    }
 });
 
 // ==========================================
@@ -103,10 +102,12 @@ function renderizarTabelaDesempenho(detalhes) {
         // Substitui o " | " que vem do banco por quebra de linha visual com bolinhas
         const produtosHtml = '• ' + (det.produtos_comprados || '').split(' | ').join('<br>• ');
         
+        const numeroCupom = det.id_cupom; // Puxa diretamente o cupom do banco
+        
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${formatarData(det.data_hora, true)}</td>
-            <td>#${det.id_venda}</td>
+            <td>#${numeroCupom}</td>
             <td>${det.vendedor || 'Indefinido'}</td>
             <td>${produtosHtml}</td>
             <td>${formatarMoeda(det.venda_subtotal)}</td>
