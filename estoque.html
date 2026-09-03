@@ -212,7 +212,15 @@
     <div id="passo-2" style="display: none;">
         <div class="form-group full-width">
             <label>Bipar Códigos de Barras</label>
-            <input type="text" id="input-bipar" placeholder="Bipe o código e pressione Enter...">
+            <!-- Criamos um display: flex para deixar o input e o botão na mesma linha -->
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="input-bipar" placeholder="Bipe o código e pressione Enter..." style="flex: 1;">
+                
+                <!-- NOVO BOTÃO DE GERAR CÓDIGO INTERNO -->
+                <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno de 5 dígitos">
+                    <i class="fas fa-random"></i> Gerar
+                </button>
+            </div>
         </div>
         
         <div id="lista-codigos" style="margin-top: 15px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">

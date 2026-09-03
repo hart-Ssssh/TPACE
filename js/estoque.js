@@ -446,3 +446,26 @@ window.toggleDetalhesEstoque = function(chave) {
         seta.classList.toggle('ativa');
     }
 };
+
+// Gera um código de 5 dígitos para uso interno e adiciona na lista
+window.gerarCodigoInterno5Digitos = function() {
+    let codigo = '';
+    for (let i = 0; i < 5; i++) {
+        codigo += Math.floor(Math.random() * 10);
+    }
+    
+    // 1. Verifica se já está na listinha de agora que estamos bipando
+    const existeNaTela = codigosBipados.includes(codigo);
+    
+    // 2. Verifica se JÁ EXISTE NO BANCO DE DADOS (olhando a lista carregada)
+    const existeNoBanco = listaProdutos.some(produto => produto.codigo_barras === codigo);
+
+    // Se estiver totalmente livre de duplicidade, adiciona!
+    if (!existeNaTela && !existeNoBanco) {
+        codigosBipados.push(codigo);
+        atualizarListaCodigos();
+    } else {
+        // Se bater com a tela ou com o banco, ele "gira a roleta" de novo automaticamente!
+        window.gerarCodigoInterno5Digitos();
+    }
+};
