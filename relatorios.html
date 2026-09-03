@@ -47,6 +47,26 @@
             .toolbar input[type="date"], .toolbar input[type="number"] {
                 width: 100% !important; /* Ocupa a largura total da tela */
             }
+            
+        }
+        /* --- VISUAL PREMIUM DAS ABAS --- */
+        .tab-button {
+            border-radius: 12px; /* Deixa as abas mais arredondadas e modernas */
+            transition: all 0.3s ease;
+        }
+        
+        /* Como ficam as abas que NÃO estão selecionadas no fundo escuro */
+        .tab-button.btn-outline {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: var(--text-claro) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(5px);
+        }
+        
+        .tab-button.btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            color: #fff !important;
         }
     </style>
 </head>
@@ -205,8 +225,31 @@
         </section>
     </main>
 
-    <!-- Importação do Lógica em JS -->
+    <!-- Importa o do Lógica em JS -->
     <script src="js/relatorios.js"></script>
     <script src="js/permissoes.js"></script>
+    
+    <script>
+        // Função de controle das abas
+        function abrirAba(evento, idAba) {
+            // 1. Oculta todos os conteúdos das abas
+            let conteudos = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < conteudos.length; i++) {
+                conteudos[i].classList.remove("active");
+            }
+            
+            // 2. Reseta todos os botões: apenas adiciona a transparência, SEM remover a base
+            let botoes = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < botoes.length; i++) {
+                botoes[i].classList.add("btn-outline");
+            }
+            
+            // 3. Mostra a aba desejada
+            document.getElementById(idAba).classList.add("active");
+            
+            // 4. Preenche o botão clicado (removendo a transparência)
+            evento.currentTarget.classList.remove("btn-outline");
+        }
+    </script>
 </body>
 </html>
