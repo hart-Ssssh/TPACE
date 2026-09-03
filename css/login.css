@@ -43,18 +43,17 @@
     position: relative; /* ADICIONE ESTA LINHA */
 }
 
-/* ADICIONE ESTE BLOCO NO FINAL DO ARQUIVO */
 .login-footer {
     position: absolute;
     bottom: 20px;
     width: 100%;
     text-align: center;
     font-size: 13px;
-    color: var(--text-rodape);
+    color: var(--text-rodape); /* <-- Lilás claro */
 }
 
 .login-footer a {
-    color: var(--btn-acao);
+    color: var(--chart-turquesa); /* <-- Turquesa de destaque */
     font-weight: bold;
     text-decoration: none;
     letter-spacing: 1px;
@@ -64,7 +63,7 @@
 
 .login-footer a:hover {
     color: var(--text-claro);
-    text-shadow: 0 0 8px rgba(248, 243, 252, 0.5);
+    text-shadow: 0 0 10px rgba(104, 187, 186, 0.8);
 }
 
 /* O Cartão de Vidro do Login */

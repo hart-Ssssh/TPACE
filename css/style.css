@@ -729,7 +729,7 @@ tr:hover {
 }
 
 /* ==========================================
-   RODAPÉ THREEE (Páginas Internas)
+   RODAPÉ THREEEO (Páginas Internas)
    ========================================== */
 .threeeo-footer {
     text-align: center;
@@ -737,12 +737,12 @@ tr:hover {
     padding-bottom: 5px;
     margin-top: 20px;
     font-size: 13px;
-    color: var(--text-secundario);
+    color: var(--text-rodape); /* <-- Trocado para o lilás claro */
     border-top: 1px solid var(--border-divisoria);
 }
 
 .threeeo-footer a {
-    color: var(--btn-acao);
+    color: var(--chart-turquesa); /* <-- Trocado para o turquesa de destaque */
     font-weight: bold;
     text-decoration: none;
     text-transform: uppercase;
@@ -751,6 +751,6 @@ tr:hover {
 }
 
 .threeeo-footer a:hover {
-    color: var(--chart-turquesa); /* Muda para a cor turquesa dos gráficos */
-    text-shadow: 0 0 8px rgba(104, 187, 186, 0.4);
+    color: var(--text-claro); /* Fica branco/gelo ao passar o mouse */
+    text-shadow: 0 0 10px rgba(104, 187, 186, 0.8); /* Brilho neon sutil */
 }
