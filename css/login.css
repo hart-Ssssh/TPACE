@@ -53,7 +53,7 @@
 }
 
 .login-footer a {
-    color: var(--chart-turquesa); /* <-- Turquesa de destaque */
+    color: var(--chart-rosa); /* <-- Rosa de destaque */
     font-weight: bold;
     text-decoration: none;
     letter-spacing: 1px;

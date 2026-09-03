@@ -13,7 +13,7 @@
     --bg-linha-hover: #2A11430D;
 
     /* Bordas e Sombras */
-    --border-glass: #FFFFFFFF;
+    --border-glass: rgba(255, 255, 255, 0.5);
     --border-pesquisa: #FFFFFF88;
     --border-divisoria: #D6C4E866;
     --border-rodape: #D6C4E844;
@@ -33,6 +33,10 @@
     --text-claro: #F8F3FC;
     --text-rodape: #D6C4E8;
     --text-placeholder: #5E3A7D88;
+
+    /* Fundos Liquid Glass (Bem mais transparentes) */
+    --glass-inicio: rgba(255, 255, 255, 0.7); 
+    --glass-fim: rgba(255, 255, 255, 0.45);    
 }
 
 * {
@@ -74,16 +78,74 @@
     background: rgba(164, 95, 206, 0.7); 
 }
 
-/* Fundo do Sistema em Degradê Escuro */
+/* --- FUNDO LIQUID GLASS --- */
 body {
-    background: linear-gradient(135deg, var(--bg-topo), var(--bg-base));
-    background-attachment: fixed;
+    /* Mantemos um fundo escuro base, caso algo demore a carregar */
+    background-color: var(--bg-base); 
     color: var(--text-claro);
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Mantemos por segurança para navegadores muito antigos */
-    height: 100dvh; /* A MÁGICA PARA O CELULAR ESTÁ AQUI! */
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
+    position: relative; /* Essencial para as formas ficarem presas no fundo */
+}
+
+/* As Formas Flutuantes (Blobs) */
+.blob {
+    position: absolute;
+    filter: blur(80px); /* Esse é o segredo do efeito líquido! */
+    z-index: -1; /* Mantém elas atrás de todo o conteúdo */
+    opacity: 0.6; /* Deixa um pouco transparente para não ofuscar o texto */
+    border-radius: 50%;
+    animation: flutuar 15s infinite alternate ease-in-out;
+}
+
+/* Esfera 1 - Roxa */
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 450px;
+    height: 450px;
+    background-color: var(--btn-acao);
+    animation-delay: 0s;
+}
+
+/* Esfera 2 - Turquesa */
+.blob-2 {
+    bottom: -20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background-color: var(--chart-turquesa);
+    animation-delay: -5s; /* Começa a animação de um ponto diferente */
+}
+
+/* Esfera 3 - Rosa (Menor e mais rápida) */
+.blob-3 {
+    top: 40%;
+    left: 40%;
+    width: 300px;
+    height: 300px;
+    background-color: var(--chart-rosa);
+    animation-delay: -10s;
+    animation-duration: 20s;
+}
+
+/* Animação de Movimento Contínuo */
+@keyframes flutuar {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(150px, 100px) scale(1.2);
+    }
+    66% {
+        transform: translate(-100px, 200px) scale(0.8);
+    }
+    100% {
+        transform: translate(50px, -50px) scale(1.1);
+    }
 }
 
 /* --- BARRA SUPERIOR (TOPBAR GLASS) --- */
@@ -522,6 +584,44 @@ tr:hover {
     transform: rotate(180deg);
 }
 
+/* ==========================================
+   EFEITO LIQUID GLASS 3D (MASTER) - CORRIGIDO
+   ========================================== */
+.topbar, .card, .chart-placeholder, .toolbar, .table-wrapper, 
+.modal-glass, .login-glass-card, .perfil-destaque, .box-info {
+    /* Fundo degradê fosco claro */
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)) !important;
+    
+    /* Desfoque mantido, mas saturação removida para não escurecer o painel */
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    
+    border: 1px solid var(--border-glass) !important;
+    
+    /* O Brilho Especular (Lábio branco nas bordas) mantido intacto! */
+    box-shadow: 
+        0 8px 32px rgba(42, 17, 67, 0.15), /* Sombra mais suave */
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.9), /* O reflexo da luz */
+        inset -1px -1px 3px rgba(0, 0, 0, 0.05) !important;
+    
+    border-radius: 16px; 
+}
+
+/* Ajustes finos para não quebrar peças específicas */
+.topbar {
+    border-radius: 0 0 16px 16px !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.table-wrapper table {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+}
+
 @media screen and (max-width: 768px) {
     .topbar {
         padding: 15px 20px;
@@ -729,20 +829,25 @@ tr:hover {
 }
 
 /* ==========================================
-   RODAPÉ THREEEO (Páginas Internas)
+   RODAPÉ THREEE (Páginas Internas)
    ========================================== */
 .threeeo-footer {
     text-align: center;
-    padding-top: 30px;
-    padding-bottom: 5px;
+    padding: 15px; /* Adicionado padding ao redor */
     margin-top: 20px;
+    margin-bottom: 10px; /* Desgruda do fim da tela */
     font-size: 13px;
-    color: var(--text-rodape); /* <-- Trocado para o lilás claro */
+    color: var(--text-claro); /* Mudado para claro para maior contraste */
     border-top: 1px solid var(--border-divisoria);
+    
+    /* Um fundo levemente escurecido para isolar do LiquidGlass */
+    background: rgba(42, 17, 67, 0.3); 
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
 }
 
 .threeeo-footer a {
-    color: var(--chart-turquesa); /* <-- Trocado para o turquesa de destaque */
+    color: var(--chart-rosa); 
     font-weight: bold;
     text-decoration: none;
     text-transform: uppercase;
@@ -751,6 +856,6 @@ tr:hover {
 }
 
 .threeeo-footer a:hover {
-    color: var(--text-claro); /* Fica branco/gelo ao passar o mouse */
-    text-shadow: 0 0 10px rgba(104, 187, 186, 0.8); /* Brilho neon sutil */
+    color: var(--text-claro);
+    text-shadow: 0 0 10px rgba(104, 187, 186, 0.8); 
 }
