@@ -169,26 +169,51 @@ window.abrirModalEditar = function(chave_grupo) {
     document.getElementById('prod-ncm').value = produtoBase.ncm || "";
     document.getElementById('prod-promocional').value = produtoBase.valor_promocional || "";
     document.getElementById('prod-em-promocao').value = produtoBase.em_promocao || 0;
-    document.getElementById('prod-lote').value = produtoBase.lote || "";
-    document.getElementById('prod-validade').value = produtoBase.validade ? produtoBase.validade.split('T')[0] : "";
-    
-    document.getElementById('prod-imagem-url').value = produtoBase.foto || "";
-    if (produtoBase.foto) {
-        document.getElementById('preview-imagem').src = produtoBase.foto;
-        document.getElementById('preview-imagem').style.display = "block";
-        document.getElementById('icone-imagem').style.display = "none";
-    } else {
+document.getElementById('prod-lote').value = produtoBase.lote || "";
+        document.getElementById('prod-validade').value = produtoBase.validade ? produtoBase.validade.split('T')[0] : "";
+        
+        document.getElementById('prod-imagem-url').value = produtoBase.foto || "";
+        
+        // CORREÇÃO: Limpa o input de arquivo físico para não reenviar fotos antigas!
+        document.getElementById('prod-imagem').value = ""; 
+        
+        if (produtoBase.foto) {
+            const imgPreview = document.getElementById('preview-imagem');
+            
+            // Corrige os links antigos do banco em tempo real para exibir a foto
+            let fotoCorrigida = produtoBase.foto.replace("pub-https://", "https://pub-").replace(".r2.cloudflarestorage.com/tpace.r2.dev/", ".r2.dev/");
+            imgPreview.src = fotoCorrigida;
+            
+            // Se a imagem falhar ao carregar, esconde a moldura quebrada e mostra o ícone da câmera
+            imgPreview.onerror = function() {
+                this.style.display = "none";
+                document.getElementById('icone-imagem').style.display = "block";
+            };
+            
+            imgPreview.style.display = "block";
+            document.getElementById('icone-imagem').style.display = "none";
+        } else {
+            document.getElementById('preview-imagem').src = "";
+            document.getElementById('preview-imagem').style.display = "none";
+            document.getElementById('icone-imagem').style.display = "block";
+        }
+        
+        document.getElementById('modal-produto').classList.add('active');
+    }
+
+window.fecharModal = function() {
+        document.getElementById('modal-produto').classList.remove('active');
+        
+        // CORREÇÃO: Zera completamente o formulário e a memória da imagem ao fechar
+        document.getElementById('form-produto').reset();
+        document.getElementById('prod-imagem').value = "";
+        document.getElementById('prod-imagem-url').value = "";
+        
+        // Devolve o visual do botão de câmera vazio
         document.getElementById('preview-imagem').src = "";
         document.getElementById('preview-imagem').style.display = "none";
         document.getElementById('icone-imagem').style.display = "block";
-    }
-    
-    document.getElementById('modal-produto').classList.add('active');
-};
-
-window.fecharModal = function() {
-    document.getElementById('modal-produto').classList.remove('active');
-};
+    };
 
 // ==========================================
 // 3. SALVAR (CRIAÇÃO OU ATUALIZAÇÃO EM LOTE)
