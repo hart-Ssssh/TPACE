@@ -187,9 +187,12 @@ window.toggleDetalhesUsuario = function(id) {
 function preencherSelectGestores(funcionarios) {
     const selectGestor = document.getElementById('f-gestor');
     if (!selectGestor) return;
+    
     selectGestor.innerHTML = '<option value="">Nenhum / Selecione</option>';
+    
     funcionarios.forEach(func => {
-        if (func.nome_completo) {
+        // Verifica se tem nome E se o nível de senioridade é 5 (Gestão)
+        if (func.nome_completo && (func.nivel_senioridade == 5 || func.nivel_senioridade === '5')) {
             selectGestor.innerHTML += `<option value="${func.id}">${func.nome_completo}</option>`;
         }
     });

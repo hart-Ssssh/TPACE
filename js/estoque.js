@@ -331,15 +331,19 @@ if (inputPesquisa) {
 }
 
 function filtrarTabela(termo) {
-    if (!termo) return renderizarTabela(listaProdutos);
-    const filtrados = listaProdutos.filter(prod => {
-        const nome = (prod.nome || "").toLowerCase();
-        const codigo = (prod.codigo_barras || "").toLowerCase();
-        const geral = (prod.codigo_geral || "").toLowerCase();
-        return nome.includes(termo) || codigo.includes(termo) || geral.includes(termo);
-    });
-    renderizarTabela(filtrados);
-}
+        if (!termo) return renderizarTabela(listaProdutos);
+        
+        const filtrados = listaProdutos.filter(prod => {
+            // O segredo: Converter explicitamente para String() antes do toLowerCase()
+            const nome = String(prod.nome || "").toLowerCase();
+            const codigo = String(prod.codigo_barras || "").toLowerCase();
+            const geral = String(prod.codigo_geral || "").toLowerCase();
+            
+            return nome.includes(termo) || codigo.includes(termo) || geral.includes(termo);
+        });
+        
+        renderizarTabela(filtrados);
+    }
 
 function renderizarTabela(produtos) {
     const tbody = document.getElementById('tabela-estoque');
