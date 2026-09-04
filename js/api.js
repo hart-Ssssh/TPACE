@@ -46,19 +46,31 @@ export default {
             const body = await request.json();
             const stmts = [];
             const resVenda = await env.DB.prepare(`
-                INSERT INTO tb_vendas (id_sessao_caixa, id_cliente, data_hora, subtotal, desconto, total, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            `).bind(body.id_sessao_caixa, body.id_cliente, body.data_hora, body.subtotal, body.desconto, body.total, body.status).run();
+                    INSERT INTO tb_vendas (id_sessao_caixa, id_cliente, data_hora, subtotal, desconto, total, status, id_cupom)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                `).bind(
+                    body.id_sessao_caixa, 
+                    body.id_cliente, 
+                    body.data_hora, 
+                    body.subtotal, 
+                    body.desconto, 
+                    body.total, 
+                    body.status, 
+                    body.id_cupom
+                ).run();
             const cloudVendaId = resVenda.meta.last_row_id;
             for (const item of body.itens) {
-                stmts.push(env.DB.prepare(`
-                    INSERT INTO tb_itens_venda (id_venda, id_produto, quantidade, preco_unitario, subtotal)
-                    VALUES (?, ?, ?, ?, ?)
-                `).bind(cloudVendaId, item.id_produto, item.quantidade, item.preco_unitario, item.subtotal));
-                stmts.push(env.DB.prepare(`
-                    UPDATE tb_produtos SET quantidade = quantidade - ? WHERE id = ?
-                `).bind(item.quantidade, item.id_produto));
-            }
+                    stmts.push(env.DB.prepare(`
+                        INSERT INTO tb_itens_venda (id_venda, id_produto, quantidade, preco_unitario, subtotal)
+                        VALUES (?, ?, ?, ?, ?)
+                    `).bind(cloudVendaId, item.id_produto, item.quantidade, item.preco_unitario, item.subtotal));
+                    stmts.push(env.DB.prepare(`
+                        UPDATE tb_produtos 
+                        SET quantidade = quantidade - ? 
+                        WHERE (codigo_geral IS NOT NULL AND codigo_geral = (SELECT codigo_geral FROM tb_produtos WHERE id = ?))
+                           OR (codigo_geral IS NULL AND id = ?)
+                    `).bind(item.quantidade, item.id_produto, item.id_produto));
+                }
             for (const pag of body.pagamentos) {
                 stmts.push(env.DB.prepare(`
                     INSERT INTO tb_pagamentos (id_venda, metodo, valor)
@@ -109,6 +121,23 @@ export default {
             return new Response(JSON.stringify({ erro: "Erro ao buscar versão" }), { status: 500, headers: corsHeaders });
         }
     }
+
+    if (path === "/api/app/trocas" && method === "POST") {
+            try {
+                const body = await request.json();
+                const stmts = [];
+                for (const t of body) {
+                    stmts.push(env.DB.prepare(`
+                        INSERT INTO tb_trocas (tipo_troca, data_troca, id_vendedor, produto_retornado, quantidade)
+                        VALUES (?, ?, ?, ?, ?)
+                    `).bind(t.tipo_troca, t.data_troca, t.id_vendedor, t.produto_retornado, t.quantidade));
+                }
+                await env.DB.batch(stmts);
+                return new Response(JSON.stringify({ sucesso: true }), { status: 201, headers: corsHeaders });
+            } catch (error) {
+                return new Response(JSON.stringify({ erro: "Erro ao sincronizar trocas na nuvem.", detalhe: error.message }), { status: 500, headers: corsHeaders });
+            }
+        }
 
     // =====================================================================
     // ROTAS DA WEB E DASHBOARD
@@ -194,12 +223,10 @@ export default {
     if (method === "GET" && path === "/relatorios/trocas") {
       try {
         const query = `
-            SELECT p.nome, iv.quantidade, v.data_hora, v.status
-            FROM tb_itens_venda iv
-            JOIN tb_vendas v ON iv.id_venda = v.id
-            JOIN tb_produtos p ON iv.id_produto = p.id
-            WHERE v.status = 'cancelado'
-            ORDER BY v.data_hora DESC
+            SELECT t.tipo_troca, t.data_troca, t.quantidade, p.nome
+            FROM tb_trocas t
+            LEFT JOIN tb_produtos p ON t.produto_retornado = p.codigo_barras
+            ORDER BY t.data_troca DESC
         `;
         const res = await env.DB.prepare(query).all();
         return new Response(JSON.stringify(res.results), { headers: corsHeaders });
@@ -253,6 +280,7 @@ export default {
         const queryDetalhes = `
             SELECT
                 v.id as id_venda,
+                v.id_cupom,
                 v.data_hora,
                 v.subtotal as venda_subtotal,
                 v.total as venda_total,
@@ -340,18 +368,33 @@ export default {
       }
     }
 
+// POST: CRIAR PRODUTO
     if (path === "/api/web/produtos" && method === "POST") {
       try {
         const body = await request.json();
         const stmt = env.DB.prepare(`
           INSERT INTO tb_produtos (
             nome, codigo_barras, preco_venda, quantidade, quantidade_minima, unidade_venda,
-            custo, cest, aliquotas_imposto, ncm, valor_promocional, em_promocao, lote, validade, id_filial
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            custo, cest, aliquotas_imposto, ncm, valor_promocional, em_promocao, lote, validade, id_filial, foto, codigo_geral
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
         `);
         await stmt.bind(
-          body.nome, body.codigo_barras, body.preco_venda, body.quantidade, body.quantidade_minima, body.unidade_venda,
-          body.custo, body.cest, body.aliquotas_imposto, body.ncm, body.valor_promocional, body.em_promocao, body.lote, body.validade, 1
+          body.nome || null, 
+          body.codigo_barras || null, 
+          body.preco_venda || 0, 
+          body.quantidade || 0, 
+          body.quantidade_minima || 0, 
+          body.unidade_venda || 'Un',
+          body.custo || null, 
+          body.cest || null, 
+          body.aliquotas_imposto || null, 
+          body.ncm || null, 
+          body.valor_promocional || null, 
+          body.em_promocao || 0, 
+          body.lote || null, 
+          body.validade || null, 
+          body.foto || null,
+          body.codigo_geral || null // NOVO CAMPO SALVO
         ).run();
 
         return new Response(JSON.stringify({ sucesso: true }), { status: 201, headers: corsHeaders });
@@ -360,6 +403,7 @@ export default {
       }
     }
 
+    // PUT: ATUALIZAR PRODUTO
     if (path.startsWith("/api/web/produtos/") && method === "PUT") {
       try {
         const id = path.split('/').pop();
@@ -367,12 +411,27 @@ export default {
         const stmt = env.DB.prepare(`
           UPDATE tb_produtos
           SET nome = ?, codigo_barras = ?, preco_venda = ?, quantidade = ?, quantidade_minima = ?, unidade_venda = ?,
-              custo = ?, cest = ?, aliquotas_imposto = ?, ncm = ?, valor_promocional = ?, em_promocao = ?, lote = ?, validade = ?
+              custo = ?, cest = ?, aliquotas_imposto = ?, ncm = ?, valor_promocional = ?, em_promocao = ?, lote = ?, validade = ?, foto = ?, codigo_geral = ?
           WHERE id = ?
         `);
         await stmt.bind(
-          body.nome, body.codigo_barras, body.preco_venda, body.quantidade, body.quantidade_minima, body.unidade_venda,
-          body.custo, body.cest, body.aliquotas_imposto, body.ncm, body.valor_promocional, body.em_promocao, body.lote, body.validade, id
+          body.nome || null, 
+          body.codigo_barras || null, 
+          body.preco_venda || 0, 
+          body.quantidade || 0, 
+          body.quantidade_minima || 0, 
+          body.unidade_venda || 'Un',
+          body.custo || null, 
+          body.cest || null, 
+          body.aliquotas_imposto || null, 
+          body.ncm || null, 
+          body.valor_promocional || null, 
+          body.em_promocao || 0, 
+          body.lote || null, 
+          body.validade || null, 
+          body.foto || null, 
+          body.codigo_geral || null, // NOVO CAMPO ATUALIZADO
+          id
         ).run();
 
         return new Response(JSON.stringify({ sucesso: true }), { status: 200, headers: corsHeaders });
@@ -391,8 +450,37 @@ export default {
       }
     }
 
-    // =======================================================
-    // FUNCIONÁRIOS: ROTAS DE GET, POST E PUT (CORRIGIDAS)
+    // =====================================================================
+    // UPLOAD DE IMAGEM PARA O CLOUDFLARE R2
+    // =====================================================================
+    if (path === "/api/web/upload" && method === "POST") {
+      try {
+        const formData = await request.formData();
+        const file = formData.get("file");
+
+        if (!file) {
+          return new Response(JSON.stringify({ erro: "Nenhum arquivo enviado" }), { status: 400, headers: corsHeaders });
+        }
+
+        // Gera um nome único para a imagem (ex: 169123456_foto.png)
+        const nomeArquivo = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+        // Salva no R2 (Usando o binding BUCKET_PRODUTOS configurado no Cloudflare)
+        await env.BUCKET_PRODUTOS.put(nomeArquivo, file.stream(), {
+          httpMetadata: { contentType: file.type }
+        });
+
+        // ATENÇÃO: Troque este link pelo Public Access gerado no seu Bucket R2!
+                const urlPublica = `https://pub-c5ee40d961c6c73a7181839dec953784.r2.cloudflarestorage.com/tpace.r2.dev/${nomeArquivo}`;
+
+        return new Response(JSON.stringify({ sucesso: true, url: urlPublica }), { status: 201, headers: corsHeaders });
+      } catch (error) {
+        return new Response(JSON.stringify({ erro: "Erro ao salvar no R2.", detalhe: error.message }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+   // =======================================================
+    // FUNCIONÁRIOS: GET DADOS PESSOAIS (SELECT)
     // =======================================================
     if (method === "GET" && path === "/api/web/funcionarios/pessoal") {
       try {
@@ -405,6 +493,9 @@ export default {
       }
     }
 
+    // =======================================================
+    // FUNCIONÁRIOS: GET DADOS PROFISSIONAIS (SELECT)
+    // =======================================================
     if (method === "GET" && path === "/api/web/funcionarios/profissional") {
       try {
         const { results } = await env.DB.prepare(
@@ -416,33 +507,40 @@ export default {
       }
     }
 
+    // =======================================================
+    // FUNCIONÁRIOS: POST (CADASTRAR NOVO COM ID MANUAL)
+    // =======================================================
     if (method === "POST" && path === "/api/web/funcionarios") {
       try {
         const body = await request.json();
 
+        // 1. GERAÇÃO MANUAL DO ID: Pega o maior ID atual e soma 1
+        const maxIdResult = await env.DB.prepare("SELECT MAX(id) as maxId FROM tb_funcionarios").first();
+        const novoId = (maxIdResult && maxIdResult.maxId !== null ? maxIdResult.maxId : 0) + 1;
+
+        // 2. Insere na tabela principal forçando o novoId manualmente
         const stmtFuncionario = env.DB.prepare(`
           INSERT INTO tb_funcionarios (
-            nome_completo, data_nascimento, genero, raca, estado_civil, nacionalidade,
-            naturalidade, cpf, orgao_emissor, email, telefone, contato_emergencia,
-            pcd, escolaridade, formacao_academica, logradouro, numero, bairro,
+            id, nome_completo, data_nascimento, genero, raca, estado_civil, nacionalidade, 
+            naturalidade, cpf, orgao_emissor, email, telefone, contato_emergencia, 
+            pcd, escolaridade, formacao_academica, logradouro, numero, bairro, 
             cidade, cep, complemento, status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
 
-        const resultInsert = await stmtFuncionario.bind(
-          body.nome_completo, body.data_nascimento, body.genero, body.raca, body.estado_civil, body.nacionalidade,
+        await stmtFuncionario.bind(
+          novoId, body.nome_completo, body.data_nascimento, body.genero, body.raca, body.estado_civil, body.nacionalidade,
           body.naturalidade, body.cpf, body.orgao_emissor, body.email, body.telefone, body.contato_emergencia,
           body.pcd, body.escolaridade, body.formacao_academica, body.logradouro, body.numero, body.bairro,
           body.cidade, body.cep, body.complemento, body.status
-        ).first();
+        ).run();
 
-        const novoId = resultInsert.id;
-
+        // 3. Insere na tabela de complemento usando o mesmo novoId
         const stmtComplemento = env.DB.prepare(`
           INSERT INTO tb_funcionarios_complemento (
-            id_funcionario, data_admissao, tipo, cargo, nivel_senioridade,
-            setor, gestor, tempo_empregado, modelo_trabalho, escala_trabalho,
-            salario_base, tipo_remuneracao, banco, agencia, chave_pix, centro_custo,
+            id_funcionario, data_admissao, tipo, cargo, nivel_senioridade, 
+            setor, gestor, tempo_empregado, modelo_trabalho, escala_trabalho, 
+            salario_base, tipo_remuneracao, banco, agencia, chave_pix, centro_custo, 
             data_demissao, tipo_demissao, motivo_demissao
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `);
@@ -455,21 +553,25 @@ export default {
         ).run();
 
         return new Response(JSON.stringify({ success: true, id: novoId }), { status: 201, headers: corsHeaders });
-      } catch (e) {
-        return new Response(JSON.stringify({ error: "POST Funcionario: " + e.message }), { status: 500, headers: corsHeaders });
+      } catch (e) { 
+        return new Response(JSON.stringify({ error: "POST Funcionario: " + e.message }), { status: 500, headers: corsHeaders }); 
       }
     }
 
+    // =======================================================
+    // FUNCIONÁRIOS: PUT (EDITAR EXISTENTE COM TRAVA DE SEGURANÇA)
+    // =======================================================
     if (method === "PUT" && path.startsWith("/api/web/funcionarios/")) {
       try {
         const id = path.split('/').pop();
         const body = await request.json();
 
+        // 1. Atualiza tabela principal
         const stmtFuncionario = env.DB.prepare(`
-          UPDATE tb_funcionarios SET
-            nome_completo=?, data_nascimento=?, genero=?, raca=?, estado_civil=?, nacionalidade=?,
-            naturalidade=?, cpf=?, orgao_emissor=?, email=?, telefone=?, contato_emergencia=?,
-            pcd=?, escolaridade=?, formacao_academica=?, logradouro=?, numero=?, bairro=?,
+          UPDATE tb_funcionarios SET 
+            nome_completo=?, data_nascimento=?, genero=?, raca=?, estado_civil=?, nacionalidade=?, 
+            naturalidade=?, cpf=?, orgao_emissor=?, email=?, telefone=?, contato_emergencia=?, 
+            pcd=?, escolaridade=?, formacao_academica=?, logradouro=?, numero=?, bairro=?, 
             cidade=?, cep=?, complemento=?, status=?
           WHERE id = ?
         `);
@@ -481,21 +583,42 @@ export default {
           body.cidade, body.cep, body.complemento, body.status, id
         ).run();
 
-        const stmtComplemento = env.DB.prepare(`
-          UPDATE tb_funcionarios_complemento SET
-            data_admissao=?, tipo=?, cargo=?, nivel_senioridade=?,
-            setor=?, gestor=?, tempo_empregado=?, modelo_trabalho=?, escala_trabalho=?,
-            salario_base=?, tipo_remuneracao=?, banco=?, agencia=?, chave_pix=?, centro_custo=?,
-            data_demissao=?, tipo_demissao=?, motivo_demissao=?
-          WHERE id_funcionario = ?
-        `);
+        // 2. Verifica se a ficha profissional já existe
+        const checkComplemento = await env.DB.prepare("SELECT id FROM tb_funcionarios_complemento WHERE id_funcionario = ?").bind(id).first();
 
-        await stmtComplemento.bind(
-          body.data_admissao, body.tipo, body.cargo, body.nivel_senioridade,
-          body.setor, body.gestor, body.tempo_empregado, body.modelo_trabalho, body.escala_trabalho,
-          body.salario_base, body.tipo_remuneracao, body.banco, body.agencia, body.chave_pix, body.centro_custo,
-          body.data_demissao, body.tipo_demissao, body.motivo_demissao, id
-        ).run();
+        if (checkComplemento) {
+          // Se existe, faz UPDATE normal
+          const stmtComplemento = env.DB.prepare(`
+            UPDATE tb_funcionarios_complemento SET 
+              data_admissao=?, tipo=?, cargo=?, nivel_senioridade=?, 
+              setor=?, gestor=?, tempo_empregado=?, modelo_trabalho=?, escala_trabalho=?, 
+              salario_base=?, tipo_remuneracao=?, banco=?, agencia=?, chave_pix=?, centro_custo=?, 
+              data_demissao=?, tipo_demissao=?, motivo_demissao=?
+            WHERE id_funcionario = ?
+          `);
+          await stmtComplemento.bind(
+            body.data_admissao, body.tipo, body.cargo, body.nivel_senioridade,
+            body.setor, body.gestor, body.tempo_empregado, body.modelo_trabalho, body.escala_trabalho,
+            body.salario_base, body.tipo_remuneracao, body.banco, body.agencia, body.chave_pix, body.centro_custo,
+            body.data_demissao, body.tipo_demissao, body.motivo_demissao, id
+          ).run();
+        } else {
+          // Se não existe, faz INSERT para garantir que os dados não se percam
+          const stmtComplemento = env.DB.prepare(`
+            INSERT INTO tb_funcionarios_complemento (
+              id_funcionario, data_admissao, tipo, cargo, nivel_senioridade, 
+              setor, gestor, tempo_empregado, modelo_trabalho, escala_trabalho, 
+              salario_base, tipo_remuneracao, banco, agencia, chave_pix, centro_custo, 
+              data_demissao, tipo_demissao, motivo_demissao
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `);
+          await stmtComplemento.bind(
+            id, body.data_admissao, body.tipo, body.cargo, body.nivel_senioridade,
+            body.setor, body.gestor, body.tempo_empregado, body.modelo_trabalho, body.escala_trabalho,
+            body.salario_base, body.tipo_remuneracao, body.banco, body.agencia, body.chave_pix, body.centro_custo,
+            body.data_demissao, body.tipo_demissao, body.motivo_demissao
+          ).run();
+        }
 
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
       } catch (e) {

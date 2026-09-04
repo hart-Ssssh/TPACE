@@ -15,39 +15,80 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
         @media screen and (max-width: 768px) {
-            /* 1. Devolve a rolagem horizontal das tabelas */
+            /* 1. Devolve a rolagem horizontal e aumenta o espaço geral entre campos */
             .table-wrapper {
                 overflow-x: auto !important; /* Habilita deslizar para os lados */
             }
             table {
-                table-layout: auto !important; /* Desfaz o esmagamento das colunas */
-                min-width: 700px !important; /* Dá espaço real para os dados respirarem */
+                table-layout: auto !important; 
+                min-width: 850px !important; /* Ideal para a tabela principal (Desempenho) */
             }
             th, td {
-                white-space: nowrap !important; /* Impede que o texto quebre em várias linhas na vertical */
+                white-space: nowrap !important; /* Impede que o texto quebre */
+                padding: 12px 15px !important; /* Aumenta o espaço em branco entre as células */
             }
             
+            /* EXCEÇÃO: Ajustes para a Aba de Trocas */
+            #aba-trocas table {
+                min-width: 500px !important;
+            }
+            #aba-trocas th:nth-child(2), #aba-trocas td:nth-child(2) {
+                width: 1%;
+                padding-right: 10px !important;
+            }
+            #aba-trocas th:nth-child(3), #aba-trocas td:nth-child(3) {
+                padding-left: 0 !important;
+            }
+
+            /* EXCEÇÃO: Ajustes para a Aba Radar de Ação */
+            #aba-radar table {
+                min-width: 500px !important; /* Como tem 3 colunas, não precisa de 850px */
+            }
+            #aba-radar th:nth-child(2), #aba-radar td:nth-child(2) {
+                width: 1%; /* Puxa "Quantidade" para perto do limite do texto */
+                padding-right: 15px !important;
+            }
+            #aba-radar th:nth-child(3), #aba-radar td:nth-child(3) {
+                width: 1%; /* Gruda a "Ação Sugerida" logo em seguida */
+            }
+
+            /* EXCEÇÃO: Ajustes para a Aba Giro de Estoque */
+            #aba-giro table {
+                min-width: 650px !important; /* Ajuste moderado para 5 colunas */
+            }
+            #aba-giro th:nth-child(1), #aba-giro td:nth-child(1) {
+                width: 1%; /* Encolhe a coluna "Unidade" */
+                padding-right: 10px !important;
+            }
+            #aba-giro th:nth-child(2), #aba-giro td:nth-child(2) {
+                padding-left: 0 !important; /* Aproxima o "Produto" da "Unidade" */
+            }
+            #aba-giro th:nth-child(3), #aba-giro td:nth-child(3) {
+                width: 1%; /* Puxa o "Volume (mês)" para perto do "Produto" */
+            }
+
             /* 2. Ajusta os botões das abas do menu para não ficarem minúsculos */
             .tab-menu .btn {
-                flex: 1 1 45%; /* Divide a tela, colocando 2 abas por linha */
+                flex: 1 1 45%; 
                 padding: 10px;
                 font-size: 13px;
             }
-
+            
             /* 3. Ajusta a barra de filtros (datas e busca por ID) */
             .toolbar {
                 align-items: stretch !important;
             }
             .toolbar > div {
-                margin-left: 0 !important; /* Remove o alinhamento forçado à direita */
+                margin-left: 0 !important; 
                 flex-direction: column;
                 align-items: stretch !important;
             }
             .toolbar input[type="date"], .toolbar input[type="number"] {
-                width: 100% !important; /* Ocupa a largura total da tela */
+                width: 100% !important; 
             }
-            
         }
         /* --- VISUAL PREMIUM DAS ABAS --- */
         .tab-button {

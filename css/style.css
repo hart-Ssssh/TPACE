@@ -78,17 +78,25 @@
     background: rgba(164, 95, 206, 0.7); 
 }
 
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 /* --- FUNDO LIQUID GLASS --- */
 body {
-    /* Mantemos um fundo escuro base, caso algo demore a carregar */
     background-color: var(--bg-base); 
     color: var(--text-claro);
     display: flex;
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
+    width: 100%;             /* NOVO */
+    max-width: 100%;         /* NOVO */
     overflow: hidden;
-    position: relative; /* Essencial para as formas ficarem presas no fundo */
+    overscroll-behavior: none; /* NOVO: Mata o efeito "elástico" de puxar a tela para fora */
+    position: relative; 
 }
 
 /* As Formas Flutuantes (Blobs) */

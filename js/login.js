@@ -41,10 +41,16 @@ document.getElementById('form-login').addEventListener('submit', async function(
             localStorage.setItem('tpace_usuario_nome', dados.usuario.nome);
 
             // REDIRECIONAMENTO INTELIGENTE
-            // Se for Estoque (4) ou Repositor (5), vai direto pro Estoque. Senão, Dash.
+            // Se for Estoque (4) ou Repositor (5), vai direto pro Estoque.
             if (dados.usuario.nivel_acesso === 4 || dados.usuario.nivel_acesso === 5) {
                 window.location.href = 'estoque.html';
-            } else {
+            } 
+            // Se for RH (3), vai direto para a gestão de Usuários/Funcionários.
+            else if (dados.usuario.nivel_acesso === 3) {
+                window.location.href = 'usuarios.html';
+            } 
+            // Gerentes, Financeiro e Admin vão para o Dashboard.
+            else {
                 window.location.href = 'dashboard.html';
             }
 
