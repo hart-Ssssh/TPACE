@@ -228,14 +228,22 @@ async function carregarTrocas() {
         const tbody = document.getElementById('tbody-trocas');
         tbody.innerHTML = '';
         
-        if(dados.length === 0) return tbody.innerHTML = `<tr><td colspan="3">Nenhuma devolução registrada.</td></tr>`;
-
+        if(dados.length === 0) return tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhuma troca ou devolução registrada.</td></tr>`;
+        
         dados.forEach(item => {
+            // Estiliza a badge dependendo se é Troca (Desconto) ou Devolução (Estorno)
+            const isTroca = item.tipo_troca === 'troca';
+            const textoTipo = isTroca ? 'Troca' : 'Devolução';
+            const badgeClass = isTroca ? 'status-medium' : 'status-critical';
+            
+            const nomeExibicao = item.nome || 'Produto não encontrado';
+
             tbody.innerHTML += `
                 <tr>
-                    <td>${item.nome}</td>
-                    <td>${Number(item.quantidade).toLocaleString('pt-BR')}</td>
-                    <td>${formatarData(item.data_hora, true)}</td>
+                    <td>${formatarData(item.data_troca, true)}</td>
+                    <td><span class="status-badge ${badgeClass}">${textoTipo}</span></td>
+                    <td>${nomeExibicao}</td>
+                    <td>${Number(item.quantidade).toLocaleString('pt-BR')} un</td>
                 </tr>
             `;
         });
