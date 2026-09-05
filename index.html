@@ -1,52 +1,115 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - T-PACE</title>
-    <!-- Importa as variáveis de cor e o estilo base -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Importa o estilo específico da tela de login -->
-    <link rel="stylesheet" href="css/login.css">
+    <title>Acesso Negado | 403</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 50% 50%, #29004d 0%, #110022 50%, #05000a 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Container com Glassmorphism mais sombrio */
+        .container {
+            background: rgba(20, 0, 40, 0.4);
+            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 50px);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 
+                        0 0 40px rgba(138, 43, 226, 0.15) inset;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(162, 59, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: floatIn 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Ícone de cadeado animado */
+        .icon {
+            font-size: clamp(50px, 10vw, 80px);
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(162, 59, 255, 0.6));
+            animation: pulse 2s infinite alternate;
+        }
+
+        /* Título 403 com efeito de texto gradiente e neon */
+        h1 {
+            font-size: clamp(60px, 15vw, 110px);
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: 4px;
+            line-height: 1;
+            background: linear-gradient(135deg, #e089ff, #9b00e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 15px rgba(155, 0, 232, 0.4));
+        }
+
+        h2 {
+            font-size: clamp(20px, 5vw, 28px);
+            margin: 10px 0 20px;
+            font-weight: 600;
+            color: #d896ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: clamp(14px, 3.5vw, 16px);
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #a894c2;
+        }
+
+        /* Efeitos e Animações */
+        @keyframes floatIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(162, 59, 255, 0.4)); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(162, 59, 255, 0.8)); }
+        }
+
+        /* Garantia extra de responsividade para telas muito pequenas */
+        @media (max-width: 350px) {
+            .container {
+                padding: 30px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
 
-    <div class="login-container">
-        <div class="login-glass-card">
-            
-            <div class="login-header">
-                <h1>T-PACE</h1>
-                <p>Faça login para acessar o sistema</p>
-            </div>
-
-            <form id="form-login">
-                <div class="input-group">
-                    <label for="usuario">Usuário</label>
-                    <input type="text" id="usuario" placeholder="Usuário..." required>
-                </div>
-
-                <div class="input-group">
-                    <label for="senha">Senha</label>
-                    <input type="password" id="senha" placeholder="Senha..." required>
-                </div>
-
-                <!-- Mensagem de erro que o JS vai usar -->
-                <div id="mensagem-erro" class="error-message"></div>
-
-                <button type="submit" class="btn btn-block">ENTRAR</button>
-            </form>
-
-        </div>
-        <footer class="login-footer">
-            <p>Desenvolvido por <a href="https://threeeo.com.br" target="_blank">Threeeo</a></p>
-        </footer>
+    <div class="container">
+        <div class="icon">🔒</div>
+        <h1>403</h1>
+        <h2>Acesso Restrito</h2>
+        <p>Você encontrou um bloqueio de segurança. Suas credenciais não têm permissão para explorar esta área.</p>
     </div>
 
-    <!-- Script que vai processar o login simulado -->
-    <script src="js/login.js"></script>
 </body>
 </html>
