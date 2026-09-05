@@ -404,15 +404,22 @@ window.iniciarLeitorCamera = function() {
 };
 
 window.fecharCamera = function() {
-    if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-            html5QrCode.clear();
-            document.getElementById('camera-container').style.display = 'none';
-        }).catch(err => {
-            document.getElementById('camera-container').style.display = 'none';
-        });
-    } else {
-        document.getElementById('camera-container').style.display = 'none';
+    try {
+        if (html5QrCode) {
+            // Tenta parar a câmera e limpar a memória suavemente
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+            }).catch(err => { 
+                // Ignora erros da promessa (ex: demora no encerramento)
+            });
+        }
+    } catch (e) {
+        // MÁGICA: Captura o erro síncrono da biblioteca e ignora silenciosamente
+        // Isso evita que o erro de "câmera não iniciada" vaze para a tela de salvamento
+    } finally {
+        // Independentemente de qualquer coisa, esconde a caixa preta do HTML
+        const container = document.getElementById('camera-container');
+        if (container) container.style.display = 'none';
     }
 };
 
