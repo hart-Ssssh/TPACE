@@ -289,13 +289,20 @@ async function salvarProduto(event) {
             // == MODO EDIÇÃO (ÚNICO OU LOTE) ==
             const idsArray = JSON.parse(idValue); // Transforma o texto de volta num array de IDs
             
+            // NOVO: Lê o que o usuário digitou no campo de código de barras
+            const codigoEditado = parseText(document.getElementById('prod-codigo').value);
+            
             const promessas = idsArray.map(id => {
                 const original = listaProdutos.find(p => p.id === id);
-                // Mantém o código de barras original do item, apenas atualiza o resto
+                
+                // NOVO: Se for um produto único, salva o código editado. Se for lote, protege e mantém o original.
+                const codigoFinal = (idsArray.length === 1) ? codigoEditado : (original ? original.codigo_barras : null);
+                
                 const dadosAtualizados = { 
                     ...dadosBase, 
-                    codigo_barras: original ? original.codigo_barras : null 
+                    codigo_barras: codigoFinal 
                 };
+                
                 return fetch(`${urlAPIProdutos}/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -348,30 +355,50 @@ let html5QrCode;
 window.iniciarLeitorCamera = function() {
     document.getElementById('camera-container').style.display = 'block';
     
-    // Inicia a instância do leitor apontando para a div "reader"
-    html5QrCode = new Html5Qrcode("reader");
+    // Garante que o leitor foi instanciado
+    if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+    }
     
-    // Usa a câmera traseira do celular ("environment") e demarca uma área de foco retangular
-    const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+    // ==========================================
+    // CONFIGURAÇÃO TURBO PARA CELULARES
+    // ==========================================
+    const config = { 
+        fps: 15, // Aumenta a fluidez do vídeo (quadros por segundo)
+        qrbox: { width: 280, height: 100 }, // Deixa a caixa achatada, ideal para códigos de barras longos
+        
+        // O SEGREDO: Foca a CPU APENAS nos códigos de varejo, ignorando QR Codes e afins.
+        formatsToSupport: [
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.ITF
+        ]
+    };
     
     html5QrCode.start({ facingMode: "environment" }, config,
         (decodedText, decodedResult) => {
-            // Sucesso ao ler o código!
+            // Sucesso!
             const inputBipar = document.getElementById('input-bipar');
             inputBipar.value = decodedText;
             
-            // Simula o 'Enter' para o seu sistema já processar o código lido
             const event = new KeyboardEvent('keydown', { key: 'Enter' });
             inputBipar.dispatchEvent(event);
             
-            // Fecha a câmera na hora para o celular não ficar apitando no mesmo código
             fecharCamera();
         },
         (errorMessage) => {
-            // Os erros a cada frame que a câmera não achar um código são normais, basta ignorar.
+            // Ignora os frames vazios normais
         }
     ).catch((err) => {
-        alert("Erro ao acessar a câmera. Verifique se o navegador tem permissão.");
+        let motivo = "Verifique as permissões de câmera do navegador.";
+        
+        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+            motivo = "Os navegadores exigem que o site tenha um link seguro (HTTPS) para ligar a câmera.";
+        }
+        
+        alert(`Não foi possível acessar a câmera.\n\nMotivo: ${motivo}`);
         fecharCamera();
     });
 };
