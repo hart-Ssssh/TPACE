@@ -7,6 +7,7 @@
     <title>Estoque - T-PACE</title>
     <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
     <div class="blob blob-1"></div>
@@ -212,15 +213,25 @@
     <div id="passo-2" style="display: none;">
         <div class="form-group full-width">
             <label>Inserir Códigos de Barras</label>
-            <!-- Criamos um display: flex para deixar o input e o botão na mesma linha -->
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="input-bipar" placeholder="Insira o código e pressione Enter..." style="flex: 1;">
+            <!-- Layout em coluna: Input em cima, Botões em baixo lado a lado -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="input-bipar" placeholder="Insira o código e pressione Enter..." style="width: 100%;">
                 
-                <!-- NOVO BOTÃO DE GERAR CÓDIGO INTERNO -->
-                <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno de 5 dígitos">
-                    <i class="fas fa-random"></i> Gerar
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno" style="flex: 1;">
+                        <i class="fas fa-random"></i> Gerar
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="iniciarLeitorCamera()" title="Escanear pela Câmera" style="flex: 1;">
+                        <i class="fas fa-camera"></i> Escanear
+                    </button>
+                </div>
             </div>
+        </div>
+        
+        <!-- Tela da Câmera Oculta por Padrão -->
+        <div id="camera-container" style="display: none; margin-top: 15px; text-align: center;">
+            <div id="reader" style="width: 100%; border-radius: 8px; overflow: hidden; border: 2px dashed var(--btn-acao);"></div>
+            <button type="button" class="btn btn-outline" style="margin-top: 10px;" onclick="fecharCamera()">Cancelar Câmera</button>
         </div>
         
         <div id="lista-codigos" style="margin-top: 15px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">

@@ -203,6 +203,7 @@ document.getElementById('prod-lote').value = produtoBase.lote || "";
 
 window.fecharModal = function() {
         document.getElementById('modal-produto').classList.remove('active');
+        if (typeof fecharCamera === 'function') fecharCamera();
         
         // CORREÇÃO: Zera completamente o formulário e a memória da imagem ao fechar
         document.getElementById('form-produto').reset();
@@ -336,6 +337,55 @@ window.excluirProduto = async function(chave_grupo, nomeProduto) {
         } catch (erro) {
             alert("Erro de conexão ao excluir produtos.");
         }
+    }
+};
+
+// ==========================================
+// MÓDULO DO LEITOR DE CÓDIGO DE BARRAS (CÂMERA)
+// ==========================================
+let html5QrCode;
+
+window.iniciarLeitorCamera = function() {
+    document.getElementById('camera-container').style.display = 'block';
+    
+    // Inicia a instância do leitor apontando para a div "reader"
+    html5QrCode = new Html5Qrcode("reader");
+    
+    // Usa a câmera traseira do celular ("environment") e demarca uma área de foco retangular
+    const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+    
+    html5QrCode.start({ facingMode: "environment" }, config,
+        (decodedText, decodedResult) => {
+            // Sucesso ao ler o código!
+            const inputBipar = document.getElementById('input-bipar');
+            inputBipar.value = decodedText;
+            
+            // Simula o 'Enter' para o seu sistema já processar o código lido
+            const event = new KeyboardEvent('keydown', { key: 'Enter' });
+            inputBipar.dispatchEvent(event);
+            
+            // Fecha a câmera na hora para o celular não ficar apitando no mesmo código
+            fecharCamera();
+        },
+        (errorMessage) => {
+            // Os erros a cada frame que a câmera não achar um código são normais, basta ignorar.
+        }
+    ).catch((err) => {
+        alert("Erro ao acessar a câmera. Verifique se o navegador tem permissão.");
+        fecharCamera();
+    });
+};
+
+window.fecharCamera = function() {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            document.getElementById('camera-container').style.display = 'none';
+        }).catch(err => {
+            document.getElementById('camera-container').style.display = 'none';
+        });
+    } else {
+        document.getElementById('camera-container').style.display = 'none';
     }
 };
 
