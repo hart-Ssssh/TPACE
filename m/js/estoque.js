@@ -227,25 +227,34 @@ async function salvarProduto(event) {
     btn.disabled = true;
 
     try {
-        let imagemUrl = document.getElementById('prod-imagem-url').value;
-        const fileInput = document.getElementById('prod-imagem');
-        
-        // --- UPLOAD DA FOTO ---
-        if (fileInput.files.length > 0) {
-            btn.innerText = "Enviando Imagem...";
-            const formData = new FormData();
-            formData.append('file', fileInput.files[0]);
-            const resUpload = await fetch(urlAPIUpload, { method: 'POST', body: formData });
-            const dataUpload = await resUpload.json();
+            let imagemUrl = document.getElementById('prod-imagem-url').value;
+            const fileInput = document.getElementById('prod-imagem');
             
-            if (dataUpload.sucesso && dataUpload.url) {
-                imagemUrl = dataUpload.url;
-            } else {
-                throw new Error("Falha no upload da imagem");
+            // --- UPLOAD DA FOTO (COM REDIMENSIONAMENTO) ---
+            if (fileInput.files.length > 0) {
+                btn.innerText = "Preparando Foto...";
+                
+                // Pega a foto e corta para 500x500px na memória do navegador
+                const arquivoOriginal = fileInput.files[0];
+                const fotoCortada = await redimensionarImagem(arquivoOriginal, 500);
+
+                btn.innerText = "Enviando Imagem...";
+                const formData = new FormData();
+                // Envia a foto recém-cortada em vez do arquivo cru gigante
+                formData.append('file', fotoCortada, arquivoOriginal.name);
+                
+                const resUpload = await fetch(urlAPIUpload, { method: 'POST', body: formData });
+                const dataUpload = await resUpload.json();
+                
+                if (dataUpload.sucesso && dataUpload.url) {
+                    imagemUrl = dataUpload.url;
+                } else {
+                    throw new Error("Falha no upload da imagem");
+                }
             }
-        }
-        
-        btn.innerText = "Salvando Banco...";
+            
+            btn.innerText = "Salvando Banco...";
+            // (O código continua normal a partir daqui...)
         const idValue = document.getElementById('prod-id').value;
         const isNovo = (idValue === "");
         
@@ -428,6 +437,45 @@ function ocultarBotoesSeRepositor() {
     if (nivel === 5) {
         document.querySelectorAll('.action-links, .action-links-mobile').forEach(td => td.style.display = 'none');
     }
+}
+
+// ==========================================
+// REDIMENSIONAMENTO DE IMAGEM CLIENT-SIDE (500x500)
+// ==========================================
+function redimensionarImagem(file, tamanhoQuadrado) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = tamanhoQuadrado;
+                canvas.height = tamanhoQuadrado;
+                const ctx = canvas.getContext('2d');
+
+                // Calcula a escala para cobrir o quadrado inteiro sem esticar
+                const scale = Math.max(tamanhoQuadrado / img.width, tamanhoQuadrado / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+
+                // Calcula as coordenadas (x, y) para manter a imagem centralizada no corte
+                const dx = (tamanhoQuadrado - scaledWidth) / 2;
+                const dy = (tamanhoQuadrado - scaledHeight) / 2;
+
+                // Desenha a imagem redimensionada e cortada no canvas
+                ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
+
+                // Converte o canvas de volta para um arquivo (Blob) em alta qualidade (90%)
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, file.type || 'image/jpeg', 0.9);
+            };
+            img.onerror = reject;
+            img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 const inputPesquisa = document.getElementById('inputPesquisa');
