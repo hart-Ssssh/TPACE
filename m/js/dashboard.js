@@ -1,5 +1,5 @@
 // ATENÇÃO: Verifique se essa URL base é a mesma do seu Worker!
-const urlAPIBase = "https://tpace-api.whyguiih.workers.dev/api/web";
+const urlAPIBase = "https://tpacem.manoelaagostini.workers.dev/api/web";
 
 document.addEventListener("DOMContentLoaded", async function() {
     

@@ -1,9 +1,9 @@
 // ==========================================
 // CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
 // ==========================================
-const urlAPIPessoal = "https://tpace-api.whyguiih.workers.dev/api/web/funcionarios/pessoal";
-const urlAPIProfissional = "https://tpace-api.whyguiih.workers.dev/api/web/funcionarios/profissional";
-const urlAPIFuncionariosGeral = "https://tpace-api.whyguiih.workers.dev/api/web/funcionarios";
+const urlAPIPessoal = "https://tpacem.manoelaagostini.workers.dev/api/web/funcionarios/pessoal";
+const urlAPIProfissional = "https://tpacem.manoelaagostini.workers.dev/api/web/funcionarios/profissional";
+const urlAPIFuncionariosGeral = "https://tpacem.manoelaagostini.workers.dev/api/web/funcionarios";
 
 let listaFuncionarios = [];
 

@@ -16,7 +16,7 @@ document.getElementById('form-login').addEventListener('submit', async function(
         // ================================================================
         // ATENÇÃO: Substitua o link abaixo pela URL real do seu Worker!
         // ================================================================
-        const urlDaSuaAPI = "https://tpace-api.whyguiih.workers.dev/api/web/login";
+        const urlDaSuaAPI = "https://tpacem.manoelaagostini.workers.dev/api/web/login";
 
         // Faz o POST para a API mandando o nome e a senha
         const resposta = await fetch(urlDaSuaAPI, {

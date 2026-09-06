@@ -470,8 +470,8 @@ export default {
           httpMetadata: { contentType: file.type }
         });
 
-        // ATENÇÃO: Troque este link pelo Public Access gerado no seu Bucket R2!
-                const urlPublica = `https://pub-c5ee40d961c6c73a7181839dec953784.r2.cloudflarestorage.com/tpace.r2.dev/${nomeArquivo}`;
+        // Link corrigido apontando diretamente para o Public Access do R2
+                const urlPublica = `https://pub-cef0af4ec14641d69ab30f7d560f9387.r2.dev/${nomeArquivo}`;
 
         return new Response(JSON.stringify({ sucesso: true, url: urlPublica }), { status: 201, headers: corsHeaders });
       } catch (error) {

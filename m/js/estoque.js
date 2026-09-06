@@ -1,5 +1,5 @@
-const urlAPIProdutos = "https://tpace-api.whyguiih.workers.dev/api/web/produtos";
-const urlAPIUpload = "https://tpace-api.whyguiih.workers.dev/api/web/upload";
+const urlAPIProdutos = "https://tpacem.manoelaagostini.workers.dev/api/web/produtos";
+const urlAPIUpload = "https://tpacem.manoelaagostini.workers.dev/api/web/upload";
 let listaProdutos = [];
 let codigosBipados = []; 
 
