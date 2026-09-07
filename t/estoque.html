@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <!-- Logo -->
+        <div class="topbar-brand">T-PACE</div>
+        <!-- ... resto do seu código continua normal abaixo ... -->
+        
+        <!-- Botão Hamburger -->
+        <button class="mobile-menu-btn">
+            <span></span><span></span><span></span>
+        </button>
+
+        <!-- Menu Principal (Fica oculto no celular até clicar) -->
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link" title="Dashboard">
+                <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
+            </a>
+            <a href="relatorios.html" class="menu-link" title="Relatórios">
+                <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
+            </a>
+            <a href="usuarios.html" class="menu-link" title="Usuários">
+                <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
+            </a>
+            <a href="estoque.html" class="menu-link active" title="Controle de Estoque">
+                <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
+            </a>
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
+                <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
+            </a>
+        </nav>
+
+        <div class="topbar-divider"></div>
+
+        <!-- Usuário -->
+        <div class="user-info">
+            <span>Carregando...</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- CONTEÚDO DA TELA: ESTOQUE -->
+        <section class="screen-container">
+            <h2>Gerenciar Estoque</h2>
+            
+            <!-- TOOLBAR COM BOTÕES -->
+            <div class="toolbar">
+                <input type="text" id="inputPesquisa" placeholder="Pesquisar produto por nome ou código..." style="width: 300px;">
+                <div>
+                    <!-- O botão que abre a janelinha modal -->
+                    <button class="btn" onclick="abrirModalNovo()">+ Adicionar Produto</button>
+                </div>
+            </div>
+
+            <!-- ESTRUTURA DA TABELA -->
+            <!-- ESTRUTURA DA TABELA -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th class="col-desktop">Categoria</th>
+                            <th class="col-desktop">Qtd</th>
+                            <th class="col-desktop">Preço</th>
+                            <th class="col-desktop">Status</th>
+                            <th class="col-desktop">Ações</th>
+                            <th class="col-mobile-seta"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-estoque">
+                        <!-- O JS injeta aqui -->
+                    </tbody>
+                </table>
+            </div>
+            <footer class="threeeo-footer">
+                <p>Desenvolvido por <a href="https://threeeo.com.br" target="_blank">Threeeo</a></p>
+            </footer>
+        </section>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- JANELA MODAL OCULTA (ADICIONAR/EDITAR)     -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="modal-produto">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h3 id="modal-titulo">Adicionar Produto</h3>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            
+            <form id="form-produto">
+    <input type="hidden" id="prod-id">
+    <input type="hidden" id="prod-codigo-geral">
+    
+    <!-- ================= PASSO 1 (GERAL) ================= -->
+    <div id="passo-1">
+        <div class="form-grid">
+            <!-- Linha da Foto -->
+            <div class="form-group full-width" style="text-align: center; margin-bottom: 10px;">
+                <label>Imagem do Produto</label>
+                <div style="margin: 10px auto; width: 140px; height: 140px; border-radius: 12px; border: 2px dashed var(--btn-acao); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: var(--bg-pesquisa);" onclick="document.getElementById('prod-imagem').click()">
+                    <img id="preview-imagem" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    <i class="fas fa-camera" id="icone-imagem" style="font-size: 35px; color: var(--text-secundario); opacity: 0.5;"></i>
+                </div>
+                <input type="file" id="prod-imagem" accept="image/*" capture="environment" style="display: none;" onchange="previewImagem(event)">
+                <input type="hidden" id="prod-imagem-url">
+            </div>
+
+            <!-- Linha 1 -->
+            <div class="form-group full-width">
+                <label>Nome do Produto *</label>
+                <input type="text" id="prod-nome" required>
+            </div>
+            
+            <!-- Linha 2 -->
+            <!-- AQUI ESTÁ O TRUQUE: O campo de código original fica isolado para sumir no cadastro novo -->
+            <div class="form-group" id="container-codigo-barras">
+                <label>Código de Barras</label>
+                <input type="text" id="prod-codigo">
+            </div>
+            
+            <div class="form-group">
+                <label>Unid. Venda *</label>
+                <select id="prod-unidade">
+                    <option value="Un">Unidade</option>
+                    <option value="Kg">Quilograma</option>
+                    <option value="L">Litro</option>
+                    <option value="Cx">Caixa</option>
+                    <option value="Mt">Metro</option>
+                    <option value="G">Grama</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Em Promoção?</label>
+                <select id="prod-em-promocao">
+                    <option value="0">Não</option>
+                    <option value="1">Sim</option>
+                </select>
+            </div>
+
+            <!-- Linha 3 -->
+            <div class="form-group">
+                <label>Custo (R$)</label>
+                <input type="number" step="0.01" id="prod-custo">
+            </div>
+            <div class="form-group">
+                <label>Preço Venda (R$) *</label>
+                <input type="number" step="0.01" id="prod-preco" required>
+            </div>
+            <div class="form-group">
+                <label>Preço Promocional (R$)</label>
+                <input type="number" step="0.01" id="prod-promocional">
+            </div>
+
+            <!-- Linha 4 -->
+            <div class="form-group">
+                <label>Qtd Atual *</label>
+                <input type="number" step="0.001" id="prod-qtd" required>
+            </div>
+            <div class="form-group">
+                <label>Qtd Mínima *</label>
+                <input type="number" step="0.001" id="prod-minimo" required>
+            </div>
+            <div class="form-group">
+                <label>Alíquota Imposto (%)</label>
+                <input type="number" step="0.01" id="prod-imposto">
+            </div>
+
+            <!-- Linha 5 -->
+            <div class="form-group">
+                <label>NCM</label>
+                <input type="text" id="prod-ncm">
+            </div>
+            <div class="form-group">
+                <label>CEST</label>
+                <input type="text" id="prod-cest">
+            </div>
+            <div class="form-group">
+                <label>Lote</label>
+                <input type="text" id="prod-lote">
+            </div>
+
+            <!-- Linha 6 -->
+            <div class="form-group">
+                <label>Validade</label>
+                <input type="date" id="prod-validade">
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn" id="btn-proximo" onclick="irParaPasso2()">Próximo <i class="fas fa-arrow-right"></i></button>
+            <button type="submit" class="btn" id="btn-salvar-edicao" style="display: none;">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <!-- ================= PASSO 2 (APENAS CADASTRO NOVO) ================= -->
+    <div id="passo-2" style="display: none;">
+        <div class="form-group full-width">
+            <label>Inserir Códigos de Barras</label>
+            <!-- Layout em coluna: Input em cima, Botões em baixo lado a lado -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="input-bipar" placeholder="Insira o código e pressione Enter..." style="width: 100%;">
+                
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno" style="flex: 1;">
+                        <i class="fas fa-random"></i> Gerar
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="iniciarLeitorCamera()" title="Escanear pela Câmera" style="flex: 1;">
+                        <i class="fas fa-camera"></i> Escanear
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tela da Câmera Oculta por Padrão -->
+        <div id="camera-container" style="display: none; margin-top: 15px; text-align: center;">
+            <div id="reader" style="width: 100%; border-radius: 8px; overflow: hidden; border: 2px dashed var(--btn-acao);"></div>
+            <button type="button" class="btn btn-outline" style="margin-top: 10px;" onclick="fecharCamera()">Cancelar Câmera</button>
+        </div>
+        
+        <div id="lista-codigos" style="margin-top: 15px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
+            <!-- Os códigos bipados aparecerão aqui -->
+        </div>
+        
+        <div class="modal-actions" style="margin-top: 25px;">
+            <button type="button" class="btn btn-outline" onclick="voltarPasso1()"><i class="fas fa-arrow-left"></i> Voltar</button>
+            <!-- Este botão envia o formulário inteiro -->
+            <button type="submit" class="btn" id="btn-finalizar-cadastro">Finalizar Cadastros</button>
+        </div>
+    </div>
+</form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/permissoes.js"></script>
+    <script src="js/estoque.js"></script>
+    
+</body>
+</html>

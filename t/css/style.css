@@ -1,0 +1,879 @@
+/* --- RESET E VARIÁVEIS (PALETA OFICIAL T-PACE) --- */
+:root {
+    /* Fundos / Backgrounds (Convertidos para Hex CSS RGBA) */
+    --bg-topo: #5E3A7D;
+    --bg-base: #2A1143;
+    --glass-inicio: #F8F3FCE6; /* Translúcido 90% */
+    --glass-fim: #F8F3FCCC;    /* Translúcido 80% */
+    --bg-pesquisa: #F8F3FC99;
+    --bg-rodape: #F8F3FC44;
+    --bg-badge: #A45FCE1A;
+    --bg-placeholder: #D6C4E833;
+    --bg-linha-selecionada: #2A11431A;
+    --bg-linha-hover: #2A11430D;
+
+    /* Bordas e Sombras */
+    --border-glass: rgba(255, 255, 255, 0.5);
+    --border-pesquisa: #FFFFFF88;
+    --border-divisoria: #D6C4E866;
+    --border-rodape: #D6C4E844;
+    --border-badge: #A45FCE44;
+    --sombra-escura: #2A1143;
+
+    /* Destaques e Botões */
+    --btn-acao: #A45FCE;
+    
+    /* Cores Auxiliares (Gráficos e Ações) */
+    --chart-turquesa: #68BBBA;
+    --chart-rosa: #F25C8F;
+
+    /* Textos e Tipografia */
+    --text-escuro: #2A1143;
+    --text-secundario: #5E3A7D;
+    --text-claro: #F8F3FC;
+    --text-rodape: #D6C4E8;
+    --text-placeholder: #5E3A7D88;
+
+    /* Fundos Liquid Glass (Bem mais transparentes) */
+    --glass-inicio: rgba(255, 255, 255, 0.7); 
+    --glass-fim: rgba(255, 255, 255, 0.45);    
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ==========================================
+   SCROLLBARS PERSONALIZADAS (GLASSMORPHISM)
+   ========================================== */
+
+/* Regra para o Firefox */
+* {
+    scrollbar-width: thin; /* Deixa a barra fininha */
+    scrollbar-color: rgba(164, 95, 206, 0.4) transparent; /* Cor do botão e fundo transparente */
+}
+
+/* Regras para Chrome, Edge, Safari e celulares Android/iOS */
+::-webkit-scrollbar {
+    width: 6px; /* Deixa a barra vertical bem delicada */
+    height: 6px; /* Deixa a barra horizontal fininha na tabela */
+}
+
+/* O Fundo da barra (Track) - Totalmente transparente! */
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+/* A "pecinha" que rola (Thumb) - Roxinho de vidro */
+::-webkit-scrollbar-thumb {
+    background: rgba(164, 95, 206, 0.4); /* Usa o roxo da paleta com transparência */
+    border-radius: 10px; /* Bordas arredondadas e chiques */
+}
+
+/* Quando o usuário clica ou passa o mouse na barra */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(164, 95, 206, 0.7); 
+}
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* --- FUNDO LIQUID GLASS --- */
+body {
+    background-color: var(--bg-base); 
+    color: var(--text-claro);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;             /* NOVO */
+    max-width: 100%;         /* NOVO */
+    overflow: hidden;
+    overscroll-behavior: none; /* NOVO: Mata o efeito "elástico" de puxar a tela para fora */
+    position: relative; 
+}
+
+/* As Formas Flutuantes (Blobs) */
+.blob {
+    position: absolute;
+    filter: blur(80px); /* Esse é o segredo do efeito líquido! */
+    z-index: -1; /* Mantém elas atrás de todo o conteúdo */
+    opacity: 0.6; /* Deixa um pouco transparente para não ofuscar o texto */
+    border-radius: 50%;
+    animation: flutuar 15s infinite alternate ease-in-out;
+}
+
+/* Esfera 1 - Roxa */
+.blob-1 {
+    top: -10%;
+    left: -10%;
+    width: 450px;
+    height: 450px;
+    background-color: var(--btn-acao);
+    animation-delay: 0s;
+}
+
+/* Esfera 2 - Turquesa */
+.blob-2 {
+    bottom: -20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background-color: var(--chart-turquesa);
+    animation-delay: -5s; /* Começa a animação de um ponto diferente */
+}
+
+/* Esfera 3 - Rosa (Menor e mais rápida) */
+.blob-3 {
+    top: 40%;
+    left: 40%;
+    width: 300px;
+    height: 300px;
+    background-color: var(--chart-rosa);
+    animation-delay: -10s;
+    animation-duration: 20s;
+}
+
+/* Animação de Movimento Contínuo */
+@keyframes flutuar {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(150px, 100px) scale(1.2);
+    }
+    66% {
+        transform: translate(-100px, 200px) scale(0.8);
+    }
+    100% {
+        transform: translate(50px, -50px) scale(1.1);
+    }
+}
+
+/* --- BARRA SUPERIOR (TOPBAR GLASS) --- */
+.topbar {
+    min-height: 70px; 
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    border-bottom: 1px solid var(--border-glass);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.2);
+    flex-wrap: wrap; 
+    transition: all 0.3s ease;
+}
+
+.topbar-brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--btn-acao);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: auto; 
+}
+
+/* O Menu no Computador */
+.topbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-link {
+    background-color: transparent;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    width: 44px;
+    height: 44px;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.menu-link:hover {
+    background-color: var(--bg-badge);
+    border-color: var(--border-badge);
+}
+
+.menu-link:hover .nav-icon {
+    transform: scale(1.15);
+}
+
+.menu-link.active {
+    background-color: var(--bg-linha-selecionada);
+    border: 1px solid var(--btn-acao);
+    box-shadow: inset 0 0 8px rgba(164, 95, 206, 0.15);
+}
+
+.topbar-divider {
+    width: 1px;
+    height: 35px;
+    background-color: var(--border-divisoria);
+    margin: 0 5px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text-escuro);
+}
+
+/* --- ÁREA PRINCIPAL --- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.screen-container {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: var(--text-claro);
+    text-shadow: 0 2px 4px rgba(42, 17, 67, 0.4);
+}
+
+/* --- BOTÕES --- */
+.btn {
+    background-color: var(--btn-acao);
+    color: var(--text-claro);
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: 0.2s;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(42, 17, 67, 0.3);
+}
+
+.btn:hover {
+    background-color: var(--bg-topo);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--btn-acao);
+    border: 1px solid var(--btn-acao);
+    box-shadow: none;
+}
+
+.btn-outline:hover {
+    background-color: var(--bg-linha-selecionada);
+    color: var(--text-escuro);
+}
+
+/* Inputs Gerais */
+input, select {
+    padding: 10px;
+    border: 1px solid var(--border-divisoria);
+    border-radius: 4px;
+    outline: none;
+    color: var(--text-escuro);
+    background-color: var(--glass-inicio);
+}
+
+input:focus, select:focus {
+    border-color: var(--btn-acao);
+}
+
+/* --- TELA: DASHBOARD --- */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card, .chart-placeholder {
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+    backdrop-filter: blur(12px);
+    color: var(--text-escuro);
+}
+
+.card-title {
+    font-size: 14px;
+    color: var(--text-secundario);
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.card-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: var(--btn-acao);
+}
+
+.chart-placeholder {
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secundario);
+    font-style: italic;
+}
+
+/* --- TELA: ESTOQUE --- */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    padding: 15px;
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+    color: var(--text-escuro);
+}
+
+th, td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-divisoria);
+    white-space: nowrap; /* Impede que qualquer campo quebre linha */
+}
+
+/* Regra para o Nome do Produto cortar com reticências (...) no PC */
+th:nth-child(2), td:nth-child(2) {
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th {
+    background-color: var(--bg-rodape);
+    font-weight: 600;
+    color: var(--text-secundario);
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover {
+    background-color: var(--bg-linha-hover);
+}
+
+/* --- PREÇO PROMOCIONAL NO ESTOQUE --- */
+.promo-badge {
+    background-color: rgba(164, 95, 206, 0.15);
+    color: var(--text-secundario);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    border: 1px solid rgba(164, 95, 206, 0.3);
+    display: inline-block;
+}
+
+/* --- Badges de Status --- */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-critical { background-color: rgba(242, 92, 143, 0.15); color: var(--btn-acao); border: 1px solid rgba(255, 77, 77, 0.4); }
+.status-warning { background-color: rgba(164, 95, 206, 0.15); color: var(--btn-acao); border: 1px solid rgba(255, 165, 0, 0.4); }
+.status-low { background-color: rgba(142, 138, 159, 0.15); color: var(--btn-acao); border: 1px solid var(--border-badge); }
+.status-medium { background-color: rgba(104, 187, 186, 0.15); color: var(--btn-acao); border: 1px solid rgba(104, 187, 186, 0.4); }
+.status-good { background-color: rgba(52, 211, 153, 0.15); color: var(--btn-acao); border: 1px solid rgba(106, 139, 138, 0.4); }
+
+/* --- GRÁFICOS (DASHBOARD) --- */
+.chart-container {
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-header h3 {
+    font-size: 18px;
+    color: var(--text-secundario);
+    text-transform: uppercase;
+}
+
+#chart-selector {
+    background-color: var(--bg-pesquisa);
+    border: 1px solid var(--border-divisoria);
+    color: var(--text-escuro);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#chart-selector:focus {
+    border-color: var(--btn-acao);
+    box-shadow: 0 0 5px var(--bg-badge);
+}
+
+.canvas-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* --- BOTÕES DE AÇÃO NA TABELA (MINI-GLASS) --- */
+.action-links {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-edit { background: linear-gradient(135deg, var(--chart-turquesa), #4ba3a2); }
+.btn-edit:hover { background: linear-gradient(135deg, #4ba3a2, var(--chart-turquesa)); box-shadow: 0 0 10px var(--chart-turquesa); transform: translateY(-2px); }
+
+.btn-delete { background: linear-gradient(135deg, var(--chart-rosa), #d43f6a); }
+.btn-delete:hover { background: linear-gradient(135deg, #d43f6a, var(--chart-rosa)); box-shadow: 0 0 10px var(--chart-rosa); transform: translateY(-2px); }
+
+/* --- JANELA MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(42, 17, 67, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+.modal-glass {
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim));
+    border: 1px solid var(--border-glass);
+    box-shadow: 0 8px 32px rgba(42, 17, 67, 0.4);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 750px;
+    color: var(--text-escuro);
+    
+    /* O SEGREDO: Se o form for muito grande, ele cria uma barra de rolagem interna! */
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-divisoria);
+    padding-bottom: 10px;
+}
+
+.modal-header h3 { color: var(--btn-acao); }
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secundario);
+    cursor: pointer;
+}
+
+.form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full-width { grid-column: span 3; }
+.form-group label { font-size: 12px; font-weight: bold; color: var(--text-secundario); text-transform: uppercase; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ==========================================
+   RESPONSIVIDADE DAS TELAS INTERNAS (CELULARES)
+   ========================================== */
+
+/* Botão Hamburger Oculto no Desktop */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+}
+
+.mobile-menu-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--btn-acao);
+    border-radius: 3px;
+    transition: 0.3s;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(42, 17, 67, 0.15);
+}
+
+.table-wrapper table { box-shadow: none; }
+
+/* Esconde a coluna da seta e a linha de detalhes no Computador */
+.col-mobile-seta, .td-seta { display: none; }
+.detalhes-row { display: none !important; }
+
+/* Animação da Setinha */
+.seta-tabela {
+    color: var(--btn-acao);
+    transition: transform 0.3s ease;
+}
+.seta-tabela.ativa {
+    transform: rotate(180deg);
+}
+
+/* ==========================================
+   EFEITO LIQUID GLASS 3D (MASTER) - CORRIGIDO
+   ========================================== */
+.topbar, .card, .chart-placeholder, .toolbar, .table-wrapper, 
+.modal-glass, .login-glass-card, .perfil-destaque, .box-info {
+    /* Fundo degradê fosco claro */
+    background: linear-gradient(135deg, var(--glass-inicio), var(--glass-fim)) !important;
+    
+    /* Desfoque mantido, mas saturação removida para não escurecer o painel */
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    
+    border: 1px solid var(--border-glass) !important;
+    
+    /* O Brilho Especular (Lábio branco nas bordas) mantido intacto! */
+    box-shadow: 
+        0 8px 32px rgba(42, 17, 67, 0.15), /* Sombra mais suave */
+        inset 1.5px 1.5px 2px rgba(255, 255, 255, 0.9), /* O reflexo da luz */
+        inset -1px -1px 3px rgba(0, 0, 0, 0.05) !important;
+    
+    border-radius: 16px; 
+}
+
+/* Ajustes finos para não quebrar peças específicas */
+.topbar {
+    border-radius: 0 0 16px 16px !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.table-wrapper table {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+}
+
+@media screen and (max-width: 768px) {
+    .topbar {
+        padding: 15px 20px;
+        gap: 0; 
+        align-items: center; 
+    }
+
+    /* 1. Botão Sanduíche na extrema ESQUERDA */
+    .mobile-menu-btn {
+        order: 1;
+        display: flex; 
+        margin-right: 15px; 
+    }
+
+    /* 2. Logo T-PACE logo após o botão */
+    .topbar-brand { 
+        order: 2; 
+        margin-right: auto; 
+        white-space: nowrap;
+    }
+    
+    /* 3. Usuário na extrema DIREITA */
+    .user-info {
+        order: 3;
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .topbar-divider { display: none; } 
+
+    /* 4. O SUB-MENU ABAIXO (Sanfona) */
+    .topbar-menu {
+        order: 4; 
+        width: 100%; 
+        
+        display: none !important; 
+        flex-direction: row; 
+        justify-content: space-evenly; 
+        
+        background-color: var(--bg-pesquisa); 
+        border: 1px solid var(--border-divisoria);
+        border-radius: 12px;
+        padding: 10px;
+        margin-top: 15px; 
+        box-shadow: inset 0 2px 5px rgba(42, 17, 67, 0.05); 
+    }
+
+    .topbar-menu.open {
+        display: flex !important; 
+        animation: deslizarBaixo 0.3s ease-out forwards;
+    }
+
+    @keyframes deslizarBaixo {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu-link { width: 40px; height: 40px; }
+        .screen-container { 
+        padding: 15px; 
+        padding-bottom: 40px; /* Garante que o final não fique espremido ou cortado */
+    }
+
+    .toolbar { flex-direction: column; gap: 10px; }
+    .toolbar input { width: 100% !important; }
+    .toolbar div { display: flex; width: 100%; gap: 10px; }
+    .toolbar .btn { flex: 1; padding: 12px 5px; font-size: 12px; }
+
+   /* ==========================================
+       A MÁGICA DA TABELA MAGRINHA (SEM ROLAGEM)
+       ========================================== */
+    .table-wrapper {
+        overflow-x: hidden !important; /* Bloqueia a rolagem horizontal de vez */
+    }
+
+    table {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+    
+th, td {
+        padding: 7px 3px !important;
+        font-size: 13px !important;
+        line-height: 1.2;
+        white-space: nowrap !important; /* Impede a quebra de linha no celular */
+    }
+    
+    /* Coluna 1 (Código) - Fixo, sem quebra, usa reticências se faltar espaço */
+    th:nth-child(1), td:nth-child(1) {
+         width: 35% !important; /* Um pouco mais de espaço para os códigos */
+         overflow: hidden !important;
+         text-overflow: ellipsis !important;
+    }
+    
+    /* Coluna 2 (Produto) - Nome extenso vira reticências (...) */
+    th:nth-child(2), td:nth-child(2) {
+         width: 55% !important;
+         overflow: hidden !important;
+         text-overflow: ellipsis !important;
+    }
+    
+    /* Esconde as colunas extras de vez! */
+    .col-desktop { display: none !important; }
+    
+    /* Coluna da Setinha */
+    .col-mobile-seta, .td-seta { 
+        display: table-cell !important; 
+        width: 10% !important; 
+        text-align: center !important; 
+        vertical-align: middle; 
+    }
+
+    .linha-produto { cursor: pointer; }
+
+    /* Linha de Detalhes (Sanfona) */
+    .detalhes-row.open {
+        display: table-row !important;
+        background-color: var(--bg-linha-selecionada);
+    }
+
+    .detalhes-content {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detalhe-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-divisoria);
+        font-size: 13px;
+    }
+
+    .detalhe-item b { color: var(--text-secundario); text-transform: uppercase; font-size: 11px; }
+    
+    .detalhes-acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    /* ==========================================
+       MODAL E FORMULÁRIOS NO CELULAR
+       ========================================== */
+    .modal-overlay {
+        padding: 15px; /* Não deixa o vidro encostar na borda da tela */
+    }
+
+    .modal-glass {
+        padding: 20px;
+        max-height: 85vh; /* Dá espaço para o teclado virtual não bugar a tela */
+    }
+
+    /* Coloca todos os campos em 1 única coluna */
+    .form-grid { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+        margin-bottom: 15px;
+    }
+    .form-group.full-width { 
+        grid-column: span 1; 
+    }
+
+    /* Inputs confortáveis para o dedo e blindados contra o zoom do iPhone */
+    .form-group input, .form-group select {
+        padding: 12px 15px;
+        font-size: 16px !important; 
+    }
+
+    /* Botões empilhados (Salvar em cima, Cancelar embaixo) */
+    .modal-actions {
+        flex-direction: column-reverse; 
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .modal-actions button {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+    }
+    
+    /* Empilha os Cards do Dashboard */
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    /* --- Ajustes do Gráfico no Celular --- */
+    .chart-header {
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    #chart-selector {
+        width: 100%; 
+        font-size: 13px; 
+    }
+
+    .canvas-wrapper { height: 250px; }
+}
+
+/* ==========================================
+   RODAPÉ THREEE (Páginas Internas)
+   ========================================== */
+.threeeo-footer {
+    text-align: center;
+    padding: 15px; /* Adicionado padding ao redor */
+    margin-top: 20px;
+    margin-bottom: 10px; /* Desgruda do fim da tela */
+    font-size: 13px;
+    color: var(--text-claro); /* Mudado para claro para maior contraste */
+    border-top: 1px solid var(--border-divisoria);
+    
+    /* Um fundo levemente escurecido para isolar do LiquidGlass */
+    background: rgba(42, 17, 67, 0.3); 
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+}
+
+.threeeo-footer a {
+    color: var(--chart-rosa); 
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.threeeo-footer a:hover {
+    color: var(--text-claro);
+    text-shadow: 0 0 10px rgba(104, 187, 186, 0.8); 
+}
