@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <!-- Importando a biblioteca Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <!-- Logo -->
+        <div class="topbar-brand">T-PACE</div>
+        
+        <!-- Botão Hamburger -->
+        <button class="mobile-menu-btn">
+            <span></span><span></span><span></span>
+        </button>
+
+        <!-- Menu Principal (Fica oculto no celular até clicar) -->
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link active" title="Dashboard">
+                <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
+            </a>
+            <a href="relatorios.html" class="menu-link" title="Relatórios">
+                <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
+            </a>
+            <a href="usuarios.html" class="menu-link" title="Usuários">
+                <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
+            </a>
+            <a href="estoque.html" class="menu-link" title="Controle de Estoque">
+                <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
+            </a>
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
+                <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
+            </a>
+        </nav>
+
+        <div class="topbar-divider"></div>
+
+        <!-- Usuário -->
+        <div class="user-info">
+            <span>Carregando...</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- CONTEÚDO DA TELA: DASHBOARD -->
+        <section class="screen-container">
+            <h2>Resumo de Hoje</h2>
+            
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-title">Vendas do Dia</div>
+                    <div class="card-value" id="card-vendas">R$ 0,00</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Atendimentos</div>
+                    <div class="card-value" id="card-atendimentos">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Alertas de Estoque</div>
+                    <div class="card-value" id="card-alertas">0 itens</div>
+                </div>
+            </div>
+
+            <!-- GRÁFICO DINÂMICO -->
+            <div class="chart-container card">
+                <div class="chart-header">
+                    <h3>Análise de Desempenho</h3>
+                    <select id="chart-selector">
+                        <option value="faturamento">Faturamento (Últimos 7 dias)</option>
+                        <option value="pagamentos">Métodos de Pagamento</option>
+                        <option value="produtos">Top 5 Produtos Mais Vendidos</option>
+                        <option value="filiais">Faturamento por Filial</option>
+                    </select>
+                </div>
+                <div class="canvas-wrapper">
+                    <!-- Onde o gráfico será desenhado -->
+                    <canvas id="meuGrafico"></canvas>
+                </div>
+            </div>
+            <footer class="threeeo-footer">
+                <p>Desenvolvido por <a href="https://threeeo.com.br" target="_blank">Threeeo</a></p>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/permissoes.js"></script>
+    <script src="js/dashboard.js"></script>
+
+</body>
+</html>

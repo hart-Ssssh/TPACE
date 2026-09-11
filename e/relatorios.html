@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="icon" type="image/x-icon" href="assets/icons/icone.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - T-PACE</title>
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <!-- Importando a biblioteca Chart.js para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Apenas classes auxiliares para as abas que não estão no style.css base */
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        /* CORREÇÕES RESPONSIVAS EXCLUSIVAS PARA OS RELATÓRIOS */
+        @media screen and (max-width: 768px) {
+            /* 1. Devolve a rolagem horizontal e aumenta o espaço geral entre campos */
+            .table-wrapper {
+                overflow-x: auto !important; /* Habilita deslizar para os lados */
+            }
+            table {
+                table-layout: auto !important; 
+                min-width: 850px !important; /* Ideal para a tabela principal (Desempenho) */
+            }
+            th, td {
+                white-space: nowrap !important; /* Impede que o texto quebre */
+                padding: 12px 15px !important; /* Aumenta o espaço em branco entre as células */
+            }
+            
+            /* EXCEÇÃO: Ajustes para a Aba de Trocas */
+            #aba-trocas table {
+                min-width: 500px !important;
+            }
+            #aba-trocas th:nth-child(2), #aba-trocas td:nth-child(2) {
+                width: 1%;
+                padding-right: 10px !important;
+            }
+            #aba-trocas th:nth-child(3), #aba-trocas td:nth-child(3) {
+                padding-left: 0 !important;
+            }
+
+            /* EXCEÇÃO: Ajustes para a Aba Radar de Ação */
+            #aba-radar table {
+                min-width: 500px !important; /* Como tem 3 colunas, não precisa de 850px */
+            }
+            #aba-radar th:nth-child(2), #aba-radar td:nth-child(2) {
+                width: 1%; /* Puxa "Quantidade" para perto do limite do texto */
+                padding-right: 15px !important;
+            }
+            #aba-radar th:nth-child(3), #aba-radar td:nth-child(3) {
+                width: 1%; /* Gruda a "Ação Sugerida" logo em seguida */
+            }
+
+            /* EXCEÇÃO: Ajustes para a Aba Giro de Estoque */
+            #aba-giro table {
+                min-width: 650px !important; /* Ajuste moderado para 5 colunas */
+            }
+            #aba-giro th:nth-child(1), #aba-giro td:nth-child(1) {
+                width: 1%; /* Encolhe a coluna "Unidade" */
+                padding-right: 10px !important;
+            }
+            #aba-giro th:nth-child(2), #aba-giro td:nth-child(2) {
+                padding-left: 0 !important; /* Aproxima o "Produto" da "Unidade" */
+            }
+            #aba-giro th:nth-child(3), #aba-giro td:nth-child(3) {
+                width: 1%; /* Puxa o "Volume (mês)" para perto do "Produto" */
+            }
+
+            /* 2. Ajusta os botões das abas do menu para não ficarem minúsculos */
+            .tab-menu .btn {
+                flex: 1 1 45%; 
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            /* 3. Ajusta a barra de filtros (datas e busca por ID) */
+            .toolbar {
+                align-items: stretch !important;
+            }
+            .toolbar > div {
+                margin-left: 0 !important; 
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .toolbar input[type="date"], .toolbar input[type="number"] {
+                width: 100% !important; 
+            }
+        }
+        /* --- VISUAL PREMIUM DAS ABAS --- */
+        .tab-button {
+            border-radius: 12px; /* Deixa as abas mais arredondadas e modernas */
+            transition: all 0.3s ease;
+        }
+        
+        /* Como ficam as abas que NÃO estão selecionadas no fundo escuro */
+        .tab-button.btn-outline {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: var(--text-claro) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(5px);
+        }
+        
+        .tab-button.btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- TOPBAR COM NAVEGAÇÃO -->
+    <header class="topbar">
+        <!-- Logo -->
+        <div class="topbar-brand">T-PACE</div>
+        <!-- ... resto do seu código continua normal abaixo ... -->
+        
+        <!-- Botão Hamburger -->
+        <button class="mobile-menu-btn">
+            <span></span><span></span><span></span>
+        </button>
+
+        <!-- Menu Principal (Fica oculto no celular até clicar) -->
+        <nav class="topbar-menu">
+            <a href="dashboard.html" class="menu-link" title="Dashboard">
+                <img src="assets/icons/dashboard.png" alt="Dashboard" class="nav-icon">
+            </a>
+            <a href="relatorios.html" class="menu-link active" title="Relatórios">
+                <img src="assets/icons/relatorio.png" alt="Relatórios" class="nav-icon">
+            </a>
+            <a href="usuarios.html" class="menu-link" title="Usuários">
+                <img src="assets/icons/usuario.png" alt="Usuários" class="nav-icon">
+            </a>
+            <a href="estoque.html" class="menu-link" title="Controle de Estoque">
+                <img src="assets/icons/estoque.png" alt="Estoque" class="nav-icon">
+            </a>
+            <a href="index.html" id="btn-sair" class="menu-link" title="Sair">
+                <img src="assets/icons/sair.png" alt="Sair" class="nav-icon">
+            </a>
+        </nav>
+
+        <div class="topbar-divider"></div>
+        <div class="user-info">
+            <span id="nome-usuario-logado">Carregando...</span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="screen-container">
+            <h2>Painel de Relatórios</h2>
+
+            <!-- MENU DE ABAS (Usando os botões do seu CSS) -->
+            <div class="tab-menu">
+                <button class="btn tab-button" onclick="abrirAba(event, 'aba-desempenho')">Desempenho Financeiro</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-giro')">Giro de Estoque</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-radar')">Radar de Ação</button>
+                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-trocas')">Trocas</button>
+            </div>
+
+            <!-- ABA 1: DESEMPENHO E VENDAS DETALHADAS -->
+            <div id="aba-desempenho" class="tab-content active">
+                
+                <!-- Toolbar estilo Estoque para o Filtro -->
+                <div class="toolbar" style="justify-content: flex-start; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight: bold; color: var(--text-secundario);">Período:</label>
+                    <input type="date" id="filtro-inicio">
+                    <span style="color: var(--text-secundario);">até</span>
+                    <input type="date" id="filtro-fim">
+                    <button class="btn" onclick="carregarRelatorioDesempenho()">Atualizar</button>
+                    
+                    <!-- NOVO CAMPO: Busca por ID -->
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
+                        <label style="font-weight: bold; color: var(--text-secundario);">Buscar Venda (ID):</label>
+                        <input type="number" id="filtro-id-venda" placeholder="Ex: 123" style="width: 150px;">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="chart-header">
+                        <h3>Gráfico de Faturamento</h3>
+                        <span class="status-badge status-good" id="total-faturamento" style="font-size: 14px;">Total: R$ 0,00</span>
+                    </div>
+                    <p id="texto-periodo" style="text-align: center; color: var(--text-secundario); font-weight: bold; margin-top: -10px; margin-bottom: 15px;"></p>
+                    
+                    <div class="canvas-wrapper">
+                        <canvas id="meuGrafico"></canvas>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Detalhamento Individual de Vendas</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data e Hora</th>
+                                    <th>Venda (ID)</th>
+                                    <th>Vendedor</th>
+                                    <th>Produtos e Quantidades</th>
+                                    <th>Subtotal</th>
+                                    <th>Total Venda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-desempenho">
+                                <tr><td colspan="6" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: GIRO DE ESTOQUE -->
+            <div id="aba-giro" class="tab-content">
+                <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Visão Geral e Giro de Estoque</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Unidade</th><th>Produto</th><th>Volume (mês)</th><th>Estoque</th><th>Giro</th></tr></thead>
+                            <tbody id="tbody-giro">
+                                <tr><td colspan="5" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: RADAR -->
+            <div id="aba-radar" class="tab-content">
+                <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Estoque Desequilibrado</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Produto</th><th>Quantidade</th><th>Ação Sugerida</th></tr></thead>
+                            <tbody id="tbody-radar">
+                                <tr><td colspan="3" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 4: TROCAS -->
+            <div id="aba-trocas" class="tab-content">
+                <div class="card">
+                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Trocas e Devoluções</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Quantidade</th></tr></thead>
+                            <tbody id="tbody-trocas">
+                                <tr><td colspan="4" style="text-align:center;">Carregando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <footer class="threeeo-footer">
+                <p>Desenvolvido por <a href="https://threeeo.com.br" target="_blank">Threeeo</a></p>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Importa o do Lógica em JS -->
+    <script src="js/relatorios.js"></script>
+    <script src="js/permissoes.js"></script>
+    
+    <script>
+        // Função de controle das abas
+        function abrirAba(evento, idAba) {
+            // 1. Oculta todos os conteúdos das abas
+            let conteudos = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < conteudos.length; i++) {
+                conteudos[i].classList.remove("active");
+            }
+            
+            // 2. Reseta todos os botões: apenas adiciona a transparência, SEM remover a base
+            let botoes = document.getElementsByClassName("tab-button");
+            for (let i = 0; i < botoes.length; i++) {
+                botoes[i].classList.add("btn-outline");
+            }
+            
+            // 3. Mostra a aba desejada
+            document.getElementById(idAba).classList.add("active");
+            
+            // 4. Preenche o botão clicado (removendo a transparência)
+            evento.currentTarget.classList.remove("btn-outline");
+        }
+    </script>
+</body>
+</html>
