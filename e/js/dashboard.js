@@ -38,12 +38,12 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     // Suas cores oficiais para os gráficos
     const cores = {
-        roxo: '#CE3A3A', // Nome mantido como 'roxo' para não quebrar a lógica abaixo, mas a cor é Vermelho Ação
-        turquesa: '#68BBBA',
-        verde: '#6A8B8A',
-        lilas: '#E8C4C4', // Cor alterada para vermelho claro
-        chumbo: '#242A2A',
-        fundoRoxo: 'rgba(206, 58, 58, 0.2)' // Fundo vermelho translúcido
+    roxo: '#D50000', // Nome da chave mantida como roxo por compatibilidade, mas o valor é Vermelho Puro
+    turquesa: '#68BBBA',
+    verde: '#6A8B8A',
+    lilas: '#FFD6D6', // Tonalidade clara (rosa/vermelho pálido)
+    chumbo: '#242A2A',
+    fundoRoxo: 'rgba(213, 0, 0, 0.2)' // Fundo vermelho transparente
 };
 
     function renderizarGrafico(tipo) {

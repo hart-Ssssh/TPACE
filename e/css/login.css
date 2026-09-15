@@ -1,38 +1,37 @@
-/* Centraliza a caixa de login no meio da tela */
 :root {
-    /* Fundos / Backgrounds (Convertidos para Hex CSS RGBA em Vermelho) */
-    --bg-topo: #7D2222;
-    --bg-base: #431111;
-    --glass-inicio: #FCF3F3E6; /* Translúcido 90% */
-    --glass-fim: #FCF3F3CC;    /* Translúcido 80% */
-    --bg-pesquisa: #FCF3F399;
-    --bg-rodape: #FCF3F344;
-    --bg-badge: #CE3A3A1A;
-    --bg-placeholder: #E8C4C433;
-    --bg-linha-selecionada: #4311111A;
-    --bg-linha-hover: #4311110D;
+    /* Fundos / Backgrounds (Tons vermelhos profundos e frios, zero laranja) */
+    --bg-topo: #800000;      /* Vermelho escuro forte (Bordô) */
+    --bg-base: #330000;      /* Fundo principal vinho quase escuro */
+    --glass-inicio: #FFF5F5E6; /* Translúcido 90% */
+    --glass-fim: #FFF5F5CC;    /* Translúcido 80% */
+    --bg-pesquisa: #FFF5F599;
+    --bg-rodape: #FFF5F544;
+    --bg-badge: #D500001A;
+    --bg-placeholder: #FFD6D633;
+    --bg-linha-selecionada: #3300001A;
+    --bg-linha-hover: #3300000D;
 
     /* Bordas e Sombras */
     --border-glass: rgba(255, 255, 255, 0.5);
     --border-pesquisa: #FFFFFF88;
-    --border-divisoria: #E8C4C466;
-    --border-rodape: #E8C4C444;
-    --border-badge: #CE3A3A44;
-    --sombra-escura: #431111;
+    --border-divisoria: #FFD6D666;
+    --border-rodape: #FFD6D644;
+    --border-badge: #D5000044;
+    --sombra-escura: #330000;
 
     /* Destaques e Botões */
-    --btn-acao: #CE3A3A;
+    --btn-acao: #D50000;     /* Vermelho vivo, brilhante e puro */
 
     /* Cores Auxiliares (Gráficos e Ações) */
-    --chart-turquesa: #68BBBA; /* Mantido para gerar contraste */
-    --chart-rosa: #F25C8F;     /* Mantido para gerar contraste */
+    --chart-turquesa: #68BBBA;
+    --chart-rosa: #F25C8F;
 
     /* Textos e Tipografia */
-    --text-escuro: #431111;
-    --text-secundario: #7D2222;
-    --text-claro: #FCF3F3;
-    --text-rodape: #E8C4C4;
-    --text-placeholder: #7D222288;
+    --text-escuro: #330000;
+    --text-secundario: #800000;
+    --text-claro: #FFF5F5;
+    --text-rodape: #FFD6D6;
+    --text-placeholder: #80000088;
 }
 
 /* --- LOGIN CONTAINER --- */
