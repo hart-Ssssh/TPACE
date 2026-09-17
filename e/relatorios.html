@@ -31,18 +31,6 @@
                 padding: 12px 15px !important; /* Aumenta o espaço em branco entre as células */
             }
             
-            /* EXCEÇÃO: Ajustes para a Aba de Trocas */
-            #aba-trocas table {
-                min-width: 500px !important;
-            }
-            #aba-trocas th:nth-child(2), #aba-trocas td:nth-child(2) {
-                width: 1%;
-                padding-right: 10px !important;
-            }
-            #aba-trocas th:nth-child(3), #aba-trocas td:nth-child(3) {
-                padding-left: 0 !important;
-            }
-
             /* EXCEÇÃO: Ajustes para a Aba Radar de Ação */
             #aba-radar table {
                 min-width: 500px !important; /* Como tem 3 colunas, não precisa de 850px */
@@ -161,7 +149,6 @@
                 <button class="btn tab-button" onclick="abrirAba(event, 'aba-desempenho')">Desempenho Financeiro</button>
                 <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-giro')">Giro de Estoque</button>
                 <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-radar')">Radar de Ação</button>
-                <button class="btn btn-outline tab-button" onclick="abrirAba(event, 'aba-trocas')">Trocas</button>
             </div>
 
             <!-- ABA 1: DESEMPENHO E VENDAS DETALHADAS -->
@@ -246,20 +233,6 @@
                 </div>
             </div>
 
-            <!-- ABA 4: TROCAS -->
-            <div id="aba-trocas" class="tab-content">
-                <div class="card">
-                    <h3 style="color: var(--text-secundario); margin-bottom: 15px;">Trocas e Devoluções</h3>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead><tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Quantidade</th></tr></thead>
-                            <tbody id="tbody-trocas">
-                                <tr><td colspan="4" style="text-align:center;">Carregando dados...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
             <footer class="threeeo-footer">
                 <p>Desenvolvido por <a href="https://threeeo.com.br" target="_blank">Threeeo</a></p>
             </footer>

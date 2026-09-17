@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarRelatorioDesempenho();
     carregarGiro();
     carregarRadar();
-    carregarTrocas();
 
     // 3. Lógica de busca por ID
     const inputFiltroId = document.getElementById('filtro-id-venda');
@@ -137,8 +136,8 @@ function renderizarGrafico(dadosGrafico) {
     document.getElementById('total-faturamento').innerText = `Total: ${formatarMoeda(total)}`;
 
     // Cores baseadas na sua paleta CSS
-    const corLinha = '#A45FCE'; // var(--btn-acao)
-    const corFundo = 'rgba(164, 95, 206, 0.2)'; 
+    const corLinha = getComputedStyle(document.documentElement).getPropertyValue('--btn-acao').trim() || '#A45FCE';
+    const corFundo = `${corLinha}33`; 
 
     graficoChart = new Chart(ctx, {
         type: 'line',
@@ -166,7 +165,7 @@ function renderizarGrafico(dadosGrafico) {
 }
 
 // ------------------------------------------
-// OUTRAS ABAS (GIRO, RADAR E TROCAS)
+// OUTRAS ABAS (GIRO E RADAR)
 // ------------------------------------------
 
 async function carregarGiro() {
@@ -221,31 +220,3 @@ async function carregarRadar() {
     } catch (e) {}
 }
 
-async function carregarTrocas() {
-    try {
-        const res = await fetch(`${URL_BASE}/relatorios/trocas`);
-        const dados = await res.json();
-        const tbody = document.getElementById('tbody-trocas');
-        tbody.innerHTML = '';
-        
-        if(dados.length === 0) return tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Nenhuma troca ou devolução registrada.</td></tr>`;
-        
-        dados.forEach(item => {
-            // Estiliza a badge dependendo se é Troca (Desconto) ou Devolução (Estorno)
-            const isTroca = item.tipo_troca === 'troca';
-            const textoTipo = isTroca ? 'Troca' : 'Devolução';
-            const badgeClass = isTroca ? 'status-medium' : 'status-critical';
-            
-            const nomeExibicao = item.nome || 'Produto não encontrado';
-
-            tbody.innerHTML += `
-                <tr>
-                    <td>${formatarData(item.data_troca, true)}</td>
-                    <td><span class="status-badge ${badgeClass}">${textoTipo}</span></td>
-                    <td>${nomeExibicao}</td>
-                    <td>${Number(item.quantidade).toLocaleString('pt-BR')} un</td>
-                </tr>
-            `;
-        });
-    } catch (e) {}
-}
