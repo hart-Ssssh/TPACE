@@ -5,20 +5,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     const cardAtendimentos = document.getElementById('card-atendimentos');
     const cardAlertas = document.getElementById('card-alertas');
 
-    cardVendas.innerText = "Em breve"; // Requer nova rota na API
+    cardVendas.innerText = "...";
     cardAtendimentos.innerText = "...";
     cardAlertas.innerText = "...";
 
     try {
-        // Puxa os pedidos pendentes (substituindo o card de atendimentos)
-        const resPedidos = await fetch(`${URL_BASE}/pedidos/pendentes`);
-        const pedidos = await resPedidos.json();
-        cardAtendimentos.innerText = `${pedidos.length} Pendentes`;
-
-        // Puxa os produtos que estão zerados para o alerta
-        const resAlertas = await fetch(`${URL_BASE}/produtos/zero`);
-        const produtosZero = await resAlertas.json();
-        cardAlertas.innerText = `${produtosZero.length} itens`;
+        // Puxa as estatísticas consolidadas (Vendas, Pedidos e Alertas)
+        const resStats = await fetch(`${URL_BASE}/dashboard/estatisticas`);
+        const stats = await resStats.json();
+        
+        cardVendas.innerText = parseFloat(stats.vendasHoje || 0).toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        cardAtendimentos.innerText = stats.atendimentosHoje || 0;
+        cardAlertas.innerText = `${stats.alertasEstoque || 0} itens`;
 
         // Puxa os itens mais vendidos para o Gráfico
         const resGrafico = await fetch(`${URL_BASE}/produtos/mais-vendidos`);
@@ -28,6 +26,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     } catch (erro) {
         console.error("Erro ao carregar dashboard:", erro);
+        cardVendas.innerText = "Erro";
         cardAtendimentos.innerText = "Erro";
         cardAlertas.innerText = "Erro";
     }

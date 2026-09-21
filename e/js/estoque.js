@@ -33,9 +33,7 @@ async function salvarProduto(event) {
         codigo: document.getElementById('prod-codigo').value,
         preco: parseFloat(document.getElementById('prod-preco').value) || 0,
         quantidade: parseFloat(document.getElementById('prod-qtd').value) || 0,
-        estoque_minimo: parseFloat(document.getElementById('prod-minimo').value) || 0,
-        // Como a sua API não tem rota de upload de foto nativa, enviamos a URL ou nulo
-        foto: document.getElementById('prod-imagem-url').value || null 
+        estoque_minimo: parseFloat(document.getElementById('prod-minimo').value) || 0
     };
 
     try {
@@ -46,20 +44,15 @@ async function salvarProduto(event) {
                 body: JSON.stringify(dadosFormulario)
             });
         } else {
-            // Sua API atualiza uma coluna por vez na rota /produto/atualizar
-            // Fazemos um loop pelos campos alterados
-            const campos = ['nome_produto', 'codigo_barras', 'preco', 'quantidade', 'quantidade_minima'];
-            const valores = [dadosFormulario.nome, dadosFormulario.codigo, dadosFormulario.preco, dadosFormulario.quantidade, dadosFormulario.estoque_minimo];
-            
-            for(let i = 0; i < campos.length; i++) {
-                await fetch(`${URL_BASE}/produto/atualizar`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: idValue, coluna: campos[i], valor: valores[i] })
-                });
-            }
+            // Edição em lote usando a nova rota segura enviando o ID real do produto
+            await fetch(`${URL_BASE}/produto/editar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: idValue, ...dadosFormulario })
+            });
         }
-        fecharModal();
+        
+        if(typeof fecharModal === 'function') fecharModal();
         carregarProdutos();
     } catch (erro) {
         alert("Erro no processamento: " + erro.message);
@@ -69,13 +62,13 @@ async function salvarProduto(event) {
     }
 }
 
-window.excluirProduto = async function(codigo_barras, nomeProduto) {
+window.excluirProduto = async function(id_cardapio, nomeProduto) {
     if (confirm(`Tem certeza que deseja excluir "${nomeProduto}"?`)) {
         try {
-            await fetch(`${URL_BASE}/produto/deletar`, {
-                method: 'POST',
+            await fetch(`${URL_BASE}/produto/excluir`, {
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ codigo: codigo_barras })
+                body: JSON.stringify({ id: id_cardapio })
             });
             carregarProdutos();
         } catch (erro) {
@@ -84,7 +77,26 @@ window.excluirProduto = async function(codigo_barras, nomeProduto) {
     }
 }
 
-// Adaptação rápida da renderização para os nomes de colunas da sua API (id_cardapio, nome_produto)
+window.abrirModalEditar = function(id_cardapio) {
+    const produto = listaProdutos.find(p => p.id_cardapio == id_cardapio);
+    if (!produto) return;
+    
+    document.getElementById('modal-titulo').innerText = "Editar Produto";
+    document.getElementById('prod-id').value = produto.id_cardapio;
+    
+    document.getElementById('prod-nome').value = produto.nome_produto || "";
+    document.getElementById('prod-codigo').value = produto.codigo_barras || "";
+    document.getElementById('prod-preco').value = produto.preco || "";
+    document.getElementById('prod-qtd').value = produto.quantidade || 0;
+    document.getElementById('prod-minimo').value = produto.quantidade_minima || 0;
+    
+    document.getElementById('btn-salvar-edicao').style.display = 'inline-block';
+    
+    // Mostra o formulário visualmente
+    if (typeof voltarPasso1 === 'function') voltarPasso1();
+    document.getElementById('modal-produto').classList.add('active');
+}
+
 function renderizarTabela(produtos) {
     const tbody = document.getElementById('tabela-estoque');
     tbody.innerHTML = '';
@@ -104,7 +116,8 @@ function renderizarTabela(produtos) {
             <td class="col-desktop">R$ ${prod.preco || '0,00'}</td>
             <td class="col-desktop"><span class="status-badge status-good">Estoque</span></td>
             <td class="col-desktop action-links">
-                <button class="btn-action btn-delete" onclick="excluirProduto('${prod.codigo_barras}', '${prod.nome_produto}')">Excluir</button>
+                <button class="btn-action btn-edit" onclick="abrirModalEditar('${prod.id_cardapio}')">Editar</button>
+                <button class="btn-action btn-delete" onclick="excluirProduto('${prod.id_cardapio}', '${prod.nome_produto}')">Excluir</button>
             </td>
         `;
         tbody.appendChild(tr);
