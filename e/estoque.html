@@ -5,6 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - T-PACE</title>
+    <title>Estoque - T-PACE</title>
+    <!-- Adicione o bloco abaixo para arrumar o Layout quebrado -->
+    <style>
+        .form-section-title {
+            grid-column: span 3;
+            margin-top: 20px;
+            border-bottom: 1px solid var(--border-divisoria);
+            padding-bottom: 5px;
+            color: var(--text-secundario);
+            font-size: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        @media screen and (max-width: 768px) {
+            .form-section-title {
+                grid-column: span 1;
+            }
+        }
+    </style>
     <link rel="stylesheet" href="css/style.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -107,10 +126,9 @@
     <input type="hidden" id="prod-id">
     <input type="hidden" id="prod-codigo-geral">
     
-    <!-- ================= PASSO 1 (GERAL) ================= -->
     <div id="passo-1">
         <div class="form-grid">
-            <!-- Linha da Foto -->
+            <!-- Imagem -->
             <div class="form-group full-width" style="text-align: center; margin-bottom: 10px;">
                 <label>Imagem do Produto</label>
                 <div style="margin: 10px auto; width: 140px; height: 140px; border-radius: 12px; border: 2px dashed var(--btn-acao); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: var(--bg-pesquisa);" onclick="document.getElementById('prod-imagem').click()">
@@ -121,21 +139,16 @@
                 <input type="hidden" id="prod-imagem-url">
             </div>
 
-            <!-- Linha 1 -->
+            <!-- DADOS BÁSICOS -->
+            <h4 class="form-section-title">Dados Básicos</h4>
+            
             <div class="form-group full-width">
                 <label>Nome do Produto *</label>
                 <input type="text" id="prod-nome" required>
             </div>
             
-            <!-- Linha 2 -->
-            <!-- AQUI ESTÁ O TRUQUE: O campo de código original fica isolado para sumir no cadastro novo -->
-            <div class="form-group" id="container-codigo-barras">
-                <label>Código de Barras</label>
-                <input type="text" id="prod-codigo">
-            </div>
-            
-            <div class="form-group">
-                <label>Unid. Venda *</label>
+            <div class="form-group" id="container-codigo-barras"><label>Código de Barras</label><input type="text" id="prod-codigo"></div>
+            <div class="form-group"><label>Unid. Venda *</label>
                 <select id="prod-unidade">
                     <option value="Un">Unidade</option>
                     <option value="Kg">Quilograma</option>
@@ -145,61 +158,63 @@
                     <option value="G">Grama</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Em Promoção?</label>
+            <div class="form-group"><label>Em Promoção?</label>
                 <select id="prod-em-promocao">
                     <option value="0">Não</option>
                     <option value="1">Sim</option>
                 </select>
             </div>
 
-            <!-- Linha 3 -->
-            <div class="form-group">
-                <label>Custo (R$)</label>
-                <input type="number" step="0.01" id="prod-custo">
-            </div>
-            <div class="form-group">
-                <label>Preço Venda (R$) *</label>
-                <input type="number" step="0.01" id="prod-preco" required>
-            </div>
-            <div class="form-group">
-                <label>Preço Promocional (R$)</label>
-                <input type="number" step="0.01" id="prod-promocional">
+            <div class="form-group"><label>Custo (R$)</label><input type="number" step="0.01" id="prod-custo"></div>
+            <div class="form-group"><label>Preço Venda (R$) *</label><input type="number" step="0.01" id="prod-preco" required></div>
+            <div class="form-group"><label>Preço Promocional (R$)</label><input type="number" step="0.01" id="prod-promocional"></div>
+
+            <div class="form-group"><label>Qtd Atual *</label><input type="number" step="0.001" id="prod-qtd" required></div>
+            <div class="form-group"><label>Qtd Mínima *</label><input type="number" step="0.001" id="prod-minimo" required></div>
+            <div class="form-group"></div> 
+
+            <!-- CLASSIFICAÇÃO & ATRIBUTOS -->
+            <h4 class="form-section-title">Classificação & Atributos</h4>
+            
+            <div class="form-group"><label>Categoria</label><input type="text" id="prod-categoria"></div>
+            <div class="form-group"><label>Linha</label><input type="text" id="prod-linha"></div>
+            <div class="form-group"><label>Tipo</label><input type="text" id="prod-tipo"></div>
+
+            <div class="form-group"><label>Marca</label><input type="text" id="prod-marca"></div>
+            <div class="form-group"><label>Sabor</label><input type="text" id="prod-sabor"></div>
+            <div class="form-group"><label>Tamanho</label><input type="text" id="prod-tamanho" placeholder="Ex: Pote 300ml"></div>
+
+            <div class="form-group"><label>Peso Líquido</label><input type="text" id="prod-peso" placeholder="Ex: 500g"></div>
+            <div class="form-group"><label>Freezer (Nº)</label><input type="number" id="prod-freezer"></div>
+            <div class="form-group"><label>Validade</label><input type="date" id="prod-validade"></div>
+
+            <!-- DETALHES & NUTRIÇÃO -->
+            <h4 class="form-section-title">Detalhes & Nutrição</h4>
+            
+            <div class="form-group full-width">
+                <label>Ingredientes</label>
+                <textarea id="prod-ingredientes" rows="2" style="width: 100%; border-radius: 4px; border: 1px solid var(--border-divisoria); background: var(--bg-pesquisa); color: var(--text-escuro); padding: 10px;"></textarea>
             </div>
 
-            <!-- Linha 4 -->
-            <div class="form-group">
-                <label>Qtd Atual *</label>
-                <input type="number" step="0.001" id="prod-qtd" required>
-            </div>
-            <div class="form-group">
-                <label>Qtd Mínima *</label>
-                <input type="number" step="0.001" id="prod-minimo" required>
-            </div>
-            <div class="form-group">
-                <label>Alíquota Imposto (%)</label>
-                <input type="number" step="0.01" id="prod-imposto">
+            <div class="form-group"><label>Alergias</label><input type="text" id="prod-alergias"></div>
+            <div class="form-group"><label>Pode Conter</label><input type="text" id="prod-pode-conter"></div>
+            <div class="form-group"></div>
+
+            <div class="form-group full-width">
+                <label>Observações Adicionais</label>
+                <textarea id="prod-observacoes" rows="2" style="width: 100%; border-radius: 4px; border: 1px solid var(--border-divisoria); background: var(--bg-pesquisa); color: var(--text-escuro); padding: 10px;"></textarea>
             </div>
 
-            <!-- Linha 5 -->
-            <div class="form-group">
-                <label>NCM</label>
-                <input type="text" id="prod-ncm">
-            </div>
-            <div class="form-group">
-                <label>CEST</label>
-                <input type="text" id="prod-cest">
-            </div>
-            <div class="form-group">
-                <label>Lote</label>
-                <input type="text" id="prod-lote">
-            </div>
+            <!-- FISCAL -->
+            <h4 class="form-section-title">Fiscal</h4>
+            
+            <div class="form-group"><label>Alíquota Imposto (%)</label><input type="number" step="0.01" id="prod-imposto"></div>
+            <div class="form-group"><label>NCM</label><input type="text" id="prod-ncm"></div>
+            <div class="form-group"></div> 
 
-            <!-- Linha 6 -->
-            <div class="form-group">
-                <label>Validade</label>
-                <input type="date" id="prod-validade">
-            </div>
+            <div class="form-group"><label>CEST</label><input type="text" id="prod-cest"></div>
+            <div class="form-group"><label>Lote</label><input type="text" id="prod-lote"></div>
+            <div class="form-group"></div>
         </div>
         
         <div class="modal-actions">
@@ -209,38 +224,25 @@
         </div>
     </div>
 
-    <!-- ================= PASSO 2 (APENAS CADASTRO NOVO) ================= -->
+    <!-- PASSO 2 (Inalterado) -->
     <div id="passo-2" style="display: none;">
         <div class="form-group full-width">
             <label>Inserir Códigos de Barras</label>
-            <!-- Layout em coluna: Input em cima, Botões em baixo lado a lado -->
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <input type="text" id="input-bipar" placeholder="Insira o código e pressione Enter..." style="width: 100%;">
-                
                 <div style="display: flex; gap: 10px;">
-                    <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno" style="flex: 1;">
-                        <i class="fas fa-random"></i> Gerar
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="iniciarLeitorCamera()" title="Escanear pela Câmera" style="flex: 1;">
-                        <i class="fas fa-camera"></i> Escanear
-                    </button>
+                    <button type="button" class="btn btn-outline" onclick="gerarCodigoInterno5Digitos()" title="Gerar código interno" style="flex: 1;"><i class="fas fa-random"></i> Gerar</button>
+                    <button type="button" class="btn btn-outline" onclick="iniciarLeitorCamera()" title="Escanear pela Câmera" style="flex: 1;"><i class="fas fa-camera"></i> Escanear</button>
                 </div>
             </div>
         </div>
-        
-        <!-- Tela da Câmera Oculta por Padrão -->
         <div id="camera-container" style="display: none; margin-top: 15px; text-align: center;">
             <div id="reader" style="width: 100%; border-radius: 8px; overflow: hidden; border: 2px dashed var(--btn-acao);"></div>
             <button type="button" class="btn btn-outline" style="margin-top: 10px;" onclick="fecharCamera()">Cancelar Câmera</button>
         </div>
-        
-        <div id="lista-codigos" style="margin-top: 15px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
-            <!-- Os códigos bipados aparecerão aqui -->
-        </div>
-        
+        <div id="lista-codigos" style="margin-top: 15px; max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;"></div>
         <div class="modal-actions" style="margin-top: 25px;">
             <button type="button" class="btn btn-outline" onclick="voltarPasso1()"><i class="fas fa-arrow-left"></i> Voltar</button>
-            <!-- Este botão envia o formulário inteiro -->
             <button type="submit" class="btn" id="btn-finalizar-cadastro">Finalizar Cadastros</button>
         </div>
     </div>
