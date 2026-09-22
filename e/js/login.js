@@ -3,7 +3,7 @@ const URL_BASE = "https://codecream.larissagazoli45.workers.dev"; // Substitua p
 document.getElementById('form-login').addEventListener('submit', async function(event) {
     event.preventDefault();
     
-    const usuarioInput = document.getElementById('usuario').value; // O usuário digitará o e-mail aqui
+    const usuarioInput = document.getElementById('usuario').value; // O usuário digitará o nome aqui
     const senhaInput = document.getElementById('senha').value;
     const mensagemErro = document.getElementById('mensagem-erro');
     const botaoEntrar = document.querySelector('button[type="submit"]');
@@ -16,7 +16,7 @@ document.getElementById('form-login').addEventListener('submit', async function(
         const resposta = await fetch(`${URL_BASE}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: usuarioInput, senha: senhaInput })
+            body: JSON.stringify({ nome: usuarioInput, senha: senhaInput })
         });
         
         const dados = await resposta.json();
@@ -24,6 +24,7 @@ document.getElementById('form-login').addEventListener('submit', async function(
         if (dados.sucesso) {
             localStorage.setItem('tpace_usuario_id', dados.id);
             localStorage.setItem('tpace_usuario_nome', dados.nome);
+            localStorage.setItem('tpace_usuario_nivel', dados.nivel);
             // Como sua API não retorna nivel_acesso, redirecionamos direto para o dashboard
             window.location.href = 'dashboard.html';
         } else {
